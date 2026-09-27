@@ -42,6 +42,11 @@ redirigido a `/login` con el mensaje de cuenta inactiva.
 | GET | `/admin/roles` | `admin.roles.index` | `roles.ver` | Livewire `Admin\Roles\Index` |
 | GET | `/admin/roles/{rol}/permisos` | `admin.roles.permisos` | `roles.ver` | Livewire `Admin\Roles\Permisos` |
 
+Las rutas `/admin/...` son páginas completas de Livewire 4 y se registran con `Route::livewire()`
+(no `Route::get()`), por ejemplo:
+`Route::livewire('/admin/usuarios', Admin\Usuarios\Index::class)->name('admin.usuarios.index')->middleware('can:usuarios.ver');`
+`login`, `logout` e `inicio` son rutas Blade/controlador normales con `Route::get`/`Route::post`.
+
 Las acciones que modifican datos se ejecutan dentro de los componentes Livewire y vuelven a
 verificar su propio permiso (ver [componentes-livewire.md](componentes-livewire.md)); proteger la
 página no basta porque las acciones de Livewire son peticiones independientes.

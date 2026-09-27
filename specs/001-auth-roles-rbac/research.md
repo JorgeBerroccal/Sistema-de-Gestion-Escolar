@@ -146,7 +146,7 @@ resolver cada requisito con las herramientas nativas de Laravel 13 de la forma m
 
 ## R-11. Pruebas
 
-- **Decision**: Pest (versión mayor compatible con Laravel 13, ver R-14) con `pest-plugin-laravel` y `pest-plugin-livewire`. Unit para
+- **Decision**: Pest 4 (ver R-14) con `pest-plugin-laravel` y `pest-plugin-livewire`. Unit para
   `Usuario::tienePermiso`, `ProteccionAdministracion`, `RegistroReglasPertenencia`; Feature para
   login/logout, middleware de cuenta activa, rate limit, cada ruta y acción Livewire protegida
   (permitido + denegado 403), menú por rol, seeders y el mecanismo de pertenencia. Base de datos de
@@ -177,17 +177,34 @@ resolver cada requisito con las herramientas nativas de Laravel 13 de la forma m
 
 ## R-14. Versión del framework y de las dependencias
 
-- **Finding**: La constitución v2.0.0 (enmienda del 2026-09-27) exige Laravel 13 sobre PHP 8.3+.
-  Laravel 11 ya no recibe parches de seguridad (desde marzo de 2026) y Laravel 12 ya no recibe
-  correcciones de errores (desde agosto de 2026); Laravel 13 (marzo de 2026) tiene soporte completo.
-- **Decision**: Laravel 13 con PHP 8.3. Las versiones mayores de Livewire y Pest se fijan al crear
-  el proyecto: la última estable que declare compatibilidad con Laravel 13 en Composer, quedando
-  registradas en `composer.lock`. Antes de escribir componentes se verifica que la versión de
-  Livewire elegida admita componentes basados en clase (los contratos de este plan asumen clases
-  PHP + vistas Blade).
-- **Rationale**: Ninguna decisión de este plan depende de algo específico de una versión concreta
-  de Laravel (Gates, middleware, Eloquent, RateLimiter y sesiones existen sin cambios en 13), por lo
-  que el diseño se mantiene. Dejar que Composer resuelva las versiones compatibles evita fijar a
-  mano una combinación inválida.
-- **Alternatives considered**: Mantener Laravel 11 → sin parches de seguridad. Laravel 12 → sin
-  correcciones de errores durante el MVP.
+- **Finding (framework)**: La constitución v2.0.0 (enmienda del 2026-09-27) exige Laravel 13 sobre
+  PHP 8.3+. Laravel 11 ya no recibe parches de seguridad (desde marzo de 2026) y Laravel 12 ya no
+  recibe correcciones de errores (desde agosto de 2026); Laravel 13 (marzo de 2026) tiene soporte
+  completo.
+- **Finding (Livewire)**, verificado en `composer.json` de cada tag y en Packagist:
+  - Livewire 4 declara soporte para Laravel 13 desde **v4.2.0** (2026-02-26); v4.0.0 y v4.1.0 solo
+    admiten Laravel 10–12. La última versión es v4.4.6 (2026-09-21).
+  - La rama 3.x también lo declara desde v3.8.0 (2026-04-30), pero es la versión mayor anterior.
+  - Sin restricción explícita, `composer require livewire/livewire` instala Livewire 4.
+- **Finding (Pest)**: `pest-plugin-laravel` 4.x admite `laravel/framework ^13.0` y
+  `pest-plugin-livewire` 4.x admite `livewire/livewire ^4.0.1`; ambos requieren Pest 4 y PHP 8.3.
+- **Decision**: Laravel 13 (`^13.0`), **Livewire 4 (`^4.2`)** y **Pest 4 (`^4.4`)** con sus
+  plugins 4.x, fijados explícitamente en `composer.json`. Los componentes se escriben en formato
+  **basado en clase** (clase PHP en `app/Livewire/` + vista Blade en `resources/views/livewire/`),
+  que Livewire 4 sigue soportando; se configura `make_command.type = 'class'` en
+  `config/livewire.php` para que `make:livewire` genere ese formato por defecto. Cambios de
+  Livewire 4 que afectan a este módulo (detallados en
+  [contracts/componentes-livewire.md](contracts/componentes-livewire.md#convenciones-livewire-4)):
+  - rutas de página completa con `Route::livewire()`;
+  - layout configurado con `component_layout`;
+  - `wire:model` con `.live` explícito cuando se necesite sincronizar al escribir;
+  - etiquetas `<livewire:... />` cerradas.
+- **Rationale**: Fijar la versión mayor evita que el plan y los contratos describan una API
+  distinta de la instalada. `^4.2` es el mínimo que admite Laravel 13. El formato por clase
+  mantiene la separación PHP/Blade habitual de Laravel y es el más documentado. Los componentes de
+  un solo archivo (predeterminados en v4) son una opción válida pero nueva, y no aportan nada a
+  este módulo.
+- **Alternatives considered**: Livewire 3.8+ → admite Laravel 13 pero es la versión mayor anterior;
+  los módulos posteriores tendrían que migrar. Componentes de un solo archivo (SFC) → mezclan PHP y
+  Blade en un archivo con el prefijo ⚡; menos familiar y sin beneficio aquí. Mantener Laravel 11
+  → sin parches de seguridad. Laravel 12 → sin correcciones de errores durante el MVP.

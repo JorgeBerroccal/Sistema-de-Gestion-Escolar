@@ -21,12 +21,12 @@ esqueleto del proyecto Laravel y el entorno Docker que usarán los demás módul
 
 **Language/Version**: PHP 8.3, Laravel 13 (constitución v2.0.0; ver [research.md](research.md#r-14-versión-del-framework-y-de-las-dependencias))
 
-**Primary Dependencies**: Livewire (versión compatible con Laravel 13, R-14), Blade, Tailwind CSS (vía Vite); sin paquetes de
+**Primary Dependencies**: Livewire 4 (`^4.2`, componentes basados en clase; R-14), Blade, Tailwind CSS (vía Vite); sin paquetes de
 autenticación ni de permisos de terceros
 
 **Storage**: MySQL 8.0 (`sge`, y `sge_testing` para pruebas); sesiones en BD
 
-**Testing**: Pest (versión compatible con Laravel 13, R-14) (+ plugins Laravel y Livewire) para Unit y Feature; k6 para carga del login
+**Testing**: Pest 4 (+ plugins Laravel y Livewire 4.x; R-14) para Unit y Feature; k6 para carga del login
 
 **Target Platform**: Contenedores Linux (Docker Compose): php-fpm 8.3 + nginx + MySQL 8
 
@@ -47,7 +47,7 @@ permisos de rol, permisos)
 
 | Principio | Verificación | Pre-diseño | Post-diseño |
 |---|---|:-:|:-:|
-| I. Stack fijo | Laravel 13 / PHP 8.3, Blade + Livewire, MySQL 8, Docker Compose. Sin SPA ni otros lenguajes. Tailwind es solo CSS. | ✅ | ✅ |
+| I. Stack fijo | Laravel 13 / PHP 8.3, Blade + Livewire 4 (por clase), MySQL 8, Docker Compose. Sin SPA ni otros lenguajes. Tailwind es solo CSS. | ✅ | ✅ |
 | II. Diseño genérico | Este módulo no maneja datos de institución/niveles/grados. El Administrador inicial viene del entorno, no del código. | ✅ | ✅ |
 | III. RBAC por tablas | Tablas `roles`, `permisos`, `rol_permiso`, `usuarios`. Un único `Gate::before` → `tienePermiso()`; el código usa solo identificadores de permiso. Protección del último admin definida por permisos, no por nombre de rol (R-08). | ✅ | ✅ |
 | IV. Alcance fijo | Todo pertenece al módulo 1. Excluidos explícitamente: registro, recuperación de contraseña, 2FA, CRUD de roles. | ✅ | ✅ |
@@ -58,8 +58,10 @@ permisos de rol, permisos)
 
 **Resultado**: sin violaciones. Complexity Tracking vacío.
 
-**Nota**: el plan se ajustó a la constitución v2.0.0 (Laravel 13). Re-verificado el 2026-09-27: los
-7 principios siguen cumpliéndose; el cambio de versión no altera ninguna decisión de diseño.
+**Nota**: el plan se ajustó a la constitución v2.0.0 (Laravel 13) y fija Livewire 4 y Pest 4.
+Re-verificado el 2026-09-27: los 7 principios siguen cumpliéndose. Livewire 4 no altera el
+Principio I, que exige "Blade y Livewire" sin versión; el cambio a Livewire 4 solo ajusta
+convenciones de rutas y vistas en los contratos.
 
 ## Project Structure
 
@@ -104,7 +106,7 @@ app/
 ├── Models/{Usuario,Rol,Permiso}.php
 └── Providers/AppServiceProvider.php     # Gate::before + singleton de pertenencia
 
-config/{auth,menu,pertenencia,sge}.php
+config/{auth,livewire,menu,pertenencia,sge}.php
 database/
 ├── factories/{UsuarioFactory,RolFactory,PermisoFactory}.php
 ├── migrations/                           # roles, permisos, rol_permiso, usuarios
@@ -133,8 +135,9 @@ docker-compose.yml
 
 **Structure Decision**: Monolito Laravel estándar en la raíz del repositorio (Principio VII). Las
 piezas de autorización propias del SGE se agrupan en `app/Autorizacion/` para que los módulos
-futuros las encuentren en un solo lugar. Las vistas de administración son componentes Livewire
-bajo `app/Livewire/Admin/`.
+futuros las encuentren en un solo lugar. Las vistas de administración son componentes Livewire 4
+basados en clase bajo `app/Livewire/Admin/`, con sus vistas en `resources/views/livewire/admin/`,
+registrados como páginas con `Route::livewire()`.
 
 ## Complexity Tracking
 
