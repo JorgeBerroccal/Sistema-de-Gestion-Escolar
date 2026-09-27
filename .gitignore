@@ -1,0 +1,40 @@
+# Claude Code: configuración local y credenciales (las skills compartidas sí se versionan)
+.claude/settings.local.json
+.claude/.credentials.json
+.claude/**/*credentials*
+.claude/**/*.local.*
+
+# Variables de entorno (se versiona solo la plantilla .env.example)
+.env
+.env.*
+!.env.example
+
+# Dependencias
+/vendor/
+/node_modules/
+
+# Laravel: storage, caché y assets compilados
+/storage/
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+/public/build/
+/public/hot
+/public/storage
+
+# Pruebas y herramientas
+/.phpunit.cache/
+.phpunit.result.cache
+/coverage/
+auth.json
+
+# Docker: datos persistentes locales
+/docker/data/
+docker-compose.override.yml
+
+# IDE y sistema operativo
+/.idea/
+/.vscode/
+/.fleet/
+.DS_Store
+Thumbs.db
+*.log
