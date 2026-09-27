@@ -4,7 +4,7 @@
 
 ### I. Stack Tecnológico Fijo
 
-- El backend MUST implementarse en Laravel 11 sobre PHP 8.3 o superior.
+- El backend MUST implementarse en Laravel 13 sobre PHP 8.3 o superior.
 - El frontend MUST construirse con Blade y Livewire. Está prohibido introducir frameworks de
   frontend separados (React, Vue, Angular, Svelte u otros SPA).
 - La base de datos MUST ser MySQL 8.
@@ -135,5 +135,11 @@ existe.
 - Cumplimiento: todo plan, revisión y tarea MUST verificar conformidad con esta constitución;
   cualquier desviación MUST quedar justificada en la sección de complejidad del plan o ser
   rechazada.
+- Historial de enmiendas:
+  - 2.0.0 (2026-09-27): Principio I — la versión obligatoria del framework cambia de Laravel 11 a
+    Laravel 13. Justificación: Laravel 11 dejó de recibir parches de seguridad en marzo de 2026 y
+    Laravel 12 dejó de recibir correcciones de errores en agosto de 2026; Laravel 13 (marzo de
+    2026) es la versión con soporte completo y mantiene el requisito de PHP 8.3+. Es MAJOR porque
+    redefine de forma incompatible una regla del Principio I: código en Laravel 11 deja de cumplir.
 
-**Version**: 1.0.0 | **Ratified**: 2026-09-27 | **Last Amended**: 2026-09-27
+**Version**: 2.0.0 | **Ratified**: 2026-09-27 | **Last Amended**: 2026-09-27
