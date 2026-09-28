@@ -224,7 +224,8 @@ tiene regla registrada es rechazado con acceso denegado (403).
 - **Cambio de permisos con sesión abierta**: los permisos se evalúan en cada solicitud; no se
   requiere cerrar sesión para que un cambio surta efecto.
 - **Intentos repetidos de inicio de sesión**: tras 5 intentos fallidos consecutivos para un mismo
-  identificador en 1 minuto, se bloquean temporalmente nuevos intentos durante 1 minuto.
+  identificador desde la misma dirección IP en 1 minuto, se bloquean temporalmente nuevos intentos
+  de esa combinación identificador + IP durante 1 minuto.
 - **Usuario sin rol**: no puede existir; crear o editar un usuario sin rol es rechazado.
 - **Identificador de acceso ambiguo**: un nombre de usuario no puede tener formato de correo, para
   que un mismo texto nunca coincida con dos cuentas distintas.
@@ -257,8 +258,8 @@ tiene regla registrada es rechazado con acceso denegado (403).
   solicitud.
 - **FR-005**: El sistema MUST permitir cerrar sesión y redirigir al inicio de sesión cualquier
   acceso no autenticado a páginas protegidas.
-- **FR-006**: El sistema MUST limitar los intentos fallidos de inicio de sesión (5 por identificador
-  por minuto) y bloquear temporalmente los siguientes.
+- **FR-006**: El sistema MUST limitar los intentos fallidos de inicio de sesión (5 por combinación
+  de identificador + dirección IP por minuto) y bloquear temporalmente los siguientes.
 - **FR-007**: El sistema MUST almacenar las contraseñas solo de forma irreversible (nunca en texto
   plano) y exigir una longitud mínima de 8 caracteres.
 - **FR-008**: El sistema MUST cerrar automáticamente las sesiones tras 120 minutos de inactividad.
@@ -395,4 +396,8 @@ tiene regla registrada es rechazado con acceso denegado (403).
 - **Auditoría**: no se incluye bitácora de auditoría detallada en este módulo; basta con registrar
   fechas de creación y modificación.
 - **Autenticación de dos factores y SSO**: fuera de alcance del MVP.
+- **Limitación de intentos por identificador + IP (limitación conocida)**: en redes con NAT
+  compartido (p. ej. el WiFi institucional), muchos usuarios salen por la misma IP, por lo que la
+  IP no aporta protección adicional frente a limitar solo por identificador. Se acepta como
+  limitación conocida del MVP; no se resuelve en este módulo.
 - **Dependencias**: este es el primer módulo; no depende de otros módulos del SGE.

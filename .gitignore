@@ -14,7 +14,10 @@
 /node_modules/
 
 # Laravel: storage, caché y assets compilados
-/storage/
+# Se versiona la estructura de storage/ (archivos .gitkeep) y se ignora su contenido.
+/storage/**
+!/storage/**/
+!/storage/**/.gitkeep
 /bootstrap/cache/*
 !/bootstrap/cache/.gitignore
 /public/build/

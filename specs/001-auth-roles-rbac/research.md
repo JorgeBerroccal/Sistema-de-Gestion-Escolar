@@ -37,6 +37,12 @@ resolver cada requisito con las herramientas nativas de Laravel 13 de la forma m
      cierra la sesión recién creada y se muestra "Tu cuenta está inactiva".
   2. Un middleware `EnsureUserIsActive` en el grupo `auth` verifica `activo` en cada solicitud; si
      es falso, hace logout, invalida la sesión y redirige al login con el mismo mensaje.
+  3. Las acciones Livewire llegan por el endpoint propio de Livewire, que solo vuelve a aplicar el
+     middleware "persistente"; por eso `EnsureUserIsActive` se registra con
+     `Livewire::addPersistentMiddleware()`.
+  4. Segunda defensa: `Usuario::tienePermiso()` devuelve `false` si `activo = false`, de modo que
+     una cuenta desactivada no supera ninguna verificación de permisos aunque algo se salte el
+     middleware.
 - **Rationale**: Cumple "la sesión deja de ser válida en la siguiente solicitud" sin necesidad de
   rastrear ni borrar sesiones en almacenamiento.
 - **Alternatives considered**: Borrar filas de la tabla `sessions` al desactivar → acopla al driver
@@ -49,7 +55,9 @@ resolver cada requisito con las herramientas nativas de Laravel 13 de la forma m
   solo con intentos fallidos, máximo 5 en 60 s, y se limpia con un login exitoso. Al superar el
   límite se responde con el error de validación "Demasiados intentos. Intenta en N segundos".
 - **Rationale**: Es el patrón estándar de Laravel; no requiere tablas nuevas. Como solo cuenta
-  fallos, no interfiere con la prueba de carga de logins válidos.
+  fallos, no interfiere con la prueba de carga de logins válidos. Limitación conocida: detrás de un
+  NAT compartido (WiFi institucional) la IP no añade protección frente a limitar solo por
+  identificador; se acepta en el MVP (spec, Assumptions).
 - **Alternatives considered**: `throttle` middleware por ruta → cuenta también los intentos
   exitosos y limita por IP, lo que rompería la prueba de carga desde una sola IP.
 
@@ -146,10 +154,14 @@ resolver cada requisito con las herramientas nativas de Laravel 13 de la forma m
 
 ## R-11. Pruebas
 
-- **Decision**: Pest 4 (ver R-14) con `pest-plugin-laravel` y `pest-plugin-livewire`. Unit para
-  `Usuario::tienePermiso`, `ProteccionAdministracion`, `RegistroReglasPertenencia`; Feature para
-  login/logout, middleware de cuenta activa, rate limit, cada ruta y acción Livewire protegida
-  (permitido + denegado 403), menú por rol, seeders y el mecanismo de pertenencia. Base de datos de
+- **Decision**: Pest 4 (ver R-14) con `pest-plugin-laravel` y `pest-plugin-livewire`. Criterio:
+  toda prueba que usa la base de datos es **Feature**; `tests/Unit/` solo contiene pruebas sin BD.
+  Unit (sin BD) para lógica aislable: detección correo/username y clave de limitación del login,
+  duración de sesión, `tienePermiso` en memoria (`setRelation`), expresiones regulares de username
+  e identificador, definición de roles/permisos del seeder y `RegistroReglasPertenencia`. Feature
+  para `tienePermiso` contra la BD, `ProteccionAdministracion`, login/logout, middleware de cuenta
+  activa, rate limit, cada ruta y acción Livewire protegida (permitido + denegado 403), menú por
+  rol, seeders y el mecanismo de pertenencia. Base de datos de
   pruebas MySQL 8 (`sge_testing`) en el mismo contenedor, con `RefreshDatabase`.
 - **Rationale**: Probar sobre MySQL real verifica colación insensible a mayúsculas y restricciones
   de FK/únicos que SQLite no reproduce igual.

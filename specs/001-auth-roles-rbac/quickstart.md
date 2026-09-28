@@ -40,7 +40,9 @@ Esperado: todas en verde, incluyendo:
 | `tests/Feature/Admin` | CRUD de usuarios, restablecer contraseña, desactivar/reactivar, protección de la última cuenta administradora, permisos y asignación a roles. |
 | `tests/Feature/Seeders` | 5 roles, 7 permisos, asignaciones, Administrador inicial, idempotencia. |
 | `tests/Feature/Pertenencia` | Filtro con regla de prueba, 403 sin regla (fail-closed), modelo sin trait. |
-| `tests/Unit` | `tienePermiso`, `ProteccionAdministracion`, `RegistroReglasPertenencia`. |
+| `tests/Feature/Models` | Normalización de `Usuario`, inmutabilidad del identificador de `Permiso`, `tienePermiso` contra la BD. |
+| `tests/Feature/Autorizacion/ProteccionAdministracionTest.php` | Regla de la última cuenta administradora. |
+| `tests/Unit` (sin BD) | Detección correo/username y clave de limitación del login, duración de sesión (120 min), `tienePermiso` en memoria (incluida cuenta inactiva), expresiones regulares de username e identificador de permiso, definición de roles/permisos del seeder, `RegistroReglasPertenencia`. |
 
 ## 3. Verificación manual
 

@@ -33,8 +33,10 @@ roles >──< permisos   (vía rol_permiso)
 | nombre | varchar(100) | obligatorio |
 | descripcion | varchar(255) | opcional |
 
-- `identificador` es lo que el código referencia (`can('usuarios.crear')`). Solo se fija al crear;
-  el formulario de edición no lo expone y el modelo lo excluye de `$fillable` en actualizaciones.
+- `identificador` es lo que el código referencia (`can('usuarios.crear')`). Solo se fija al crear:
+  el formulario de edición no lo expone y el modelo `Permiso` registra un evento `updating` que lanza
+  `LogicException('El identificador de un permiso es inmutable.')` si `identificador` cambia
+  (sigue en `$fillable` para poder crearlo). Formato validado con `Permiso::REGEX_IDENTIFICADOR`.
 - No se eliminan permisos desde la interfaz.
 
 ## rol_permiso (tabla pivote)

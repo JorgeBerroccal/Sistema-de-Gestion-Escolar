@@ -28,7 +28,9 @@ Un usuario autenticado que visita `/login` es redirigido a `/inicio`.
 ## Autenticadas (middleware `auth` + `activo`)
 
 Un visitante no autenticado es redirigido a `/login`. Un usuario inactivo es deslogueado y
-redirigido a `/login` con el mensaje de cuenta inactiva.
+redirigido a `/login` con el mensaje de cuenta inactiva. El middleware `activo`
+(`EnsureUserIsActive`) también se registra como middleware persistente de Livewire, así que aplica
+igual a las peticiones de acciones Livewire; además, una cuenta inactiva no tiene ningún permiso.
 
 | Método | URI | Nombre | Permiso | Vista / componente |
 |---|---|---|---|---|
