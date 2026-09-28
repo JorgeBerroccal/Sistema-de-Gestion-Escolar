@@ -13,22 +13,23 @@
 /vendor/
 /node_modules/
 
-# Laravel: storage, caché y assets compilados
-# Se versiona la estructura de storage/ (archivos .gitkeep) y se ignora su contenido.
-/storage/**
-!/storage/**/
-!/storage/**/.gitkeep
-/bootstrap/cache/*
-!/bootstrap/cache/.gitignore
+# Laravel: storage/ y bootstrap/cache/ ya traen sus propios .gitignore anidados
+# (patrón `*` + `!.gitignore` en cada subcarpeta) que versionan la estructura de
+# directorios e ignoran su contenido de runtime; no se necesita nada aquí para ellos.
 /public/build/
 /public/hot
 /public/storage
+/public/fonts-manifest.dev.json
 
 # Pruebas y herramientas
 /.phpunit.cache/
 .phpunit.result.cache
 /coverage/
 auth.json
+_ide_helper.php
+.phpactor.json
+Homestead.json
+Homestead.yaml
 
 # Docker: datos persistentes locales
 /docker/data/
@@ -38,6 +39,10 @@ docker-compose.override.yml
 /.idea/
 /.vscode/
 /.fleet/
+/.nova/
+/.zed/
+/.cursor/
+/.codex/
 .DS_Store
 Thumbs.db
 *.log
