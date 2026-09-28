@@ -54,10 +54,11 @@ Esperado: todas en verde, incluyendo:
 | 4 | Entrar como `docente1` | Menú solo con Inicio; abrir `/admin/usuarios` → 403. |
 | 5 | Como Admin, dar `usuarios.ver` al rol Docente; recargar la sesión de `docente1` | Aparece "Usuarios" sin volver a iniciar sesión. Quitarlo de nuevo. |
 | 6 | Como Admin, desactivar `docente1` mientras tiene sesión abierta | Su siguiente clic lo lleva a `/login` con "Tu cuenta está inactiva". No puede volver a entrar. |
-| 7 | Como Admin, intentar desactivar la propia cuenta | Error "No puedes desactivar tu propia cuenta". |
-| 8 | Como Admin, quitar `roles.asignar_permisos` al rol Administrador (siendo el único admin) | Error: dejaría el sistema sin cuentas administradoras. |
-| 9 | Crear un permiso `reportes.ver` y editar su nombre | Se guarda; el identificador no es editable. |
-| 10 | 6 intentos fallidos seguidos con el mismo usuario | El 6.º muestra "Demasiados intentos…". |
+| 7 | Con `docente1` autenticado en una pestaña, abrir una pantalla de administración (por ejemplo `/admin/usuarios`, si su rol tiene el permiso) y dejarla abierta sin recargar; desde otra sesión (otro navegador o ventana privada) como Admin, desactivar la cuenta `docente1`; sin recargar la primera pestaña, ejecutar ahí una acción del componente Livewire (p. ej. el buscador o un botón) | La acción responde 403 y no se ejecuta; el middleware `activo` está registrado como middleware persistente de Livewire, así que la desactivación surte efecto sin necesidad de recargar la página. |
+| 8 | Como Admin, intentar desactivar la propia cuenta | Error "No puedes desactivar tu propia cuenta". |
+| 9 | Como Admin, quitar `roles.asignar_permisos` al rol Administrador (siendo el único admin) | Error: dejaría el sistema sin cuentas administradoras. |
+| 10 | Crear un permiso `reportes.ver` y editar su nombre | Se guarda; el identificador no es editable. |
+| 11 | 6 intentos fallidos seguidos con el mismo usuario | El 6.º muestra "Demasiados intentos…". |
 
 ## 4. Prueba de carga del login (SC-006)
 
