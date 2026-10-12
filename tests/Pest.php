@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Permiso;
+use App\Models\Rol;
+use App\Models\Usuario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -15,8 +18,11 @@ use Tests\TestCase;
 */
 
 pest()->extend(TestCase::class)
- // ->use(RefreshDatabase::class)
+    ->use(RefreshDatabase::class)
     ->in('Feature');
+
+// Las pruebas Unit pueden usar el contenedor y config(), pero nunca la base de datos.
+pest()->extend(TestCase::class)->in('Unit');
 
 /*
 |--------------------------------------------------------------------------
@@ -44,7 +50,23 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * Crea un usuario activo cuyo rol (de fábrica) tiene exactamente los permisos indicados
+ * por identificador; los permisos que no existan se crean.
+ *
+ * @param  array<int, string>  $identificadores
+ * @param  array<string, mixed>  $atributos
+ */
+function usuarioConPermisos(array $identificadores = [], array $atributos = []): Usuario
 {
-    // ..
+    $rol = Rol::factory()->create();
+
+    $ids = collect($identificadores)->map(fn (string $identificador) => Permiso::firstOrCreate(
+        ['identificador' => $identificador],
+        ['nombre' => $identificador],
+    )->id);
+
+    $rol->permisos()->sync($ids->all());
+
+    return Usuario::factory()->create(array_merge(['rol_id' => $rol->id, 'activo' => true], $atributos));
 }
