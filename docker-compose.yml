@@ -3,6 +3,9 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
+      args:
+        UID: ${HOST_UID:-1000}
+        GID: ${HOST_GID:-1000}
     volumes:
       - .:/var/www/html
     environment:
@@ -23,7 +26,7 @@ services:
 
   db:
     image: mysql:8.0
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --performance-schema=OFF --innodb-buffer-pool-size=256M
     environment:
       MYSQL_DATABASE: sge
       MYSQL_USER: sge
