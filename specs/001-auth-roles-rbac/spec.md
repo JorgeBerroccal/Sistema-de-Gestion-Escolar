@@ -22,6 +22,12 @@ seeder con los 5 roles iniciales y sus permisos base."
 
 ## Clarifications
 
+### Session 2026-10-12
+
+- Q: ¿Qué carga debe soportar el módulo? → A: La prueba de carga (SC-006) debe llegar a 1000
+  usuarios virtuales; la constitución v2.1.0 incorpora Redis y las reglas de rendimiento
+  (índices, `with()`, paginación) para lograrlo en un VPS de 2 vCPU / 4 GB.
+
 ### Session 2026-09-27
 
 - Q: ¿Qué debe ocurrir cuando se consulta un tipo de registro que requiere pertenencia (p. ej.
@@ -351,8 +357,14 @@ tiene regla registrada es rechazado con acceso denegado (403).
   siguiente acción, sin cerrar sesión, en el 100% de los casos probados.
 - **SC-005**: Una revisión del código del módulo encuentra cero decisiones de acceso basadas en el
   nombre del rol.
-- **SC-006**: Con 100 usuarios concurrentes iniciando sesión, el 95% de los inicios de sesión se
-  completa en menos de 2 segundos y la tasa de errores es menor al 1%, según la prueba de carga.
+- **SC-006**: Con una prueba de carga k6 de hasta **1000 usuarios virtuales** (rampa escalonada
+  100 → 300 → 600 → 1000), donde cada usuario inicia sesión una sola vez con su propia cuenta y
+  luego realiza consultas autenticadas con pausas de 10 a 30 s entre ellas, sobre un servidor de
+  2 vCPU / 4 GB con la pila de producción (nginx + PHP-FPM, OPcache, Redis, MySQL 8): el 95% de los
+  inicios de sesión se completa en menos de 3,5 s, el 95% de las consultas autenticadas en menos de
+  1,5 s, y la tasa de solicitudes fallidas es menor al 1%. Los umbrales del login son mayores que
+  los de las consultas porque el hash bcrypt (costo 12, ~250 ms de CPU por intento) es deliberadamente
+  costoso y es el recurso limitante con 2 vCPU; por eso las rampas escalonan los inicios de sesión.
 - **SC-007**: El Administrador puede crear una cuenta nueva y asignarle un rol en menos de 1 minuto.
 - **SC-008**: Una instalación nueva queda operativa (5 roles, permisos base y Administrador inicial
   capaz de iniciar sesión) ejecutando únicamente la carga inicial documentada.
