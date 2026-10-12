@@ -8,6 +8,11 @@
 - El frontend MUST construirse con Blade y Livewire. Está prohibido introducir frameworks de
   frontend separados (React, Vue, Angular, Svelte u otros SPA).
 - La base de datos MUST ser MySQL 8.
+- Redis MUST usarse como almacén de sesiones, caché y limitador de intentos (rate limiting). Es un
+  servicio de infraestructura (no código propio), por lo que no contraviene la prohibición de
+  servicios escritos en otro lenguaje.
+- En producción, la aplicación MUST servirse con nginx + PHP-FPM, con OPcache activo y
+  `php artisan optimize` ejecutado en cada despliegue. Laravel Octane queda descartado.
 - El entorno de desarrollo y despliegue MUST definirse con Docker y Docker Compose.
 - Está prohibido introducir otros lenguajes de backend o servicios adicionales escritos en otro
   lenguaje.
@@ -95,7 +100,9 @@ el prompt para garantizar la privacidad de los estudiantes.
   requerimiento.
 - Se prefieren las convenciones y herramientas nativas de Laravel (Eloquent, Gates/Policies,
   Form Requests, Livewire) antes que capas o patrones adicionales (repositorios genéricos, CQRS,
-  microservicios, colas, cachés distribuidas) salvo necesidad demostrada.
+  microservicios, colas, cachés distribuidas) salvo necesidad demostrada. Redis para sesiones,
+  caché y limitador de intentos (Principio I) es la necesidad demostrada por el requisito de
+  1000 usuarios virtuales; no autoriza por sí solo el uso de colas.
 - Toda complejidad adicional MUST justificarse por escrito en la sección de complejidad del plan.
 
 **Rationale**: Es un proyecto académico con plazo fijo; la sobre-ingeniería consume tiempo que no
@@ -110,6 +117,16 @@ existe.
 - El proyecto MUST levantarse completo con `docker compose up` sin pasos manuales no documentados.
 - Migraciones y seeders MUST permitir reconstruir la base de datos desde cero, incluyendo los roles
   y permisos iniciales.
+
+## Reglas de Rendimiento (aplican a todos los módulos)
+
+- Toda columna usada para búsqueda, filtrado u ordenamiento y toda clave foránea MUST tener índice.
+- Las relaciones Eloquent usadas en una vista o respuesta MUST cargarse con `with()` (carga
+  anticipada) para evitar consultas N+1.
+- Todo listado MUST estar paginado; está prohibido cargar colecciones completas sin límite.
+
+**Rationale**: El sistema debe sostener 1000 usuarios virtuales en un VPS de 2 vCPU / 4 GB; estas
+reglas son baratas de aplicar desde el inicio y costosas de corregir después.
 
 ## Flujo de Desarrollo y Criterios de Terminado
 
@@ -141,5 +158,11 @@ existe.
     Laravel 12 dejó de recibir correcciones de errores en agosto de 2026; Laravel 13 (marzo de
     2026) es la versión con soporte completo y mantiene el requisito de PHP 8.3+. Es MAJOR porque
     redefine de forma incompatible una regla del Principio I: código en Laravel 11 deja de cumplir.
+  - 2.1.0 (2026-10-12): Principio I — se agrega Redis (sesiones, caché, limitador de intentos) y
+    la pila de producción nginx + PHP-FPM con OPcache y `php artisan optimize` (Octane
+    descartado); Principio VII — aclaración de que Redis es la necesidad demostrada, sin habilitar
+    colas; nueva sección "Reglas de Rendimiento" (índices, `with()`, paginación obligatoria).
+    Justificación: la prueba de carga debe llegar a 1000 usuarios virtuales en un VPS de 2 vCPU /
+    4 GB. Es MINOR porque amplía materialmente guías sin invalidar código conforme a 2.0.0.
 
-**Version**: 2.0.0 | **Ratified**: 2026-09-27 | **Last Amended**: 2026-09-27
+**Version**: 2.1.0 | **Ratified**: 2026-09-27 | **Last Amended**: 2026-10-12
