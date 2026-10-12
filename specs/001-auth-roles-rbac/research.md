@@ -255,3 +255,13 @@ resolver cada requisito con las herramientas nativas de Laravel 13 de la forma m
   (job asíncrono con Redis como backend), para no bloquear solicitudes web con la generación. No se
   implementa ni se agregan colas en este módulo; la constitución (Principio VII) exige justificar
   cualquier cola por necesidad demostrada en ese módulo.
+
+## R-17. Sin tablas de sesiones, caché ni colas
+
+- **Decision**: Se eliminan las migraciones del esqueleto de `sessions`, `cache`, `cache_locks`, `jobs`,
+  `job_batches` y `failed_jobs`; los defaults de `config/session.php`, `config/cache.php` y
+  `config/queue.php` pasan a `redis`/`redis`/`sync` y se quitan los almacenes `database`.
+- **Nota para el Módulo 5**: la tabla de colas (`jobs`, y `failed_jobs`) se agregará solo si allí se
+  decide generar las boletas PDF en cola (R-16); en ese caso se evaluará también Redis como backend de
+  la cola, que no requiere tablas.
+- **Rationale**: Tablas sin uso son ruido y tentación para usar el driver `database` por accidente.

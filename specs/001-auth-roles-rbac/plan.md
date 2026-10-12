@@ -145,8 +145,8 @@ registrados como páginas con `Route::livewire()`.
 - **Servicios**: `redis` (`redis:7-alpine`, `maxmemory 256mb`, política `volatile-lru`: sesiones y
   claves del limitador tienen TTL) se agrega a `docker-compose.yml`; `app` depende de él.
 - **.env**: `SESSION_DRIVER=redis`, `CACHE_STORE=redis`, `REDIS_CLIENT=phpredis`, `REDIS_HOST=redis`.
-  `phpunit.xml` fuerza `SESSION_DRIVER=array` y `CACHE_STORE=array`. La tabla `sessions` se conserva
-  solo como respaldo si se cambia el driver a `database`.
+  `phpunit.xml` fuerza `SESSION_DRIVER=array` y `CACHE_STORE=array`. No existen tablas
+  `sessions`, `cache` ni de colas (las migraciones del esqueleto se eliminan; T013); `QUEUE_CONNECTION=sync`.
 - **OPcache** (`docker/php/opcache.ini`): activo; `validate_timestamps` por variable de entorno
   (`1` en desarrollo, `0` en producción). **PHP-FPM** (`docker/php/fpm-pool.conf`): `pm = dynamic`,
   `pm.max_children` dimensionado para 4 GB. En cada despliegue de producción: `php artisan optimize`.

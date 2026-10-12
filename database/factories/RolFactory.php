@@ -13,7 +13,7 @@ class RolFactory extends Factory
     public function definition(): array
     {
         return [
-            'nombre' => fake()->unique()->jobTitle().' '.fake()->unique()->lexify('????'),
+            'nombre' => 'Rol '.fake()->unique()->lexify('????????'),
             'descripcion' => fake()->sentence(),
         ];
     }

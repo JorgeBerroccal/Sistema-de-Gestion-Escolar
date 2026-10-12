@@ -89,10 +89,14 @@ roles >──< permisos   (vía rol_permiso)
 - `desactivar` está prohibido si: (a) el usuario objetivo es el propio usuario autenticado, o
   (b) dejaría cero cuentas administradoras (ver regla abajo).
 
-## Tablas estándar de Laravel que se conservan
+## Tablas estándar de Laravel
 
-- `sessions` (solo respaldo: el driver de sesión por defecto es `redis`; la tabla se usa si se cambia a `database`), `SESSION_LIFETIME=120`; `cache` y `jobs` quedan sin uso (caché en Redis; sin colas).
-- Se elimina `password_reset_tokens` (no hay recuperación de contraseña en el MVP).
+Ninguna se conserva: se eliminan las migraciones del esqueleto de `users`, `password_reset_tokens`, `sessions`, `cache`, `cache_locks`, `jobs`, `job_batches` y `failed_jobs`.
+
+- Sesiones (`SESSION_LIFETIME=120`), caché y limitador de intentos usan Redis; no hay tabla `sessions` ni `cache`.
+- No hay colas en este módulo: `QUEUE_CONNECTION=sync`, sin tablas `jobs`, `job_batches` ni `failed_jobs`.
+- No hay recuperación de contraseña en el MVP: sin `password_reset_tokens`.
+- La BD contiene solo `roles`, `permisos`, `rol_permiso` y `usuarios` (más la tabla `migrations`).
 
 ## Regla derivada: cuenta administradora
 
