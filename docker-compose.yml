@@ -9,7 +9,6 @@ services:
     volumes:
       - .:/var/www/html
     environment:
-      - APP_ENV=${APP_ENV:-local}
       - OPCACHE_VALIDATE_TIMESTAMPS=${OPCACHE_VALIDATE_TIMESTAMPS:-1}
     depends_on:
       db:
