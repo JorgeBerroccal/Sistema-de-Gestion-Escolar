@@ -63,6 +63,9 @@ roles >──< permisos   (vía rol_permiso)
 | activo | boolean | obligatorio, por defecto `true` |
 | remember_token | varchar(100) | nullable (estándar Laravel) |
 
+- Índices (Reglas de Rendimiento): PK; únicos en `username` y `email`; índice en `rol_id` (FK),
+  en `activo`, en `nombres` y en `apellidos`. La búsqueda del listado filtra por prefijo
+  (`LIKE 'texto%'`) en `nombres`, `apellidos`, `username` y `email` para aprovechar esos índices.
 - `config/auth.php` apunta el provider `users` a `App\Models\Usuario`.
 - Mutators normalizan `username` y `email` a minúsculas; `password` usa el cast `hashed`.
 - Relaciones: `rol()` belongsTo `Rol`.
@@ -88,7 +91,7 @@ roles >──< permisos   (vía rol_permiso)
 
 ## Tablas estándar de Laravel que se conservan
 
-- `sessions` (driver de sesión `database`, `SESSION_LIFETIME=120`), `cache`, `jobs`.
+- `sessions` (solo respaldo: el driver de sesión por defecto es `redis`; la tabla se usa si se cambia a `database`), `SESSION_LIFETIME=120`; `cache` y `jobs` quedan sin uso (caché en Redis; sin colas).
 - Se elimina `password_reset_tokens` (no hay recuperación de contraseña en el MVP).
 
 ## Regla derivada: cuenta administradora
@@ -117,7 +120,7 @@ operación que deje 0 cuentas administradoras:
 | `RolesYPermisosSeeder` | 5 roles, 7 permisos base, asignaciones (ver research R-07). Idempotente (`firstOrCreate` por `nombre` / `identificador`). | Sí |
 | `AdministradorInicialSeeder` | Cuenta Administrador desde `SGE_ADMIN_*`; no sobrescribe si existe. | Sí |
 | `UsuariosDemoSeeder` | 1 usuario por rol para demos y pruebas manuales. | Solo `APP_ENV=local` |
-| `LoadTestSeeder` | 100 usuarios `carga001`…`carga100` para k6. | No (se ejecuta explícitamente) |
+| `LoadTestSeeder` | 1000 usuarios `carga0001`…`carga1000` (rol `Carga` con solo `usuarios.ver`) para k6. **Rechaza `APP_ENV=production`.** | No (se ejecuta explícitamente) |
 
 Nota sobre idempotencia: `RolesYPermisosSeeder` asigna un permiso base a sus roles **solo cuando
 ese permiso se crea por primera vez** (`wasRecentlyCreated`). Re-ejecutarlo no duplica nada y no

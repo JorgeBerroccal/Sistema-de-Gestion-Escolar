@@ -10,7 +10,7 @@ Guía para comprobar de punta a punta que el módulo funciona. Detalles de rutas
 - Docker Desktop con Docker Compose v2.
 - `.env` creado a partir de `.env.example`, con al menos:
   - `DB_*` apuntando al servicio `db`
-  - `SESSION_DRIVER=database`, `SESSION_LIFETIME=120`
+  - `SESSION_DRIVER=redis`, `CACHE_STORE=redis`, `SESSION_LIFETIME=120`
   - `SGE_ADMIN_USERNAME`, `SGE_ADMIN_EMAIL`, `SGE_ADMIN_PASSWORD`
 
 ## 1. Levantar y preparar
@@ -60,16 +60,18 @@ Esperado: todas en verde, incluyendo:
 | 10 | Crear un permiso `reportes.ver` y editar su nombre | Se guarda; el identificador no es editable. |
 | 11 | 6 intentos fallidos seguidos con el mismo usuario | El 6.º muestra "Demasiados intentos…". |
 
-## 4. Prueba de carga del login (SC-006)
+## 4. Prueba de carga (SC-006)
 
 ```bash
-docker compose exec app php artisan db:seed --class=LoadTestSeeder
-docker compose --profile load run --rm k6 run /scripts/login.js
+docker compose exec app php artisan db:seed --class=LoadTestSeeder   # 1000 usuarios; falla en producción
+docker compose --profile load run --rm k6 run /scripts/carga.js
+# contra un servidor desplegado en un entorno de pruebas (APP_ENV=staging):
+docker compose --profile load run --rm k6 run -e BASE_URL=https://staging.ejemplo.pe /scripts/carga.js
 ```
 
-Esperado: k6 termina con los umbrales en verde — `p(95) < 2000 ms` en el login y
-`http_req_failed < 1 %` con 100 VUs durante 1 minuto. Guardar el resumen de la ejecución junto a la
-entrega del módulo.
+Esperado (rampa 100 → 300 → 600 → 1000 VUs, ~15 min): `p(95) < 3500 ms` en el login,
+`p(95) < 1500 ms` en las consultas y `http_req_failed < 1 %`. Guardar el resumen de la ejecución
+junto a la entrega del módulo.
 
 ## 5. Reconstrucción desde cero (SC-008)
 

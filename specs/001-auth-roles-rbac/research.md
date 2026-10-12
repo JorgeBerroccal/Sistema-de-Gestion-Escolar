@@ -168,14 +168,29 @@ resolver cada requisito con las herramientas nativas de Laravel 13 de la forma m
 - **Alternatives considered**: SQLite en memoria → más rápido pero con comportamientos distintos en
   colación y claves foráneas.
 
-## R-12. Prueba de carga del login (SC-006)
+## R-12. Prueba de carga (SC-006): 1000 usuarios virtuales
 
-- **Decision**: Script k6 `tests/Load/login.js`: cada VU hace `GET /login`, extrae el token CSRF,
-  hace `POST /login` con un usuario de prueba distinto y verifica la redirección a `/inicio`.
-  Umbrales: `http_req_duration{name:login}` p(95) < 2000 ms, `http_req_failed` < 1 %, 100 VUs
-  durante 1 minuto. Los 100 usuarios los crea `LoadTestSeeder` (solo se ejecuta explícitamente,
-  nunca en `DatabaseSeeder`). k6 corre con la imagen `grafana/k6` en un perfil `load` de Compose.
-- **Rationale**: Cumple el Principio V para el endpoint crítico de login sin instalar k6 localmente.
+- **Decision**: Script k6 `tests/Load/carga.js` con escenario `ramping-vus`. `BASE_URL` se lee del
+  entorno (`__ENV.BASE_URL`, por defecto `http://web`). Etapas: 0→100 (1 min), mantener 1 min;
+  →300 (1,5 min), mantener 1 min; →600 (2 min), mantener 1 min; →1000 (2,5 min), mantener 3 min;
+  bajada 1 min. Cada VU inicia sesión **una sola vez** (primera iteración: `GET /login`, extrae
+  `_token`, `POST /login` con `carga{__VU, 4 dígitos}`) y en las iteraciones siguientes hace
+  consultas autenticadas — `GET /inicio` y `GET /admin/usuarios?q=…&page=N` (la propiedad `q` del
+  componente es `#[Url]`, por lo que no hace falta reproducir el protocolo de Livewire) — con
+  `sleep` aleatorio de 10 a 30 s entre ellas. El rol `Carga` tiene solo `usuarios.ver`.
+- **Umbrales** (propuestos para 2 vCPU / 4 GB): `http_req_duration{name:login}` p(95) < 3500 ms;
+  `http_req_duration{name:consulta}` p(95) < 1500 ms; `http_req_failed` < 1 %.
+- **Razonamiento de los umbrales**: bcrypt costo 12 ≈ 250 ms de CPU por verificación; con 2 vCPU el
+  tope teórico es ~8 logins/s, así que las rampas se dimensionan para ≤ ~3 logins/s (1000 VUs
+  entran en ~7 min) y dejan CPU para las consultas. Con pausas medias de 20 s, 1000 VUs generan
+  ~50 req/s de consultas (~30–40 ms de CPU c/u con OPcache). No se baja `BCRYPT_ROUNDS` en producción
+  para pasar la prueba. Si un umbral falla, primero se investiga (pool FPM, consultas, Redis); un
+  umbral solo se cambia con justificación escrita junto a la evidencia (T095).
+- **Datos**: `LoadTestSeeder` (1000 usuarios, un hash bcrypt reutilizado, inserción por lotes;
+  prohibido en `APP_ENV=production`; nunca en `DatabaseSeeder`). k6 corre con `grafana/k6` en el
+  perfil `load` de Compose, o apuntando a un servidor desplegado con `BASE_URL`.
+- **Rationale**: Cumple el Principio V para el endpoint crítico de login y valida las reglas de
+  rendimiento (índices, `with()`, paginación) con un listado real.
 
 ## R-13. Docker
 
@@ -220,3 +235,23 @@ resolver cada requisito con las herramientas nativas de Laravel 13 de la forma m
   los módulos posteriores tendrían que migrar. Componentes de un solo archivo (SFC) → mezclan PHP y
   Blade en un archivo con el prefijo ⚡; menos familiar y sin beneficio aquí. Mantener Laravel 11
   → sin parches de seguridad. Laravel 12 → sin correcciones de errores durante el MVP.
+
+## R-15. Redis, producción y rendimiento (constitución v2.1.0)
+
+- **Decision**: Redis 7 (phpredis) para sesiones, caché y limitador de intentos; producción con
+  nginx + PHP-FPM, OPcache activo (`validate_timestamps=0`) y `php artisan optimize`; Octane
+  descartado. Reglas para todos los módulos: índices en columnas de búsqueda y FK, `with()` contra
+  N+1, paginación obligatoria.
+- **Rationale**: Sesiones y limitador en MySQL competirían con las consultas de negocio en un VPS de
+  2 vCPU; Redis las saca de la BD. FPM + OPcache es suficiente para ~50 req/s sin la complejidad
+  (estado en memoria, fugas) de Octane.
+- **Alternatives considered**: sesiones en BD → escrituras por solicitud en MySQL. Octane → riesgo de
+  estado compartido entre solicitudes sin necesidad demostrada. Caché de permisos → sigue descartada
+  (R-07): invalidación innecesaria.
+
+## R-16. Boletas PDF en cola (nota para el Módulo 5, sin implementar)
+
+- **Anotación**: En el Módulo 5 (Evaluación y Boletas) se evaluará generar las boletas PDF en cola
+  (job asíncrono con Redis como backend), para no bloquear solicitudes web con la generación. No se
+  implementa ni se agregan colas en este módulo; la constitución (Principio VII) exige justificar
+  cualquier cola por necesidad demostrada en ese módulo.

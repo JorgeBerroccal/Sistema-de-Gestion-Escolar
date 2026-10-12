@@ -24,15 +24,15 @@ esqueleto del proyecto Laravel y el entorno Docker que usarán los demás módul
 **Primary Dependencies**: Livewire 4 (`^4.2`, componentes basados en clase; R-14), Blade, Tailwind CSS (vía Vite); sin paquetes de
 autenticación ni de permisos de terceros
 
-**Storage**: MySQL 8.0 (`sge`, y `sge_testing` para pruebas); sesiones en BD
+**Storage**: MySQL 8.0 (`sge`, y `sge_testing` para pruebas); Redis 7 para sesiones, caché y limitador de intentos (`SESSION_DRIVER=redis`, `CACHE_STORE=redis`; constitución v2.1.0)
 
-**Testing**: Pest 4 (+ plugins Laravel y Livewire 4.x; R-14) para Unit y Feature; k6 para carga del login
+**Testing**: Pest 4 (+ plugins Laravel y Livewire 4.x; R-14) para Unit y Feature; k6 para carga (login + consultas autenticadas, hasta 1000 VUs)
 
-**Target Platform**: Contenedores Linux (Docker Compose): php-fpm 8.3 + nginx + MySQL 8
+**Target Platform**: Contenedores Linux (Docker Compose): php-fpm 8.3 + nginx + MySQL 8 + Redis 7; producción con OPcache activo y `php artisan optimize`, sin Octane (R-15)
 
 **Project Type**: Aplicación web monolítica renderizada en servidor
 
-**Performance Goals**: Login p95 < 2 s con 100 usuarios concurrentes, errores < 1 % (SC-006)
+**Performance Goals**: hasta 1000 usuarios virtuales (rampa 100→300→600→1000); login p95 < 3,5 s, consultas p95 < 1,5 s, errores < 1 % en 2 vCPU / 4 GB (SC-006; R-12)
 
 **Constraints**: Sesión expira a los 120 min de inactividad; 5 intentos fallidos/min por
 identificador+IP; plazo del MVP 2 meses
@@ -53,7 +53,8 @@ permisos de rol, permisos)
 | IV. Alcance fijo | Todo pertenece al módulo 1. Excluidos explícitamente: registro, recuperación de contraseña, 2FA, CRUD de roles. | ✅ | ✅ |
 | V. Pruebas obligatorias | Unit + Feature por cada historia; permitido/denegado por cada ruta y acción; k6 para el login (endpoint crítico). | ✅ | ✅ |
 | VI. IA restringida | No aplica aún; el mecanismo de pertenencia fail-closed es la base que usará el chatbot (contracts/pertenencia.md). | ✅ N/A | ✅ N/A |
-| VII. Simplicidad | Sin starter kits, sin spatie/permission, sin caché de permisos, sin repositorios; login como formulario HTTP clásico. | ✅ | ✅ |
+| VII. Simplicidad | Sin starter kits, sin spatie/permission, sin caché de permisos, sin repositorios; login como formulario HTTP clásico. Redis solo para sesiones, caché del limitador y caché de Laravel (necesidad demostrada: 1000 VUs); sin colas. | ✅ | ✅ |
+| Reglas de rendimiento | Índices en búsqueda y FK (`usuarios.rol_id`, `username`, `email`, `activo`, `rol_permiso`), `with('rol')` y `paginate(15)` en el listado de usuarios, verificado con test de conteo de consultas (T102). | ✅ | ✅ |
 | Restricciones | `.env` + `.env.example`; `docker compose up`; migraciones y seeders reconstruyen la BD con roles, permisos y admin. | ✅ | ✅ |
 
 **Resultado**: sin violaciones. Complexity Tracking vacío.
@@ -111,7 +112,7 @@ database/
 ├── factories/{UsuarioFactory,RolFactory,PermisoFactory}.php
 ├── migrations/                           # roles, permisos, rol_permiso, usuarios
 └── seeders/{DatabaseSeeder,RolesYPermisosSeeder,AdministradorInicialSeeder,
-             UsuariosDemoSeeder,LoadTestSeeder}.php
+             UsuariosDemoSeeder,LoadTestSeeder}.php   # LoadTestSeeder: 1000 usuarios, solo no-producción
 resources/views/
 ├── layouts/app.blade.php                 # menú desde config/menu.php con @can
 ├── auth/login.blade.php
@@ -123,10 +124,10 @@ tests/
 ├── Unit/
 ├── Feature/{Auth,Autorizacion,Admin,Seeders,Pertenencia}/
 ├── Support/Pertenencia/                  # RegistroDePrueba + ReglaDePrueba
-└── Load/login.js                         # k6
+└── Load/carga.js                         # k6 (BASE_URL)
 
 docker/
-├── php/Dockerfile
+├── php/{Dockerfile,opcache.ini,fpm-pool.conf}   # phpredis, OPcache, pool FPM
 ├── nginx/default.conf
 └── mysql/init/01-create-testing-db.sql
 docker-compose.yml
@@ -138,6 +139,24 @@ piezas de autorización propias del SGE se agrupan en `app/Autorizacion/` para q
 futuros las encuentren en un solo lugar. Las vistas de administración son componentes Livewire 4
 basados en clase bajo `app/Livewire/Admin/`, con sus vistas en `resources/views/livewire/admin/`,
 registrados como páginas con `Route::livewire()`.
+
+## Despliegue y carga (constitución v2.1.0)
+
+- **Servicios**: `redis` (`redis:7-alpine`, `maxmemory 256mb`, política `volatile-lru`: sesiones y
+  claves del limitador tienen TTL) se agrega a `docker-compose.yml`; `app` depende de él.
+- **.env**: `SESSION_DRIVER=redis`, `CACHE_STORE=redis`, `REDIS_CLIENT=phpredis`, `REDIS_HOST=redis`.
+  `phpunit.xml` fuerza `SESSION_DRIVER=array` y `CACHE_STORE=array`. La tabla `sessions` se conserva
+  solo como respaldo si se cambia el driver a `database`.
+- **OPcache** (`docker/php/opcache.ini`): activo; `validate_timestamps` por variable de entorno
+  (`1` en desarrollo, `0` en producción). **PHP-FPM** (`docker/php/fpm-pool.conf`): `pm = dynamic`,
+  `pm.max_children` dimensionado para 4 GB. En cada despliegue de producción: `php artisan optimize`.
+  Octane queda descartado.
+- **`LoadTestSeeder`**: crea 1000 usuarios `carga0001`…`carga1000` calculando el hash bcrypt **una
+  sola vez** e insertando por lotes. Lanza excepción si `APP_ENV=production`; no está en
+  `DatabaseSeeder`. La prueba contra un servidor desplegado se hace en un entorno de pruebas
+  (`APP_ENV=staging`) con la misma pila, nunca contra la base real de producción.
+- **k6** (`tests/Load/carga.js`): lee `BASE_URL` (por defecto `http://web`) y apunta al servidor
+  desplegado con `-e BASE_URL=https://…`.
 
 ## Complexity Tracking
 

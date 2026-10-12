@@ -32,7 +32,7 @@ Requiere `usuarios.ver` para montar.
 
 | Acción | Permiso | Entradas | Resultado / errores |
 |---|---|---|---|
-| `buscar` (propiedad `q`) | `usuarios.ver` | texto | Filtra por nombres, apellidos, username o email. Paginación de 15. |
+| `buscar` (propiedad `q`) | `usuarios.ver` | texto | Filtra por prefijo en nombres, apellidos, username o email (`LIKE 'texto%'`, con índices). Propiedad `#[Url]` para poder consultarla por GET. Carga `rol` con `with()`. Paginación de 15. |
 | `desactivar(id)` | `usuarios.desactivar` | id de usuario | `activo=false`. Error si es el propio usuario ("No puedes desactivar tu propia cuenta") o si es la última cuenta administradora. |
 | `reactivar(id)` | `usuarios.desactivar` | id de usuario | `activo=true`. |
 
