@@ -9,9 +9,15 @@ it('un usuario sin permisos solo ve Inicio', function () {
         ->assertDontSee('Permisos');
 });
 
-it('oculta ítems cuya ruta no existe aunque tenga el permiso', function () {
-    $this->actingAs(usuarioConPermisos(['usuarios.ver', 'roles.ver']))->get('/inicio')
+it('con usuarios.ver se ve el enlace Usuarios hacia /admin/usuarios', function () {
+    $this->actingAs(usuarioConPermisos(['usuarios.ver']))->get('/inicio')
         ->assertOk()
-        ->assertDontSee('>Usuarios<', false)
-        ->assertDontSee('>Roles<', false);
+        ->assertSee('href="'.url('/admin/usuarios').'"', false)
+        ->assertSee('>Usuarios<', false);
+});
+
+it('sin usuarios.ver no se ve el enlace Usuarios', function () {
+    $this->actingAs(usuarioConPermisos(['roles.ver']))->get('/inicio')
+        ->assertOk()
+        ->assertDontSee('>Usuarios<', false);
 });
