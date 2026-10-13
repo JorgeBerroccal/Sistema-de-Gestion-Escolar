@@ -46,6 +46,21 @@ class Usuario extends Authenticatable
         return Attribute::get(fn () => trim("{$this->nombres} {$this->apellidos}"));
     }
 
+    /** @var array<int, string>|null identificadores del rol, memoizados por instancia (nunca entre solicitudes) */
+    protected ?array $identificadoresPermiso = null;
+
+    /** Una cuenta inactiva no tiene ningún permiso (segunda defensa; research R-03/R-05). */
+    public function tienePermiso(string $identificador): bool
+    {
+        if (! $this->activo) {
+            return false;
+        }
+
+        $this->identificadoresPermiso ??= $this->rol->permisos->pluck('identificador')->all();
+
+        return in_array($identificador, $this->identificadoresPermiso, true);
+    }
+
     public function rol(): BelongsTo
     {
         return $this->belongsTo(Rol::class, 'rol_id');
