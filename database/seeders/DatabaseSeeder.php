@@ -6,11 +6,12 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seeders de roles/permisos y Administrador inicial se registran en las fases siguientes.
-     */
     public function run(): void
     {
-        //
+        $this->call([RolesYPermisosSeeder::class, AdministradorInicialSeeder::class]);
+
+        if (app()->environment('local')) {
+            $this->call(UsuariosDemoSeeder::class);
+        }
     }
 }
