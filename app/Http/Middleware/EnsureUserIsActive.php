@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Http\Requests\Auth\LoginRequest;
+use App\Support\Sesion;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,9 +16,7 @@ class EnsureUserIsActive
         $usuario = Auth::user();
 
         if ($usuario && ! $usuario->activo) {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+            Sesion::cerrarYReiniciar($request);
 
             return redirect()->route('login')
                 ->withErrors(['login' => LoginRequest::MENSAJE_INACTIVA]);

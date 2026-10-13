@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Requests\Auth\LoginRequest;
 use App\Models\Usuario;
 
 function intentoFallido(string $login = 'ana.perez')
@@ -56,7 +57,22 @@ it('no afecta a los intentos con otro login', function () {
     $this->post('/login', ['login' => 'luis.diaz', 'password' => 'password'])->assertRedirect('/inicio');
 });
 
-it('no cuenta como fallo el login con cuenta inactiva ni los exitosos', function () {
+it('cuenta como fallo el login con cuenta inactiva y contraseña correcta, y bloquea el 6.º', function () {
+    Usuario::factory()->inactivo()->create(['username' => 'ana.perez']);
+    $this->freezeTime();
+
+    foreach (range(1, 5) as $i) {
+        $this->from('/login')->post('/login', ['login' => 'ana.perez', 'password' => 'password'])
+            ->assertSessionHasErrors(['login' => LoginRequest::MENSAJE_INACTIVA]);
+    }
+
+    $this->from('/login')->post('/login', ['login' => 'ana.perez', 'password' => 'password'])
+        ->assertRedirect('/login')
+        ->assertSessionHasErrors(['login' => 'Demasiados intentos. Intenta nuevamente en 60 segundos.']);
+    $this->assertGuest();
+});
+
+it('no cuentan como fallo los logins exitosos', function () {
     Usuario::factory()->create(['username' => 'ana.perez']);
 
     foreach (range(1, 8) as $i) {

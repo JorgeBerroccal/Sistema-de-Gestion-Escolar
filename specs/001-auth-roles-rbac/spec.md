@@ -231,7 +231,9 @@ tiene regla registrada es rechazado con acceso denegado (403).
   requiere cerrar sesión para que un cambio surta efecto.
 - **Intentos repetidos de inicio de sesión**: tras 5 intentos fallidos consecutivos para un mismo
   identificador desde la misma dirección IP en 1 minuto, se bloquean temporalmente nuevos intentos
-  de esa combinación identificador + IP durante 1 minuto.
+  de esa combinación identificador + IP durante 1 minuto. Un intento con credenciales correctas
+  sobre una cuenta inactiva también cuenta como fallido (se rechaza el acceso), de modo que no
+  permite repetir verificaciones de contraseña sin tope.
 - **Usuario sin rol**: no puede existir; crear o editar un usuario sin rol es rechazado.
 - **Identificador de acceso ambiguo**: un nombre de usuario no puede tener formato de correo, para
   que un mismo texto nunca coincida con dos cuentas distintas.
@@ -265,7 +267,11 @@ tiene regla registrada es rechazado con acceso denegado (403).
 - **FR-005**: El sistema MUST permitir cerrar sesión y redirigir al inicio de sesión cualquier
   acceso no autenticado a páginas protegidas.
 - **FR-006**: El sistema MUST limitar los intentos fallidos de inicio de sesión (5 por combinación
-  de identificador + dirección IP por minuto) y bloquear temporalmente los siguientes.
+  de identificador + dirección IP por minuto) y bloquear temporalmente los siguientes. Cuenta como
+  intento fallido toda credencial inválida y también el login con credenciales correctas de una
+  cuenta inactiva; solo los logins exitosos no cuentan y limpian el contador. No se añade un
+  `throttle` por IP a nivel de ruta (bloquearía la prueba de carga desde una sola IP y a colegios
+  con IP pública compartida).
 - **FR-007**: El sistema MUST almacenar las contraseñas solo de forma irreversible (nunca en texto
   plano) y exigir una longitud mínima de 8 caracteres.
 - **FR-008**: El sistema MUST cerrar automáticamente las sesiones tras 120 minutos de inactividad.

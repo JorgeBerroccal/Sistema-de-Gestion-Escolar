@@ -19,8 +19,8 @@ Resultados de `POST /login`:
 |---|---|
 | Credenciales válidas, cuenta activa | 302 → `/inicio`; sesión regenerada; limpia contador de intentos. |
 | Credenciales inválidas o usuario inexistente | 302 → `/login` con error en `login`: "Las credenciales no son válidas." (mensaje idéntico en ambos casos). |
-| Credenciales válidas, cuenta inactiva | 302 → `/login` con error en `login`: "Tu cuenta está inactiva. Contacta al administrador."; sin sesión. |
-| 6.º intento fallido en 60 s para el mismo `login`+IP | 302 → `/login` con error "Demasiados intentos. Intenta nuevamente en N segundos." |
+| Credenciales válidas, cuenta inactiva | 302 → `/login` con error en `login`: "Tu cuenta está inactiva. Contacta al administrador."; sin sesión; cuenta como intento fallido para el límite. |
+| 6.º intento fallido (incluye cuenta inactiva) en 60 s para el mismo `login`+IP | 302 → `/login` con error "Demasiados intentos. Intenta nuevamente en N segundos." |
 | Campos vacíos | 302 → `/login` con errores de validación. |
 
 Un usuario autenticado que visita `/login` es redirigido a `/inicio`.

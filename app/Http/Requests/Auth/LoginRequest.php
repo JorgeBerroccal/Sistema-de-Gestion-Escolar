@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Support\Sesion;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -63,7 +64,8 @@ class LoginRequest extends FormRequest
         }
 
         if (! Auth::user()->activo) {
-            Auth::logout();
+            RateLimiter::hit($clave, self::VENTANA_SEGUNDOS);
+            Sesion::cerrarYReiniciar($this);
 
             throw ValidationException::withMessages(['login' => self::MENSAJE_INACTIVA]);
         }

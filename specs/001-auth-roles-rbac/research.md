@@ -52,10 +52,11 @@ resolver cada requisito con las herramientas nativas de Laravel 13 de la forma m
 ## R-04. Limitación de intentos (FR-006)
 
 - **Decision**: `RateLimiter` de Laravel con clave `login|{login en minúsculas}|{ip}`: se incrementa
-  solo con intentos fallidos, máximo 5 en 60 s, y se limpia con un login exitoso. Al superar el
+  con intentos fallidos —credenciales inválidas **y** credenciales correctas de una cuenta
+  inactiva—, máximo 5 en 60 s, y se limpia solo con un login exitoso. Al superar el
   límite se responde con el error de validación "Demasiados intentos. Intenta en N segundos".
-- **Rationale**: Es el patrón estándar de Laravel; no requiere tablas nuevas. Como solo cuenta
-  fallos, no interfiere con la prueba de carga de logins válidos. Limitación conocida: detrás de un
+- **Rationale**: Es el patrón estándar de Laravel; no requiere tablas nuevas. Como los logins
+  exitosos no cuentan, no interfiere con la prueba de carga de logins válidos. Limitación conocida: detrás de un
   NAT compartido (WiFi institucional) la IP no añade protección frente a limitar solo por
   identificador; se acepta en el MVP (spec, Assumptions).
 - **Alternatives considered**: `throttle` middleware por ruta → cuenta también los intentos

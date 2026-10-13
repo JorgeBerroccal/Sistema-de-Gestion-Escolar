@@ -22,8 +22,12 @@ class ProteccionAdministracion
     public function contarCuentasAdministradoras(?int $excluirUsuarioId = null, ?array $simularPermisosRol = null): int
     {
         $rolesAdministradores = Rol::query()
-            ->whereHas('permisos', fn ($q) => $q->where('identificador', self::PERMISOS_ADMINISTRACION[0]))
-            ->whereHas('permisos', fn ($q) => $q->where('identificador', self::PERMISOS_ADMINISTRACION[1]))
+            ->whereHas(
+                'permisos',
+                fn ($q) => $q->whereIn('identificador', self::PERMISOS_ADMINISTRACION),
+                '=',
+                count(self::PERMISOS_ADMINISTRACION),
+            )
             ->pluck('id')
             ->all();
 
