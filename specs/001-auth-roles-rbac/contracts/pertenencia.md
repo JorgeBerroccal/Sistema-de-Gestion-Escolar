@@ -15,6 +15,8 @@ una regla de prueba; no registra reglas reales.
 | `ReglaPertenenciaFaltante` | `app/Autorizacion/Pertenencia/` | Excepción; extiende `AccessDeniedHttpException` → HTTP 403. |
 | `config/pertenencia.php` | `config/` | `'reglas' => [Modelo::class => Regla::class]`. |
 
+Un tipo de registro «declara» que requiere pertenencia (FR-027) usando el trait `RequierePertenencia` en su modelo; los modelos sin el trait solo se sujetan a RBAC.
+
 ## Interfaz `ReglaPertenencia`
 
 ```php
