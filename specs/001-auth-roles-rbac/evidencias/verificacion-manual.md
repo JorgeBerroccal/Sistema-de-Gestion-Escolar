@@ -23,3 +23,9 @@
 
 - Repetir esta verificación manual **en el servidor desplegado** (T097 solo queda verificada en local).
 - La prueba de carga de 1000 VUs (T095) sigue pendiente; ver `k6-humo.txt` para la prueba de humo.
+
+## Seguimiento de SC-007 (T103)
+
+2026-10-14: implementadas tres mejoras de usabilidad en el formulario de creación (sugerencia de username editable,
+autofocus en «Nombres», correo opcional después del rol). **Pendiente volver a medir** SC-007 en el navegador; hasta
+entonces el criterio sigue sin cumplirse.

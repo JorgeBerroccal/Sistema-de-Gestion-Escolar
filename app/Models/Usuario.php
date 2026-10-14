@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Str;
 
 class Usuario extends Authenticatable
 {
@@ -14,6 +15,23 @@ class Usuario extends Authenticatable
     public const REGEX_USERNAME = '/^[a-z0-9._-]{3,50}$/';
 
     protected $table = 'usuarios';
+
+    /**
+     * Sugerencia de username: primer nombre + "." + primer apellido, en minúsculas, sin tildes
+     * (la ñ pasa a n) y solo con caracteres de REGEX_USERNAME. Vacío si no hay una sugerencia válida.
+     */
+    public static function sugerirUsername(string $nombres, string $apellidos): string
+    {
+        $primera = fn (string $texto) => preg_replace(
+            '/[^a-z0-9._-]/',
+            '',
+            mb_strtolower(Str::ascii(preg_split('/\s+/', trim($texto))[0] ?? '')),
+        );
+
+        $sugerido = mb_substr(implode('.', array_filter([$primera($nombres), $primera($apellidos)])), 0, 50);
+
+        return preg_match(self::REGEX_USERNAME, $sugerido) === 1 ? $sugerido : '';
+    }
 
     protected $fillable = ['nombres', 'apellidos', 'username', 'email', 'password', 'rol_id', 'activo'];
 

@@ -23,6 +23,9 @@ class Form extends Component
 
     public string $email = '';
 
+    /** true cuando el Administrador escribió el username a mano: deja de sugerirse (T103). */
+    public bool $usernameEditado = false;
+
     public string $password = '';
 
     public string $password_confirmation = '';
@@ -38,6 +41,30 @@ class Form extends Component
             $this->fill($usuario->only(['nombres', 'apellidos', 'username', 'rol_id']));
             $this->email = $usuario->email ?? '';
         }
+    }
+
+    public function updatedNombres(): void
+    {
+        $this->sugerirUsername();
+    }
+
+    public function updatedApellidos(): void
+    {
+        $this->sugerirUsername();
+    }
+
+    public function updatedUsername(string $valor): void
+    {
+        $this->usernameEditado = trim($valor) !== '';
+    }
+
+    private function sugerirUsername(): void
+    {
+        if ($this->usuario?->exists || $this->usernameEditado) {
+            return;
+        }
+
+        $this->username = Usuario::sugerirUsername($this->nombres, $this->apellidos);
     }
 
     public function guardar(ProteccionAdministracion $proteccion)

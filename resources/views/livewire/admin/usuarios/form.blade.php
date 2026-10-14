@@ -4,14 +4,24 @@
         <h1 class="mb-4 text-2xl font-semibold">{{ $editando ? 'Editar usuario' : 'Crear usuario' }}</h1>
 
         <form wire:submit="guardar" class="max-w-xl space-y-4 rounded bg-white p-6 shadow">
-            @foreach ([['nombres', 'Nombres'], ['apellidos', 'Apellidos'], ['username', 'Nombre de usuario'], ['email', 'Correo (opcional)']] as [$campo, $etiqueta])
-                <div>
-                    <label for="{{ $campo }}" class="block text-sm font-medium">{{ $etiqueta }}</label>
-                    <input id="{{ $campo }}" type="{{ $campo === 'email' ? 'email' : 'text' }}" wire:model="{{ $campo }}"
-                           class="mt-1 w-full rounded border border-gray-300 px-3 py-2">
-                    @error($campo) <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-            @endforeach
+            <div>
+                <label for="nombres" class="block text-sm font-medium">Nombres</label>
+                <input id="nombres" type="text" wire:model.blur="nombres" @unless ($editando) autofocus @endunless
+                       class="mt-1 w-full rounded border border-gray-300 px-3 py-2">
+                @error('nombres') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label for="apellidos" class="block text-sm font-medium">Apellidos</label>
+                <input id="apellidos" type="text" wire:model.blur="apellidos"
+                       class="mt-1 w-full rounded border border-gray-300 px-3 py-2">
+                @error('apellidos') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label for="username" class="block text-sm font-medium">Nombre de usuario</label>
+                <input id="username" type="text" wire:model.blur="username"
+                       class="mt-1 w-full rounded border border-gray-300 px-3 py-2">
+                @error('username') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
 
             @unless ($editando)
                 <div>
@@ -36,6 +46,13 @@
                     @endforeach
                 </select>
                 @error('rol_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+
+            <div>
+                <label for="email" class="block text-sm font-medium">Correo (opcional)</label>
+                <input id="email" type="email" wire:model="email"
+                       class="mt-1 w-full rounded border border-gray-300 px-3 py-2">
+                @error('email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
 
             <div class="flex gap-3">
