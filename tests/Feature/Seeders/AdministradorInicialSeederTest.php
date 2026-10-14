@@ -46,3 +46,17 @@ it('falla y no crea el usuario si la contraseña tiene menos de 8 caracteres', f
     expect(fn () => $this->seed(AdministradorInicialSeeder::class))->toThrow(RuntimeException::class);
     expect(Usuario::count())->toBe(0);
 });
+
+it('falla con mensaje claro si falta SGE_ADMIN_USERNAME', function (?string $valor) {
+    config(['sge.admin.username' => $valor]);
+
+    expect(fn () => (new AdministradorInicialSeeder)->run())->toThrow(RuntimeException::class, 'SGE_ADMIN_USERNAME');
+    expect(Usuario::count())->toBe(0);
+})->with([[null], [''], ['   ']]);
+
+it('falla con mensaje claro si no existe el rol Administrador', function () {
+    Illuminate\Support\Facades\DB::table('rol_permiso')->delete();
+    Illuminate\Support\Facades\DB::table('roles')->delete();
+
+    expect(fn () => (new AdministradorInicialSeeder)->run())->toThrow(RuntimeException::class, 'Administrador');
+});

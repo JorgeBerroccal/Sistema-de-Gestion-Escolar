@@ -119,6 +119,18 @@ resolver cada requisito con las herramientas nativas de Laravel 13 de la forma m
   desactivar un usuario, cambiar el rol de un usuario y quitar cualquiera de esos dos permisos a un
   rol. Si la operación dejaría cero cuentas administradoras, se rechaza con un error de validación.
   Además, un usuario nunca puede desactivar su propia cuenta.
+- **Bloqueo pesimista (ultrareview)**: la comprobación por conteo sola es una carrera
+  *check-then-act*: con dos administradores A y B, si A desactiva a B mientras B desactiva a A, ambos
+  conteos ven "queda otro administrador" antes de que cualquiera confirme y se llega a cero cuentas.
+  Por eso `ProteccionAdministracion::protegido()` ejecuta comprobación y cambio dentro de
+  `DB::transaction($callback, 3)` (3 intentos ante deadlock) y, antes de comprobar, bloquea con
+  `lockForUpdate()` las filas de las cuentas administradoras activas, **siempre ordenadas por `id`**
+  para que dos transacciones tomen los bloqueos en el mismo orden y se reduzcan los deadlocks. La
+  segunda transacción espera, y su conteo (lectura posterior al bloqueo) ya ve el cambio confirmado.
+  Se aplica en los tres puntos: desactivar (`Usuarios\Index`), cambiar rol (`Usuarios\Form`) y
+  sincronizar permisos (`Roles\Permisos`); el modelo se `refresh()`a dentro de la transacción. Las
+  pruebas verifican la regla y que la operación corre en transacción con `FOR UPDATE ... ORDER BY id`,
+  no una concurrencia real.
 - **Rationale**: Una sola consulta de conteo; cubre todas las vías de auto-bloqueo.
 - **Alternatives considered**: Marcar un rol como "protegido" → sería un nombre de rol fijo de
   facto, contrario al Principio III.
@@ -266,3 +278,10 @@ resolver cada requisito con las herramientas nativas de Laravel 13 de la forma m
   decide generar las boletas PDF en cola (R-16); en ese caso se evaluará también Redis como backend de
   la cola, que no requiere tablas.
 - **Rationale**: Tablas sin uso son ruido y tentación para usar el driver `database` por accidente.
+
+## R-18. Deuda técnica menor
+
+- **`Admin\Permisos\Index` consulta dos veces el catálogo**: en `mount()` y `crear()`,
+  `cargarEdicion()` y `render()` ejecutan el mismo `SELECT ... ORDER BY identificador` (hallazgo nit
+  del ultrareview). **Decisión**: no se corrige; el catálogo tiene 7 filas, el impacto es despreciable
+  y el componente es estable. Reutilizar una sola colección si el catálogo crece.

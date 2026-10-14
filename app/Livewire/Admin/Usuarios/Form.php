@@ -63,14 +63,24 @@ class Form extends Component
         $datos = $this->validate($reglas);
 
         if ($editando) {
-            if ((int) $datos['rol_id'] !== (int) $this->usuario->rol_id
-                && ! $proteccion->puedeCambiarRol($this->usuario, Rol::findOrFail($datos['rol_id']))) {
+            $guardado = $proteccion->protegido(function () use ($proteccion, $datos) {
+                $this->usuario->refresh();
+
+                if ((int) $datos['rol_id'] !== (int) $this->usuario->rol_id
+                    && ! $proteccion->puedeCambiarRol($this->usuario, Rol::findOrFail($datos['rol_id']))) {
+                    return false;
+                }
+
+                $this->usuario->update($datos);
+
+                return true;
+            });
+
+            if (! $guardado) {
                 $this->addError('rol_id', 'No se puede cambiar el rol: el sistema quedaría sin cuentas administradoras.');
 
                 return;
             }
-
-            $this->usuario->update($datos);
         } else {
             Usuario::create($datos + ['activo' => true]);
         }

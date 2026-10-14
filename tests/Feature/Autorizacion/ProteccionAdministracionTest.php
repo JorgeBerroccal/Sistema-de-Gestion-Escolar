@@ -3,6 +3,7 @@
 use App\Autorizacion\ProteccionAdministracion;
 use App\Models\Permiso;
 use App\Models\Rol;
+use Illuminate\Support\Facades\DB;
 
 function permisosAdmin(): array
 {
@@ -89,4 +90,68 @@ it('excluye a un usuario y simula permisos de rol al contar', function () {
         ->and(proteccion()->contarCuentasAdministradoras($a->id))->toBe(1)
         ->and(proteccion()->contarCuentasAdministradoras(null, [$a->rol_id => []]))->toBe(1)
         ->and(proteccion()->contarCuentasAdministradoras(null, [$a->rol_id => permisosAdmin()]))->toBe(2);
+});
+
+it('protegido ejecuta la operación dentro de una transacción y bloquea las cuentas administradoras en orden de id', function () {
+    usuarioConPermisos(permisosAdmin());
+    usuarioConPermisos(permisosAdmin());
+    $consultas = [];
+    DB::listen(function ($q) use (&$consultas) {
+        $consultas[] = ['sql' => $q->sql, 'nivel' => DB::transactionLevel()];
+    });
+    $nivelAntes = DB::transactionLevel();
+
+    $resultado = proteccion()->protegido(fn () => DB::transactionLevel());
+
+    $bloqueos = array_values(array_filter($consultas, fn ($c) => str_contains($c['sql'], 'for update')));
+    expect($resultado)->toBeGreaterThan($nivelAntes)
+        ->and($bloqueos)->toHaveCount(1)
+        ->and($bloqueos[0]['sql'])->toContain('order by `id`')
+        ->and($bloqueos[0]['nivel'])->toBeGreaterThan($nivelAntes);
+});
+
+it('protegido deshace los cambios si la operación lanza una excepción', function () {
+    $admin = usuarioConPermisos(permisosAdmin());
+
+    try {
+        proteccion()->protegido(function () use ($admin) {
+            $admin->update(['activo' => false]);
+            throw new RuntimeException('fallo');
+        });
+    } catch (RuntimeException) {
+    }
+
+    expect($admin->fresh()->activo)->toBeTrue();
+});
+
+it('desactivar, cambiar rol y sincronizar permisos bloquean dentro de una transacción y mantienen la regla', function () {
+    $permisos = [...permisosAdmin(), 'usuarios.ver', 'usuarios.desactivar', 'roles.ver'];
+    $admin = usuarioConPermisos($permisos);
+    $segundo = usuarioConPermisos($permisos);
+    $consultas = [];
+    DB::listen(function ($q) use (&$consultas) {
+        if (str_contains($q->sql, 'for update')) {
+            $consultas[] = DB::transactionLevel();
+        }
+    });
+    $nivelBase = DB::transactionLevel();
+
+    // Con dos administradores se puede desactivar a uno; luego el último queda protegido.
+    Livewire\Livewire::actingAs($admin)->test(App\Livewire\Admin\Usuarios\Index::class)
+        ->call('desactivar', $segundo->id)->assertHasNoErrors();
+    expect($segundo->fresh()->activo)->toBeFalse();
+
+    $otro = usuarioConPermisos($permisos);
+    Livewire\Livewire::actingAs($otro)->test(App\Livewire\Admin\Usuarios\Index::class)
+        ->call('desactivar', $admin->id)->assertHasNoErrors();
+    Livewire\Livewire::actingAs($otro)->test(App\Livewire\Admin\Usuarios\Index::class)
+        ->call('desactivar', $otro->id)->assertHasErrors('general'); // propia cuenta
+
+    Livewire\Livewire::actingAs($otro)->test(App\Livewire\Admin\Roles\Permisos::class, ['rol' => $otro->rol])
+        ->set('seleccionados', [])->call('guardar')->assertHasErrors('seleccionados');
+
+    expect($otro->fresh()->activo)->toBeTrue()
+        ->and($otro->rol->permisos()->count())->toBe(5)
+        ->and($consultas)->not->toBeEmpty()
+        ->and(min($consultas))->toBeGreaterThan($nivelBase);
 });

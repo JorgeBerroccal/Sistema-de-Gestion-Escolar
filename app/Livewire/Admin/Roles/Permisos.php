@@ -37,13 +37,22 @@ class Permisos extends Component
 
         $ids = array_values(array_unique(array_map('intval', $this->seleccionados)));
 
-        if (! $proteccion->puedeSincronizarPermisos($this->rol, $ids)) {
+        $guardado = $proteccion->protegido(function () use ($proteccion, $ids) {
+            if (! $proteccion->puedeSincronizarPermisos($this->rol, $ids)) {
+                return false;
+            }
+
+            $this->rol->permisos()->sync($ids);
+
+            return true;
+        });
+
+        if (! $guardado) {
             $this->addError('seleccionados', 'No se puede guardar: el sistema quedaría sin cuentas administradoras.');
 
             return;
         }
 
-        $this->rol->permisos()->sync($ids);
         $this->seleccionados = $ids;
         session()->flash('exito', 'Permisos del rol actualizados.');
     }

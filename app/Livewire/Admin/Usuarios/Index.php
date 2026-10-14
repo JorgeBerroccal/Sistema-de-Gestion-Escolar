@@ -41,13 +41,21 @@ class Index extends Component
             return;
         }
 
-        if (! $proteccion->puedeDesactivar($usuario)) {
+        $desactivado = $proteccion->protegido(function () use ($usuario, $proteccion) {
+            $usuario->refresh();
+
+            if (! $proteccion->puedeDesactivar($usuario)) {
+                return false;
+            }
+
+            $usuario->update(['activo' => false]);
+
+            return true;
+        });
+
+        if (! $desactivado) {
             $this->addError('general', 'No se puede desactivar: el sistema quedaría sin cuentas administradoras.');
-
-            return;
         }
-
-        $usuario->update(['activo' => false]);
     }
 
     public function reactivar(int $id): void

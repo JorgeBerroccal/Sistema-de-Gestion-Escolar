@@ -5,6 +5,7 @@ namespace App\Autorizacion;
 use App\Models\Permiso;
 use App\Models\Rol;
 use App\Models\Usuario;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Evita dejar el sistema sin cuentas administradoras (research R-08, FR-022).
@@ -17,11 +18,45 @@ class ProteccionAdministracion
     public const PERMISOS_ADMINISTRACION = ['usuarios.editar', 'roles.asignar_permisos'];
 
     /**
-     * @param  array<int, array<int, string>>|null  $simularPermisosRol  rol_id => identificadores que tendría ese rol
+     * Ejecuta una operación que puede quitar administración dentro de una transacción (hasta 3
+     * intentos ante deadlock) que antes bloquea con `FOR UPDATE` las cuentas administradoras
+     * activas, ordenadas por id. Sin el bloqueo, dos operaciones simultáneas podrían pasar la
+     * comprobación a la vez y dejar cero administradores (research R-08).
+     *
+     * @template T
+     *
+     * @param  callable(): T  $operacion  debe comprobar con puede*() y hacer el cambio
+     * @return T
      */
-    public function contarCuentasAdministradoras(?int $excluirUsuarioId = null, ?array $simularPermisosRol = null): int
+    public function protegido(callable $operacion): mixed
     {
-        $rolesAdministradores = Rol::query()
+        return DB::transaction(function () use ($operacion) {
+            $this->bloquearCuentasAdministradoras();
+
+            return $operacion();
+        }, 3);
+    }
+
+    private function bloquearCuentasAdministradoras(): void
+    {
+        $roles = $this->idsRolesAdministradores();
+
+        if ($roles === []) {
+            return;
+        }
+
+        Usuario::query()
+            ->where('activo', true)
+            ->whereIn('rol_id', $roles)
+            ->orderBy('id')
+            ->lockForUpdate()
+            ->pluck('id');
+    }
+
+    /** @return array<int, int> */
+    private function idsRolesAdministradores(): array
+    {
+        return Rol::query()
             ->whereHas(
                 'permisos',
                 fn ($q) => $q->whereIn('identificador', self::PERMISOS_ADMINISTRACION),
@@ -30,6 +65,14 @@ class ProteccionAdministracion
             )
             ->pluck('id')
             ->all();
+    }
+
+    /**
+     * @param  array<int, array<int, string>>|null  $simularPermisosRol  rol_id => identificadores que tendría ese rol
+     */
+    public function contarCuentasAdministradoras(?int $excluirUsuarioId = null, ?array $simularPermisosRol = null): int
+    {
+        $rolesAdministradores = $this->idsRolesAdministradores();
 
         foreach ($simularPermisosRol ?? [] as $rolId => $identificadores) {
             $rolesAdministradores = array_diff($rolesAdministradores, [$rolId]);

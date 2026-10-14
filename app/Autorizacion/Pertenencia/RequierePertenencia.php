@@ -11,19 +11,19 @@ trait RequierePertenencia
 {
     public function scopeVisiblePara(Builder $query, Usuario $usuario): Builder
     {
-        $regla = app(RegistroReglasPertenencia::class)->reglaPara(static::class)
-            ?? throw new ReglaPertenenciaFaltante(static::class);
-
-        return $regla->aplicar($query, $usuario);
+        return $this->reglaDePertenencia()->aplicar($query, $usuario);
     }
 
     public function autorizarPertenencia(Usuario $usuario): void
     {
-        $regla = app(RegistroReglasPertenencia::class)->reglaPara(static::class)
-            ?? throw new ReglaPertenenciaFaltante(static::class);
-
-        if (! $regla->permite($usuario, $this)) {
+        if (! $this->reglaDePertenencia()->permite($usuario, $this)) {
             throw new AccessDeniedHttpException('No tienes acceso a este registro.');
         }
+    }
+
+    private function reglaDePertenencia(): ReglaPertenencia
+    {
+        return app(RegistroReglasPertenencia::class)->reglaPara(static::class)
+            ?? throw new ReglaPertenenciaFaltante(static::class);
     }
 }
