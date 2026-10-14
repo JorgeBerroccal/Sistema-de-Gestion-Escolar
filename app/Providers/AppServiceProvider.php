@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Autorizacion\Pertenencia\RegistroReglasPertenencia;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Gate;
@@ -15,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(RegistroReglasPertenencia::class);
     }
 
     /**
