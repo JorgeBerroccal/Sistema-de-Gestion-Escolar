@@ -1,0 +1,80 @@
+PRUEBA DE HUMO (10 VUs, ~35 s) - pila de desarrollo local (OPcache validate_timestamps=1, APP_ENV=local), 2026-10-14T15:03:57-05:00
+NO es la prueba de SC-006: la rampa de 1000 VUs (T095) se ejecutará contra el servidor desplegado.
+
+running (0m32.8s), 07/10 VUs, 99 complete and 0 interrupted iterations
+carga   [  94% ] 07/10 VUs  32.8s/35.0s
+running (0m33.8s), 04/10 VUs, 105 complete and 0 interrupted iterations
+carga   [  97% ] 04/10 VUs  33.8s/35.0s
+running (0m34.8s), 04/10 VUs, 105 complete and 0 interrupted iterations
+carga   [ 100% ] 04/10 VUs  34.8s/35.0s
+running (0m35.8s), 02/10 VUs, 107 complete and 0 interrupted iterations
+carga ↓ [ 100% ] 04/10 VUs  35s
+  █ THRESHOLDS 
+    http_req_duration{name:consulta}
+    ✓ 'p(95)<1500' p(95)=283.92ms
+    http_req_duration{name:login}
+    ✗ 'p(95)<3500' p(95)=4.57s
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.00%
+  █ TOTAL RESULTS 
+    checks_total.......: 208     5.697625/s
+    checks_succeeded...: 100.00% 208 out of 208
+    checks_failed......: 0.00%   0 out of 208
+    ✓ login termina en /inicio
+    ✓ inicio 200
+    ✓ usuarios 200
+    HTTP
+    http_req_duration..............: avg=164.24ms min=19.23ms med=64.87ms  max=4.59s    p(90)=269.31ms p(95)=414.92ms
+      { expected_response:true }...: avg=164.24ms min=19.23ms med=64.87ms  max=4.59s    p(90)=269.31ms p(95)=414.92ms
+      { name:consulta }............: avg=96.45ms  min=19.23ms med=61.62ms  max=828.32ms p(90)=205.49ms p(95)=283.92ms
+      { name:login }...............: avg=1.38s    min=68.11ms med=683.94ms max=4.59s    p(90)=4.57s    p(95)=4.57s   
+    http_req_failed................: 0.00%  0 out of 426
+    http_reqs......................: 426    11.669175/s
+    EXECUTION
+    iteration_duration.............: avg=2.6s     min=1.15s   med=2.55s    max=7.89s    p(90)=3.58s    p(95)=4.35s   
+    iterations.....................: 109    2.985775/s
+    vus............................: 2      min=0        max=10
+    vus_max........................: 10     min=10       max=10
+    NETWORK
+    data_received..................: 996 kB 27 kB/s
+    data_sent......................: 267 kB 7.3 kB/s
+running (0m36.5s), 00/10 VUs, 109 complete and 0 interrupted iterations
+carga ✓ [ 100% ] 00/10 VUs  35s
+time="2026-10-14T20:04:43Z" level=error msg="thresholds on metrics 'http_req_duration{name:login}' have been crossed"
+
+=== Ejecucion adicional 2026-10-14T15:05:16-05:00 (nproc=2) ===
+              * carga: Up to 10 looping VUs for 35s over 3 stages (gracefulRampDown: 30s, gracefulStop: 30s)
+  █ THRESHOLDS 
+    http_req_duration{name:consulta}
+    ✓ 'p(95)<1500' p(95)=53.57ms
+    http_req_duration{name:login}
+    ✓ 'p(95)<3500' p(95)=523.63ms
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.00%
+  █ TOTAL RESULTS 
+    checks_total.......: 250     6.829782/s
+    checks_succeeded...: 100.00% 250 out of 250
+    checks_failed......: 0.00%   0 out of 250
+    ✓ login termina en /inicio
+    ✓ inicio 200
+    ✓ usuarios 200
+    HTTP
+    http_req_duration..............: avg=37.82ms  min=15.99ms med=21.72ms  max=739.77ms p(90)=45.94ms  p(95)=74.67ms 
+      { expected_response:true }...: avg=37.82ms  min=15.99ms med=21.72ms  max=739.77ms p(90)=45.94ms  p(95)=74.67ms 
+      { name:consulta }............: avg=28.55ms  min=15.99ms med=21.28ms  max=343.89ms p(90)=40.79ms  p(95)=53.57ms 
+      { name:login }...............: avg=255.75ms min=28.54ms med=247.45ms max=739.77ms p(90)=454.85ms p(95)=523.63ms
+    http_req_failed................: 0.00%  0 out of 510
+    http_reqs......................: 510    13.932755/s
+    EXECUTION
+    iteration_duration.............: avg=2.18s    min=1.09s   med=2.2s     max=3.38s    p(90)=2.98s    p(95)=3.07s   
+    iterations.....................: 130    3.551487/s
+    vus............................: 2      min=0        max=10
+    vus_max........................: 10     min=10       max=10
+    NETWORK
+    data_received..................: 1.2 MB 33 kB/s
+    data_sent......................: 321 kB 8.8 kB/s
+
+NOTA: de 3 pasadas de humo, 2 cumplieron todos los umbrales (login p95 = 750 ms y 524 ms) y 1 superó el de login
+(p95 = 4,57 s) con load average 4,2 en un equipo de 2 vCPU (WSL2) compartido con la suite de pruebas recién
+terminada: bcrypt costo 12 compite por CPU. Es ruido del entorno local, no del script; no se cambió ningún umbral.
+La validación de SC-006 (rampa 1000 VUs) queda pendiente (T095) contra el servidor desplegado.
