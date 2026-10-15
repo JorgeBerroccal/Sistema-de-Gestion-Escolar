@@ -285,3 +285,11 @@ resolver cada requisito con las herramientas nativas de Laravel 13 de la forma m
   `cargarEdicion()` y `render()` ejecutan el mismo `SELECT ... ORDER BY identificador` (hallazgo nit
   del ultrareview). **Decisión**: no se corrige; el catálogo tiene 7 filas, el impacto es despreciable
   y el componente es estable. Reutilizar una sola colección si el catálogo crece.
+
+## R-19. Limitación conocida: sugerencia de username con apellidos compuestos
+
+- `Usuario::sugerirUsername()` (T103, SC-007) toma solo la **primera palabra** del nombre y del apellido. Con
+  apellidos compuestos como «De la Cruz» sugiere `rosa.de`, no `rosa.delacruz`. **Decisión**: se acepta por simplicidad
+  (Principio VII); el campo siempre es editable, la sugerencia solo se aplica mientras no se edite a mano y la unicidad
+  se valida al guardar. No se intenta reconocer partículas («de», «del», «la»).
+
