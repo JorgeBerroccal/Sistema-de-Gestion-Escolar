@@ -9,7 +9,7 @@ pantalla antes de crear. Nombres sugeridos entre comillas; cámbialos si prefier
 2. **Regiones permitidas**: al crear el grupo de recursos, "Chile Central" debe aparecer; si no, usar la
    región permitida más cercana (alternativa: Brazil South) y repetir los precios.
 3. **Cuotas** (Suscripción → *Usage + quotas* → filtrar por Chile Central): "Total Regional vCPUs" ≥ 4;
-   "Standard BASv2 Family vCPUs" ≥ 2; "Standard DSv4 Family vCPUs" ≥ 2. Si alguna es 0 o insuficiente,
+   "Standard BASv2 Family vCPUs" ≥ 2; "Standard DSv4 Family vCPUs" ≥ 2 (DSv5 tiene cuota 0 y su aumento fue rechazado: no usarla). Si alguna es 0 o insuficiente,
    *Request increase* (puede tardar horas) **antes** del día de la prueba de carga.
 4. **Calculadora de precios** (Chile Central): anotar disco Standard SSD 30 GiB (E4) y IP pública
    Standard estática; ajustar la tabla de costo del plan si difieren mucho.
