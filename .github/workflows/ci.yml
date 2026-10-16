@@ -89,14 +89,17 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
-      - name: Esperar a MySQL y Redis
+      # GitHub espera a los healthchecks de los servicios antes de ejecutar los pasos. Aquí se comprueba,
+      # con las extensiones de PHP (el runner no trae redis-cli), que la suite verá MySQL y Redis reales.
+      - name: Comprobar conexión a MySQL y Redis
         run: |
-          for i in $(seq 1 30); do
-            mysqladmin ping -h 127.0.0.1 -usge -psecret --silent && break
-            sleep 2
-          done
-          mysqladmin ping -h 127.0.0.1 -usge -psecret
-          redis-cli -h 127.0.0.1 ping
+          php -r '
+            $pdo = new PDO("mysql:host=db;port=3306;dbname=sge_testing", "sge", "secret");
+            echo "MySQL ", $pdo->query("select version()")->fetchColumn(), PHP_EOL;
+            $redis = new Redis();
+            $redis->connect("redis", 6379);
+            echo "Redis ", $redis->info()["redis_version"], PHP_EOL;
+          '
 
       - name: Pest (suite completa)
         run: vendor/bin/pest --ci
