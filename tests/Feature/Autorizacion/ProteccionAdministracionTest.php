@@ -1,6 +1,8 @@
 <?php
 
 use App\Autorizacion\ProteccionAdministracion;
+use App\Livewire\Admin\Roles\Permisos;
+use App\Livewire\Admin\Usuarios\Index;
 use App\Models\Permiso;
 use App\Models\Rol;
 use Illuminate\Support\Facades\DB;
@@ -137,17 +139,17 @@ it('desactivar, cambiar rol y sincronizar permisos bloquean dentro de una transa
     $nivelBase = DB::transactionLevel();
 
     // Con dos administradores se puede desactivar a uno; luego el último queda protegido.
-    Livewire\Livewire::actingAs($admin)->test(App\Livewire\Admin\Usuarios\Index::class)
+    Livewire\Livewire::actingAs($admin)->test(Index::class)
         ->call('desactivar', $segundo->id)->assertHasNoErrors();
     expect($segundo->fresh()->activo)->toBeFalse();
 
     $otro = usuarioConPermisos($permisos);
-    Livewire\Livewire::actingAs($otro)->test(App\Livewire\Admin\Usuarios\Index::class)
+    Livewire\Livewire::actingAs($otro)->test(Index::class)
         ->call('desactivar', $admin->id)->assertHasNoErrors();
-    Livewire\Livewire::actingAs($otro)->test(App\Livewire\Admin\Usuarios\Index::class)
+    Livewire\Livewire::actingAs($otro)->test(Index::class)
         ->call('desactivar', $otro->id)->assertHasErrors('general'); // propia cuenta
 
-    Livewire\Livewire::actingAs($otro)->test(App\Livewire\Admin\Roles\Permisos::class, ['rol' => $otro->rol])
+    Livewire\Livewire::actingAs($otro)->test(Permisos::class, ['rol' => $otro->rol])
         ->set('seleccionados', [])->call('guardar')->assertHasErrors('seleccionados');
 
     expect($otro->fresh()->activo)->toBeTrue()

@@ -5,9 +5,10 @@ use App\Models\Usuario;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Tests\Support\Pertenencia\ModeloSinPertenencia;
-use Tests\Support\Pertenencia\ReglaDePrueba;
 use Tests\Support\Pertenencia\RegistroDePrueba;
+use Tests\Support\Pertenencia\ReglaDePrueba;
 
 beforeEach(function () {
     Schema::create('registros_de_prueba', function (Blueprint $t) {
@@ -46,7 +47,7 @@ it('con regla, un registro ajeno da 403 y uno propio no', function () {
     conRegla();
 
     expect(fn () => $this->ajeno->autorizarPertenencia($this->ana))
-        ->toThrow(Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException::class);
+        ->toThrow(AccessDeniedHttpException::class);
     $this->ajeno->autorizarPertenencia($this->beto);
 });
 

@@ -1,0 +1,153 @@
+# Integración continua: en cada push y pull request ejecuta la suite completa de Pest (con MySQL y
+# Redis reales) y la comprobación de estilo de Pint. Contrato: specs/002-despliegue-ci-staging/contracts/workflows-github.md
+name: ci
+
+on:
+  push:
+  pull_request:
+
+# Solo lectura del repositorio y sin secretos: un PR desde una bifurcación no puede obtener nada.
+permissions:
+  contents: read
+
+# Una ejecución nueva sobre la misma rama cancela la anterior todavía en curso.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pruebas:
+    name: pruebas
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root_secret
+          MYSQL_DATABASE: sge_testing
+          MYSQL_USER: sge
+          MYSQL_PASSWORD: secret
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot_secret"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=10
+
+    steps:
+      - name: Código
+        uses: actions/checkout@v7
+
+      # phpunit.xml fija DB_HOST=db (nombre del servicio en Docker Compose) y .env.example usa
+      # REDIS_HOST=redis: se resuelven al contenedor de servicio publicado en localhost.
+      - name: Nombres de host de los servicios
+        run: echo "127.0.0.1 db redis" | sudo tee -a /etc/hosts
+
+      - name: PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, bcmath, intl, zip, redis, pcntl
+          coverage: none
+
+      - name: Caché de Composer
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/composer/files
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Dependencias de Composer
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Node 20
+        uses: actions/setup-node@v7
+        with:
+          node-version: '20'
+          cache: npm
+
+      # Las vistas usan @vite: sin el manifiesto compilado las pruebas de pantallas fallan.
+      - name: Compilar assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Entorno de pruebas
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      # GitHub espera a los healthchecks de los servicios antes de ejecutar los pasos. Aquí se comprueba,
+      # con las extensiones de PHP (el runner no trae redis-cli), que la suite verá MySQL y Redis reales.
+      - name: Comprobar conexión a MySQL y Redis
+        run: |
+          php <<'PHP'
+          <?php
+          $pdo = new PDO('mysql:host=db;port=3306;dbname=sge_testing', 'sge', 'secret');
+          echo 'MySQL ', $pdo->query('select version()')->fetchColumn(), PHP_EOL;
+          $redis = new Redis();
+          $redis->connect('redis', 6379);
+          echo 'Redis ', $redis->info()['redis_version'], PHP_EOL;
+          PHP
+
+      - name: Pest (suite completa)
+        run: vendor/bin/pest --ci
+
+  estilo:
+    name: estilo
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Código
+        uses: actions/checkout@v7
+
+      - name: PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: bcmath, intl, zip
+          coverage: none
+
+      - name: Caché de Composer
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/composer/files
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Dependencias de Composer
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Pint (solo comprobación)
+        run: vendor/bin/pint --test
+
+  # Calidad de los scripts de operación y de los workflows (no requiere PHP).
+  scripts:
+    name: scripts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Código
+        uses: actions/checkout@v7
+
+      - name: ShellCheck (deploy/*.sh y entrypoint de producción)
+        run: |
+          archivos=(deploy/*.sh docker/php/entrypoint.prod.sh)
+          docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:v0.11.0 -x -P /mnt/deploy "${archivos[@]/#//mnt/}"
+
+      - name: actionlint (workflows)
+        run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12 -color

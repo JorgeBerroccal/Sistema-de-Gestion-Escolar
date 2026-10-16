@@ -1,0 +1,125 @@
+# Pila de staging/producción: la misma de desarrollo (nginx, PHP-FPM, MySQL, Redis) pero con imágenes
+# publicadas en GHCR, sin montar código y sin publicar MySQL ni Redis. Uso (desde /opt/sge):
+#   docker compose -f docker-compose.prod.yml up -d
+# Las variables se interpolan desde el .env del servidor; deploy/deploy.sh exporta además el perfil
+# de tamaño (FPM_*, MYSQL_*, REDIS_MAXMEMORY, PHP_MEMORY_LIMIT) según PERFIL_TAMANO.
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  web:
+    image: ${REGISTRO:?REGISTRO es obligatorio}/sge-web:${SGE_VERSION:?SGE_VERSION es obligatoria}
+    restart: unless-stopped
+    environment:
+      FQDN: ${FQDN:?FQDN es obligatorio}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - ${LETSENCRYPT_DIR:-/etc/letsencrypt}:/etc/letsencrypt:ro
+      - ${CERTBOT_WEBROOT:-/var/www/certbot}:/var/www/certbot:ro
+    depends_on:
+      - app
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/salud-nginx || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    logging: *logging
+
+  # La aplicación recibe una lista explícita de variables: NO recibe la contraseña root de MySQL (FR-032).
+  app:
+    image: ${REGISTRO}/sge-app:${SGE_VERSION}
+    restart: unless-stopped
+    environment:
+      APP_NAME: ${APP_NAME:-SGE}
+      APP_ENV: ${APP_ENV:-staging}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_KEY: ${APP_KEY:?APP_KEY es obligatoria}
+      APP_URL: ${APP_URL:?APP_URL es obligatoria}
+      APP_LOCALE: ${APP_LOCALE:-es}
+      APP_FALLBACK_LOCALE: ${APP_FALLBACK_LOCALE:-en}
+      LOG_CHANNEL: ${LOG_CHANNEL:-stderr}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      BCRYPT_ROUNDS: ${BCRYPT_ROUNDS:-12}
+      SESSION_DRIVER: ${SESSION_DRIVER:-redis}
+      SESSION_LIFETIME: ${SESSION_LIFETIME:-120}
+      SESSION_ENCRYPT: ${SESSION_ENCRYPT:-false}
+      SESSION_PATH: ${SESSION_PATH:-/}
+      SESSION_DOMAIN: ${SESSION_DOMAIN:-null}
+      SESSION_SECURE_COOKIE: ${SESSION_SECURE_COOKIE:-true}
+      CACHE_STORE: ${CACHE_STORE:-redis}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-sync}
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_DATABASE: ${DB_DATABASE:-sge}
+      DB_USERNAME: ${DB_USERNAME:-sge}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD es obligatoria}
+      REDIS_CLIENT: ${REDIS_CLIENT:-phpredis}
+      REDIS_HOST: redis
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-null}
+      REDIS_PORT: "6379"
+      SGE_ADMIN_USERNAME: ${SGE_ADMIN_USERNAME:-}
+      SGE_ADMIN_EMAIL: ${SGE_ADMIN_EMAIL:-}
+      SGE_ADMIN_PASSWORD: ${SGE_ADMIN_PASSWORD:-}
+      SGE_VERSION: ${SGE_VERSION}
+      OPCACHE_VALIDATE_TIMESTAMPS: ${OPCACHE_VALIDATE_TIMESTAMPS:-0}
+      FPM_MAX_CHILDREN: ${FPM_MAX_CHILDREN:-4}
+      FPM_START_SERVERS: ${FPM_START_SERVERS:-2}
+      FPM_MIN_SPARE: ${FPM_MIN_SPARE:-1}
+      FPM_MAX_SPARE: ${FPM_MAX_SPARE:-3}
+      PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT:-128M}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    logging: *logging
+
+  # Sin `ports:` — MySQL solo es alcanzable desde la red interna de Compose (FR-008).
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --performance-schema=OFF
+      --innodb-buffer-pool-size=${MYSQL_BUFFER_POOL:-128M}
+      --max-connections=${MYSQL_MAX_CONNECTIONS:-40}
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-sge}
+      MYSQL_USER: ${DB_USERNAME:-sge}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD es obligatoria}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD es obligatoria}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      # Por TCP (127.0.0.1) y no por socket: durante la inicialización de un volumen nuevo MySQL arranca un
+      # servidor temporal sin red que sí responde por socket; la aplicación necesita el servidor definitivo.
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    logging: *logging
+
+  # Sin `ports:` — Redis solo es alcanzable desde la red interna de Compose (FR-008).
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --maxmemory ${REDIS_MAXMEMORY:-64mb} --maxmemory-policy volatile-lru --save ""
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    logging: *logging
+
+volumes:
+  db_data:

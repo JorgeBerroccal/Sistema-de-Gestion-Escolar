@@ -1,0 +1,120 @@
+# Publica las imágenes de producción en GHCR, etiquetadas por versión. El servidor nunca construye:
+# descarga estas imágenes con deploy/deploy.sh <etiqueta>. Contrato: specs/002-despliegue-ci-staging/contracts/workflows-github.md
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      etiqueta:
+        description: 'Etiqueta de Git ya existente a publicar (p. ej. v0.2.0)'
+        required: true
+        type: string
+
+# contents: read para el checkout; packages: write para publicar en ghcr.io con GITHUB_TOKEN.
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: release-${{ github.event.inputs.etiqueta || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    name: publicar
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - name: Etiqueta e imagen
+        id: meta
+        env:
+          ENTRADA: ${{ github.event.inputs.etiqueta }}
+          REF_NAME: ${{ github.ref_name }}
+          PROPIETARIO: ${{ github.repository_owner }}
+        run: |
+          etiqueta="${ENTRADA:-$REF_NAME}"
+          if ! printf '%s' "$etiqueta" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9._-]+)?$'; then
+            echo "::error::La etiqueta '$etiqueta' no tiene el formato vX.Y.Z[-sufijo]"
+            exit 1
+          fi
+          echo "etiqueta=$etiqueta" >> "$GITHUB_OUTPUT"
+          echo "registro=ghcr.io/${PROPIETARIO,,}" >> "$GITHUB_OUTPUT"
+
+      - name: Código de la etiqueta
+        uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ steps.meta.outputs.etiqueta }}
+
+      - name: Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Acceso a GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Caché de capas en GHCR (tag `cache` de cada paquete, mode=max guarda también las etapas
+      # intermedias: extensiones de PHP, composer, npm). NO se usa type=gha: la caché de Actions está
+      # limitada a la referencia que la creó y cada etiqueta de versión es una referencia distinta, así que
+      # una etiqueta nueva nunca encontraría la caché de la anterior. La caché en el registro se comparte
+      # entre etiquetas: sin cambios en Dockerfile/composer.lock/package-lock.json se reutiliza todo lo pesado.
+      - name: Imagen sge-app (PHP-FPM con el código)
+        id: app
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/php/Dockerfile.prod
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.registro }}/sge-app:${{ steps.meta.outputs.etiqueta }}
+          cache-from: type=registry,ref=${{ steps.meta.outputs.registro }}/sge-app:cache
+          cache-to: type=registry,ref=${{ steps.meta.outputs.registro }}/sge-app:cache,mode=max,image-manifest=true,oci-mediatypes=true
+
+      # sge-web toma public/ (con public/build) de la imagen sge-app recién publicada: los assets
+      # servidos coinciden siempre con el manifiesto de Vite del código.
+      - name: Imagen sge-web (nginx con public/)
+        id: web
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/nginx/Dockerfile.prod
+          platforms: linux/amd64
+          push: true
+          build-args: |
+            APP_IMAGE=${{ steps.meta.outputs.registro }}/sge-app:${{ steps.meta.outputs.etiqueta }}
+          tags: ${{ steps.meta.outputs.registro }}/sge-web:${{ steps.meta.outputs.etiqueta }}
+          cache-from: type=registry,ref=${{ steps.meta.outputs.registro }}/sge-web:cache
+          cache-to: type=registry,ref=${{ steps.meta.outputs.registro }}/sge-web:cache,mode=max,image-manifest=true,oci-mediatypes=true
+
+      - name: Resumen
+        env:
+          ETIQUETA: ${{ steps.meta.outputs.etiqueta }}
+          REGISTRO: ${{ steps.meta.outputs.registro }}
+          DIGEST_APP: ${{ steps.app.outputs.digest }}
+          DIGEST_WEB: ${{ steps.web.outputs.digest }}
+        run: |
+          {
+            echo "## Imágenes publicadas: $ETIQUETA"
+            echo
+            echo "| Imagen | Digest |"
+            echo "|---|---|"
+            echo "| \`$REGISTRO/sge-app:$ETIQUETA\` | \`$DIGEST_APP\` |"
+            echo "| \`$REGISTRO/sge-web:$ETIQUETA\` | \`$DIGEST_WEB\` |"
+            echo
+            echo "### Primera publicación de cada paquete"
+            echo "GHCR crea los paquetes nuevos como **privados**. Verifica con un pull anónimo y, si responde"
+            echo "\`denied\`, cambia la visibilidad a **Public** (perfil → Packages → paquete → Package settings →"
+            echo "Change visibility). El servidor descarga las imágenes sin credenciales."
+            echo
+            echo "\`\`\`bash"
+            echo "docker logout ghcr.io"
+            echo "docker pull $REGISTRO/sge-app:$ETIQUETA"
+            echo "docker pull $REGISTRO/sge-web:$ETIQUETA"
+            echo "\`\`\`"
+          } >> "$GITHUB_STEP_SUMMARY"

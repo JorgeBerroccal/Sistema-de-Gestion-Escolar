@@ -74,19 +74,20 @@ docker compose exec app php artisan db:seed --class=LoadTestSeeder
 ```bash
 docker compose --profile load run --rm k6 run -e SMOKE=1 /scripts/carga.js
 # contra otro servidor:
-docker compose --profile load run --rm k6 run -e SMOKE=1 -e BASE_URL=https://staging.ejemplo.pe /scripts/carga.js
+docker compose --profile load run --rm k6 run -e SMOKE=1 -e BASE_URL=https://<fqdn-del-servidor> /scripts/carga.js
 ```
 
 **Rampa completa (1000 VUs, ~15 min)** — solo contra el servidor desplegado en pruebas
-(`APP_ENV=staging`, nunca producción), no en un equipo local:
+(`APP_ENV=staging`, nunca producción), no en un equipo local; el procedimiento completo, con su lista de verificación, está en [`docs/despliegue/prueba-de-carga.md`](../../docs/despliegue/prueba-de-carga.md):
 
 ```bash
-docker compose --profile load run --rm k6 run -e BASE_URL=https://staging.ejemplo.pe /scripts/carga.js
+docker compose --profile load run --rm k6 run -e BASE_URL=https://<fqdn-del-servidor> /scripts/carga.js
 ```
 
 Esperado (rampa 100 → 300 → 600 → 1000 VUs): `p(95) < 3500 ms` en el login,
-`p(95) < 1500 ms` en las consultas y `http_req_failed < 1 %`. Guardar el resumen de la ejecución en
-`specs/001-auth-roles-rbac/evidencias/k6-carga.txt` junto con la CPU/memoria observadas. La prueba de
+`p(95) < 1500 ms` en las consultas y `http_req_failed < 1 %`. En staging, guardar la evidencia de cada sesión como
+`specs/001-auth-roles-rbac/evidencias/k6-sesion-<fecha>.md` (plantilla `k6-sesion-plantilla.md`, con el
+resumen de k6, el CSV de CPU/memoria y `cierre-carga.json`; solo vale si `evidencia_completa: true`). La prueba de
 humo local queda en `evidencias/k6-humo.txt`.
 
 ## 5. Reconstrucción desde cero (SC-008)

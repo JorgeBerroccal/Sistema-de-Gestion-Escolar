@@ -30,6 +30,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | Etiqueta de la versión desplegada. La escribe deploy/deploy.sh en el .env
+    | del servidor y la informa la comprobación de salud (/up).
+    |
+    */
+
+    'version' => env('SGE_VERSION', 'dev'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Debug Mode
     |--------------------------------------------------------------------------
     |

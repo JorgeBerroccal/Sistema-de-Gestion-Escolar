@@ -1,0 +1,12 @@
+# /etc/cron.d/sge — tareas programadas del servidor de staging (instalado por bootstrap-servidor.sh).
+# Zona horaria del servidor: America/Lima.
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Respaldo diario de la base de datos a las 03:00 (retención de 7 días)
+0 3 * * * sge cd /opt/sge && ./deploy/backup.sh diario >> /var/log/sge/backup.log 2>&1
+
+# Registro del tamaño de la VM (IMDS de Azure) al arrancar y cada 5 minutos: demuestra en el propio
+# servidor que la máquina volvió a B2ats_v2 tras una prueba de carga (metrics.sh cierre).
+@reboot sge /opt/sge/deploy/registro-tamano.sh >> /var/log/sge/registro-tamano.log 2>&1
+*/5 * * * * sge /opt/sge/deploy/registro-tamano.sh >> /var/log/sge/registro-tamano.log 2>&1

@@ -1,0 +1,10 @@
+# Imagen nginx de staging/producción. Toma public/ (incluido public/build) de la imagen sge-app de
+# la MISMA versión, para que los assets servidos coincidan siempre con el manifiesto de Vite del código.
+#   docker build -f docker/nginx/Dockerfile.prod --build-arg APP_IMAGE=ghcr.io/<propietario>/sge-app:<etiqueta> .
+ARG APP_IMAGE
+FROM ${APP_IMAGE} AS app
+
+FROM nginx:alpine
+# El directorio de trabajo de nginx debe ser el mismo que el de PHP-FPM (SCRIPT_FILENAME)
+COPY --from=app /var/www/html/public /var/www/html/public
+COPY docker/nginx/prod.conf /etc/nginx/templates/default.conf.template

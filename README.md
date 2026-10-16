@@ -53,10 +53,17 @@ docker compose exec app ./vendor/bin/pest          # suite completa
 ```bash
 docker compose exec app php artisan db:seed --class=LoadTestSeeder              # 1000 usuarios
 docker compose --profile load run --rm k6 run -e SMOKE=1 /scripts/carga.js      # humo: 10 VUs
-docker compose --profile load run --rm k6 run -e BASE_URL=https://staging.ejemplo.pe /scripts/carga.js  # rampa 1000 VUs
+docker compose --profile load run --rm k6 run -e BASE_URL=https://<fqdn-del-servidor> /scripts/carga.js  # rampa 1000 VUs
 ```
 
-La rampa completa se ejecuta contra el servidor desplegado en pruebas, no en local.
+La rampa completa se ejecuta contra el servidor desplegado en pruebas, no en local: se lanza desde GitHub
+Actions (workflow `carga`) tras seguir [`docs/despliegue/prueba-de-carga.md`](docs/despliegue/prueba-de-carga.md).
+
+## Despliegue en staging e integración continua
+
+El SGE se despliega en una máquina de Azure (staging, HTTPS con Let's Encrypt) con imágenes construidas por
+GitHub Actions; cada push y pull request ejecuta Pest y Pint. Guía completa en
+[`docs/despliegue/`](docs/despliegue/README.md).
 
 ## Regla de autorización
 

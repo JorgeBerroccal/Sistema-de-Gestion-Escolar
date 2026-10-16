@@ -1,0 +1,38 @@
+# Contexto de construcción de las imágenes (docker/php/Dockerfile*, docker/nginx/Dockerfile.prod).
+# Ningún secreto ni archivo de desarrollo debe entrar en una imagen (FR-009, DC-003).
+
+# Control de versiones y herramientas del asistente
+.git
+.github
+.claude
+.specify
+
+# Secretos y entorno local (se versiona solo la plantilla .env.example)
+.env
+.env.*
+!.env.example
+
+# Dependencias y artefactos que las imágenes de producción generan por su cuenta
+vendor
+node_modules
+public/build
+public/hot
+public/storage
+
+# Datos de ejecución
+storage/logs
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+bootstrap/cache/*.php
+docker/data
+
+# Documentación y pruebas: no forman parte de la imagen de producción
+specs
+docs
+tests
+.phpunit.cache
+.phpunit.result.cache
+coverage
+README.md
+docker-compose*.yml

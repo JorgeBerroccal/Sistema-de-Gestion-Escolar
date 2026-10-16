@@ -1,0 +1,80 @@
+# Imagen de producción/staging de la aplicación (PHP-FPM con el código dentro).
+# La construye GitHub Actions (release.yml); el servidor nunca construye (FR-007).
+# Etapas: vendor (composer sin dev) → assets (vite) → app (php-fpm).
+
+# --- vendor: dependencias de Composer sin paquetes de desarrollo -------------------
+FROM composer:2 AS vendor
+WORKDIR /app
+COPY composer.json composer.lock ./
+# La plataforma (extensiones) se verifica en la etapa final; esta imagen es solo para instalar.
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction --ignore-platform-reqs
+COPY . .
+RUN composer dump-autoload --no-dev --classmap-authoritative --no-scripts --no-interaction --ignore-platform-reqs
+
+# --- assets: compilación de Vite/Tailwind ------------------------------------------
+FROM node:20-alpine AS assets
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY vite.config.js ./
+COPY resources ./resources
+COPY app ./app
+# resources/css/app.css hace @source de las vistas de paginación del framework
+COPY --from=vendor /app/vendor/laravel/framework/src/Illuminate/Pagination/resources/views ./vendor/laravel/framework/src/Illuminate/Pagination/resources/views
+COPY public ./public
+RUN npm run build
+
+# --- app: PHP-FPM ------------------------------------------------------------------
+FROM php:8.3-fpm AS app
+
+ARG UID=1000
+ARG GID=1000
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libzip-dev \
+        libicu-dev \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install -j"$(nproc)" \
+        pdo_mysql \
+        bcmath \
+        intl \
+        zip \
+        pcntl \
+        opcache \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/zz-opcache.ini
+COPY docker/php/fpm-pool.conf /usr/local/etc/php-fpm.d/zz-sge.conf
+COPY docker/php/entrypoint.prod.sh /usr/local/bin/entrypoint-sge
+# No anunciar la versión de PHP en las cabeceras
+RUN echo 'expose_php=Off' > /usr/local/etc/php/conf.d/zz-prod.ini
+
+# Valores de la máquina económica (B2ats_v2, 1 GB); docker-compose.prod.yml los sobrescribe por perfil.
+ENV OPCACHE_VALIDATE_TIMESTAMPS=0 \
+    FPM_MAX_CHILDREN=4 \
+    FPM_START_SERVERS=2 \
+    FPM_MIN_SPARE=1 \
+    FPM_MAX_SPARE=3 \
+    PHP_MEMORY_LIMIT=128M
+
+RUN chmod 0755 /usr/local/bin/entrypoint-sge \
+    && groupadd --force --gid ${GID} sge \
+    && useradd --uid ${UID} --gid ${GID} --shell /usr/sbin/nologin --create-home sge
+
+WORKDIR /var/www/html
+
+COPY --from=vendor --chown=sge:sge /app/ ./
+COPY --from=assets --chown=sge:sge /app/public/build ./public/build
+
+# Directorios de ejecución (excluidos del contexto por .dockerignore) y manifiesto de paquetes
+RUN mkdir -p storage/app/public storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && chown -R sge:sge storage bootstrap/cache \
+    && php artisan package:discover --ansi
+
+USER sge
+
+ENTRYPOINT ["entrypoint-sge"]
+CMD ["php-fpm"]
