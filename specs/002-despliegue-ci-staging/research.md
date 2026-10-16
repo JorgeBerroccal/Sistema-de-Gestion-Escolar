@@ -63,6 +63,10 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
   usuario no root, `OPCACHE_VALIDATE_TIMESTAMPS=0`. `nginx/Dockerfile.prod` copia `public/` (con `public/build`) de la imagen `sge-app` de la misma etiqueta (`--build-arg APP_IMAGE`), de modo que los assets servidos coinciden siempre con el manifiesto de Vite del código; por eso `release.yml` construye primero `sge-app` y después `sge-web`.
 - **Justificación**: el servidor (1 GB) no puede ejecutar composer/npm; la misma imagen que se probó
   es la que corre; la etiqueta de la imagen es la versión (vuelta atrás = otra etiqueta).
+- **Caché de capas**: `type=registry` (tag `cache` de cada paquete en GHCR), **no** `type=gha`. Medido el
+  2026-10-16: la caché de Actions queda atada a la referencia que la creó y cada etiqueta es una referencia
+  distinta, así que una etiqueta nueva no reutilizaba nada (rc2: 210 s frente a 133 s); con caché en el
+  registro, 131 s en frío → 50 s (sge-app 5 s). Ver `evidencias/release.md`.
 - **Alternativas**: construir en el servidor (agota RAM); copiar un tar de la imagen por SSH (sin
   historial ni caché); Docker Hub (límites de pull y cuenta extra); registro propio (complejidad).
 - **Visibilidad del paquete**: el repositorio `JorgeBerroccal/Sistema-de-Gestion-Escolar` es
