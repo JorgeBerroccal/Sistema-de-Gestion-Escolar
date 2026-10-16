@@ -7,6 +7,8 @@ producción de la constitución (OPcache sin validar marcas de tiempo y `php art
 arranque), imágenes construidas por GitHub Actions y publicadas en GHCR. No hay datos reales de ningún
 colegio. La prueba de carga completa solo se ejecuta aquí, nunca en producción.
 
+Última revisión de la documentación: 16/10/2026 (versiones publicadas `v0.2.0` y `v0.2.1`).
+
 | Quiero… | Documento |
 |---|---|
 | Crear los recursos en el portal de Azure (región, VM, disco, IP, red, SSH) | [aprovisionamiento-azure.md](aprovisionamiento-azure.md) |

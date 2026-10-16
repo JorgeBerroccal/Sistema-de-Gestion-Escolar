@@ -33,6 +33,7 @@ Detalle visible en GitHub (leído con `gh run view --log-failed`):
 
 La rama se borró local y remotamente y el PR se cerró sin integrar.
 
-## Pendiente (manual, lo hace el desarrollador)
+## T020 — protección de `main`
 
-- T020: activar en GitHub la protección de `main` exigiendo `ci / pruebas` y `ci / estilo`.
+Activada por el desarrollador el 2026-10-16 (exige `ci / pruebas` y `ci / estilo`); el PR #2 se integró con un
+merge commit (`df80969`) y el `ci` de `main` salió verde (run 38974363166).
