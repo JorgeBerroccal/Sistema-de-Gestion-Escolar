@@ -27,9 +27,15 @@ correctos. Pila y volúmenes eliminados al terminar.
 `v0.2.9-prueba-falla` (la rama `prueba/migracion-falla` es local y no se integra a `main`). Se borrarán la
 etiqueta y la rama tras el ensayo T069.
 
+## T048 — etiqueta v0.2.1
+
+Commit `5dcd794` (merge del PR #3 en `main`), etiqueta `v0.2.1`, run de `release` 38976626788 (verde). Las
+imágenes `sge-app:v0.2.1` y `sge-web:v0.2.1` existen en GHCR y su manifiesto responde sin sesión. Sirve para
+probar el despliegue y la vuelta atrás (`/up` pasa de `v0.2.0` a `v0.2.1`).
+
 ## Versiones de prueba en GHCR
 
-Los tags `v0.2.0-rc1…rc4` y sus paquetes siguen en GHCR: el token de `gh` solo tiene los alcances `gist`,
-`read:org`, `repo`, `workflow` (sin `delete:packages`), así que no se pudieron borrar. El tag `cache` no se
-toca. Pendiente del desarrollador: GitHub → Packages → `sge-app` y `sge-web` → Package settings / Versions →
-borrar `v0.2.0-rc1`…`rc4`.
+2026-10-16: con el token de `gh` ampliado (`read:packages`, `delete:packages`) se borraron las versiones
+etiquetadas `v0.2.0-rc1`, `rc2`, `rc3` y `rc4` de `sge-app` y de `sge-web` (8 en total). Se conservaron `cache`,
+`v0.2.0`, `v0.2.1` y `v0.2.9-prueba-falla`; comprobado por manifiesto anónimo (todas responden; `rc1` ya no
+existe). Las versiones sin etiqueta (manifiestos hijos) no se borraron para no romper las imágenes conservadas.
