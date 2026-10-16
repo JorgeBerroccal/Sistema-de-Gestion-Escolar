@@ -3,6 +3,7 @@
 use App\Models\Usuario;
 use Database\Seeders\AdministradorInicialSeeder;
 use Database\Seeders\RolesYPermisosSeeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 beforeEach(function () {
@@ -55,8 +56,8 @@ it('falla con mensaje claro si falta SGE_ADMIN_USERNAME', function (?string $val
 })->with([[null], [''], ['   ']]);
 
 it('falla con mensaje claro si no existe el rol Administrador', function () {
-    Illuminate\Support\Facades\DB::table('rol_permiso')->delete();
-    Illuminate\Support\Facades\DB::table('roles')->delete();
+    DB::table('rol_permiso')->delete();
+    DB::table('roles')->delete();
 
     expect(fn () => (new AdministradorInicialSeeder)->run())->toThrow(RuntimeException::class, 'Administrador');
 });

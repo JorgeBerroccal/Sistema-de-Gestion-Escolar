@@ -3,8 +3,8 @@
 use App\Autorizacion\Pertenencia\RegistroReglasPertenencia;
 use App\Autorizacion\Pertenencia\ReglaPertenenciaFaltante;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Tests\Support\Pertenencia\ReglaDePrueba;
 use Tests\Support\Pertenencia\RegistroDePrueba;
+use Tests\Support\Pertenencia\ReglaDePrueba;
 
 it('devuelve la regla configurada', function () {
     config(['pertenencia.reglas' => [RegistroDePrueba::class => ReglaDePrueba::class]]);
