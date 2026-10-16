@@ -48,7 +48,7 @@ jobs:
 
     steps:
       - name: Código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # phpunit.xml fija DB_HOST=db (nombre del servicio en Docker Compose) y .env.example usa
       # REDIS_HOST=redis: se resuelven al contenedor de servicio publicado en localhost.
@@ -63,7 +63,7 @@ jobs:
           coverage: none
 
       - name: Caché de Composer
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/composer/files
           key: composer-${{ hashFiles('composer.lock') }}
@@ -73,7 +73,7 @@ jobs:
         run: composer install --no-interaction --prefer-dist --no-progress
 
       - name: Node 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '20'
           cache: npm
@@ -111,7 +111,7 @@ jobs:
 
     steps:
       - name: Código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: PHP 8.3
         uses: shivammathur/setup-php@v2
@@ -121,7 +121,7 @@ jobs:
           coverage: none
 
       - name: Caché de Composer
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/composer/files
           key: composer-${{ hashFiles('composer.lock') }}
