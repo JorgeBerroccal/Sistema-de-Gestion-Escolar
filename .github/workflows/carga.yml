@@ -1,0 +1,131 @@
+# Prueba de carga de 1000 usuarios virtuales (SC-006 del Módulo 1) contra el servidor de staging.
+# SOLO manual (workflow_dispatch): nunca con push ni pull request. Contrato:
+# specs/002-despliegue-ci-staging/contracts/workflows-github.md y docs/despliegue/prueba-de-carga.md
+name: carga
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'URL del servidor (vacío = la variable de repositorio STAGING_URL; no se acepta otra)'
+        required: false
+        default: ''
+        type: string
+      tamano_vm:
+        description: 'Tamaño de la VM durante la prueba, p. ej. Standard_D2s_v4 (queda en la evidencia)'
+        required: true
+        type: string
+      version:
+        description: 'Etiqueta desplegada en el servidor, p. ej. v0.2.0 (debe coincidir con la que informa /up)'
+        required: true
+        type: string
+      humo:
+        description: 'Prueba de humo (10 VUs, ~35 s) en lugar de la rampa completa de 1000 VUs'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: carga
+  cancel-in-progress: false
+
+jobs:
+  carga:
+    name: carga
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      # Guardas: solo la URL de staging, el servidor vivo y la versión declarada = la informada por /up.
+      - name: Comprobar objetivo
+        id: objetivo
+        env:
+          STAGING_URL: ${{ vars.STAGING_URL }}
+          ENTRADA_URL: ${{ inputs.base_url }}
+          VERSION_DECLARADA: ${{ inputs.version }}
+        run: |
+          if [ -z "$STAGING_URL" ]; then
+            echo "::error::Falta la variable de repositorio STAGING_URL (Settings → Secrets and variables → Actions → Variables) con la URL https del servidor de staging."
+            exit 1
+          fi
+          staging="${STAGING_URL%/}"
+          base="${ENTRADA_URL:-$staging}"
+          base="${base%/}"
+          if [ "$base" != "$staging" ]; then
+            echo "::error::base_url ($base) no coincide con STAGING_URL ($staging). La prueba de carga solo se ejecuta contra staging."
+            exit 1
+          fi
+          respuesta="$(curl -fsS --max-time 15 "$base/up")" || {
+            echo "::error::$base/up no responde: ¿está encendido el servidor y desplegada la versión?"
+            exit 1
+          }
+          informada="$(printf '%s' "$respuesta" | sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
+          if [ "$informada" != "$VERSION_DECLARADA" ]; then
+            echo "::error::El servidor informa la versión '$informada' pero declaraste '$VERSION_DECLARADA'. Corrige la entrada para que la evidencia sea veraz."
+            exit 1
+          fi
+          {
+            echo "base=$base"
+            echo "version_informada=$informada"
+          } >> "$GITHUB_OUTPUT"
+          echo "::notice::Objetivo $base · versión $informada. Recuerda haber lanzado './deploy/metrics.sh start' en el servidor y regresar a B2ats_v2 al terminar."
+
+      - name: Código
+        uses: actions/checkout@v7
+
+      - name: k6
+        id: k6
+        env:
+          BASE: ${{ steps.objetivo.outputs.base }}
+          HUMO: ${{ inputs.humo }}
+        run: |
+          mkdir -p resultados
+          chmod 777 resultados
+          opciones=()
+          if [ "$HUMO" = "true" ]; then opciones+=(-e SMOKE=1); fi
+          set -o pipefail
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -v "$PWD/tests/Load:/scripts:ro" -v "$PWD/resultados:/out" \
+            -e BASE_URL="$BASE" "${opciones[@]}" \
+            grafana/k6:2.3.0 run --summary-export=/out/k6-resumen.json /scripts/carga.js \
+            2>&1 | tee resultados/k6-salida.txt
+
+      - name: Metadatos de la evidencia
+        if: always()
+        env:
+          BASE: ${{ steps.objetivo.outputs.base }}
+          TAMANO: ${{ inputs.tamano_vm }}
+          DECLARADA: ${{ inputs.version }}
+          INFORMADA: ${{ steps.objetivo.outputs.version_informada }}
+          HUMO: ${{ inputs.humo }}
+          RESULTADO_K6: ${{ steps.k6.outcome }}
+        run: |
+          mkdir -p resultados
+          modalidad="rampa completa (hasta 1000 VUs)"
+          if [ "$HUMO" = "true" ]; then modalidad="humo (10 VUs)"; fi
+          cat > resultados/meta.json <<JSON
+          {
+            "url": "$BASE",
+            "version_declarada": "$DECLARADA",
+            "version_informada_por_up": "$INFORMADA",
+            "tamano_vm_declarado": "$TAMANO",
+            "modalidad": "$modalidad",
+            "umbrales_cumplidos": "$RESULTADO_K6",
+            "commit": "$GITHUB_SHA",
+            "run_id": "$GITHUB_RUN_ID",
+            "fecha_utc": "$(date -u +%FT%TZ)",
+            "nota": "CPU/memoria del servidor y regreso a B2ats_v2: ver metrics.sh y cierre-carga.json en el servidor"
+          }
+          JSON
+
+      - name: Evidencia
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: evidencia-carga-${{ github.run_id }}
+          path: resultados/
+          retention-days: 90
+          if-no-files-found: warn
