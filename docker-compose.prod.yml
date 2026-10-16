@@ -100,7 +100,9 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      # Por TCP (127.0.0.1) y no por socket: durante la inicialización de un volumen nuevo MySQL arranca un
+      # servidor temporal sin red que sí responde por socket; la aplicación necesita el servidor definitivo.
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
       interval: 10s
       timeout: 5s
       retries: 12

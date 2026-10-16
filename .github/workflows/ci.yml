@@ -93,13 +93,14 @@ jobs:
       # con las extensiones de PHP (el runner no trae redis-cli), que la suite verá MySQL y Redis reales.
       - name: Comprobar conexión a MySQL y Redis
         run: |
-          php -r '
-            $pdo = new PDO("mysql:host=db;port=3306;dbname=sge_testing", "sge", "secret");
-            echo "MySQL ", $pdo->query("select version()")->fetchColumn(), PHP_EOL;
-            $redis = new Redis();
-            $redis->connect("redis", 6379);
-            echo "Redis ", $redis->info()["redis_version"], PHP_EOL;
-          '
+          php <<'PHP'
+          <?php
+          $pdo = new PDO('mysql:host=db;port=3306;dbname=sge_testing', 'sge', 'secret');
+          echo 'MySQL ', $pdo->query('select version()')->fetchColumn(), PHP_EOL;
+          $redis = new Redis();
+          $redis->connect('redis', 6379);
+          echo 'Redis ', $redis->info()['redis_version'], PHP_EOL;
+          PHP
 
       - name: Pest (suite completa)
         run: vendor/bin/pest --ci
@@ -132,3 +133,21 @@ jobs:
 
       - name: Pint (solo comprobación)
         run: vendor/bin/pint --test
+
+  # Calidad de los scripts de operación y de los workflows (no requiere PHP).
+  scripts:
+    name: scripts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Código
+        uses: actions/checkout@v7
+
+      - name: ShellCheck (deploy/*.sh y entrypoint de producción)
+        run: |
+          archivos=(deploy/*.sh docker/php/entrypoint.prod.sh)
+          docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:v0.11.0 -x -P /mnt/deploy "${archivos[@]/#//mnt/}"
+
+      - name: actionlint (workflows)
+        run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12 -color

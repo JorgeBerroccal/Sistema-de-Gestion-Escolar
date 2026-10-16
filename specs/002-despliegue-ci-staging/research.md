@@ -56,7 +56,7 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
 
 - **Decisión**: `release.yml` (push de etiqueta `v*` y `workflow_dispatch` con una etiqueta existente)
   construye con Buildx `linux/amd64` y publica `ghcr.io/jorgeberroccal/sge-app:<etiqueta>` y
-  `sge-web:<etiqueta>` (además `:latest` solo informativo; el despliegue nunca usa `latest`).
+  `sge-web:<etiqueta>`.
   `Dockerfile.prod` multi-stage: (1) `node:20-alpine`: `npm ci && npm run build`; (2) `composer:2`:
   `composer install --no-dev --classmap-authoritative --no-scripts`; (3) `php:8.3-fpm` con las mismas
   extensiones que el Dockerfile de desarrollo, código copiado, `vendor` de (2), `public/build` de (1),

@@ -1,0 +1,7 @@
+# /etc/cron.d/sge — tareas programadas del servidor de staging (instalado por bootstrap-servidor.sh).
+# Zona horaria del servidor: America/Lima.
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Respaldo diario de la base de datos a las 03:00 (retención de 7 días)
+0 3 * * * sge cd /opt/sge && ./deploy/backup.sh diario >> /var/log/sge/backup.log 2>&1
