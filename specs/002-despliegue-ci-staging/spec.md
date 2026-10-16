@@ -18,14 +18,14 @@ configuración de producción, secretos solo en el servidor, despliegue repetibl
 integración continua en GitHub (suite de pruebas y estilo de código en cada push y pull request),
 control de costo con cambio temporal de tamaño y alertas de presupuesto, prueba de carga de 1000
 usuarios virtuales lanzada bajo demanda con evidencia guardada, verificación manual y medición de
-SC-007 en el servidor, y respaldo de la base de datos con restauración documentada."
+SC-007 del Módulo 1 en el servidor, y respaldo de la base de datos con restauración documentada."
 
 ## Contexto y alcance
 
 - Este feature es **infraestructura transversal** que sirve a los seis módulos del MVP; el
   desarrollador la aprobó explícitamente según el Principio IV de la constitución y es además un
   requisito del curso. No introduce funcionalidad de negocio. Uno de sus objetivos es cerrar el
-  criterio **SC-006** del Módulo 1, hoy pendiente porque solo se ejecutó la prueba de humo local;
+  criterio **SC-006 del Módulo 1**, hoy pendiente porque solo se ejecutó la prueba de humo local;
   eso no la clasifica como parte del Módulo 1.
 - El servidor es un entorno **staging** (`APP_ENV=staging`): no contiene datos reales de ningún
   colegio y es el único lugar donde se permite la prueba de carga completa (nunca en producción).
@@ -99,8 +99,10 @@ procedimiento igualmente documentado.
 **Why this priority**: Un despliegue manual no reproducible es la principal fuente de fallos antes de
 una sustentación; la vuelta atrás es la red de seguridad.
 
-**Independent Test**: Desplegar una versión etiquetada, luego una posterior con un cambio visible,
-verificarlo, y volver a la primera comprobando que el cambio desaparece y los datos persisten.
+**Independent Test**: Desplegar una versión etiquetada, luego una posterior; verificar con la
+respuesta de la comprobación de salud (que informa la versión desplegada) que cambió la versión, y
+volver a la primera comprobando que la versión informada vuelve y los datos persisten. Además, ensayar
+el despliegue de una versión cuya migración falla y recuperarse restaurando el respaldo previo.
 (La etiqueta `v0.1.0` es anterior a la imagen de producción y no tiene imagen publicada; las dos
 versiones de la prueba serán las primeras publicadas por el nuevo proceso.)
 
@@ -121,6 +123,14 @@ versiones de la prueba serán las primeras publicadas por el nuevo proceso.)
 6. **Given** el servidor desplegado, **When** se inspeccionan los contenedores, **Then** el código
    proviene de la imagen/versión desplegada y no de un directorio montado desde el equipo del
    desarrollador.
+7. **Given** una versión desplegada, **When** se consulta la comprobación de salud pública, **Then**
+   responde con éxito e informa la versión desplegada (etiqueta) sin cambiar ninguna pantalla del
+   sistema, y el script de despliegue da el despliegue por exitoso solo si la versión informada
+   coincide con la solicitada.
+8. **Given** un despliegue cuya migración falla, **When** el script lo detecta, **Then** termina con
+   error, conserva la versión anterior como activa, e indica el procedimiento de recuperación
+   (restaurar el respaldo previo y desplegar la etiqueta anterior), que devuelve el servicio con los
+   datos del respaldo en menos de 25 minutos.
 
 ---
 
@@ -144,7 +154,7 @@ en el repositorio.
    desarrollador lanza manualmente la prueba desde GitHub, **Then** la ejecución corre la rampa
    completa contra la URL pública y no se inicia sola con push ni pull request.
 2. **Given** una ejecución terminada, **When** se revisa la evidencia, **Then** contiene el resumen
-   de resultados con los umbrales de SC-006 evaluados, el tamaño de la máquina y la CPU/memoria del
+   de resultados con los umbrales de SC-006 del Módulo 1 evaluados, el tamaño de la máquina y la CPU/memoria del
    servidor durante la prueba.
 3. **Given** un servidor con `APP_ENV` distinto de staging, **When** se intenta sembrar usuarios de
    carga o lanzar la prueba completa, **Then** la operación se rechaza.
@@ -153,6 +163,10 @@ en el repositorio.
    la prueba y regresar al tamaño económico, con el costo estimado de cada paso.
 5. **Given** el resultado de la prueba, **When** los umbrales no se cumplen, **Then** la evidencia
    igualmente se guarda y queda registrado el incumplimiento (no se oculta).
+6. **Given** una sesión de prueba terminada, **When** se cierra, **Then** el registro del servidor
+   muestra que la máquina volvió al tamaño económico el mismo día, y solo entonces la sesión se marca
+   como evidencia completa; si la máquina sigue en el tamaño de carga, el cierre falla con el aviso
+   "evidencia incompleta" y el procedimiento obliga a regresar antes de continuar.
 
 ---
 
@@ -179,21 +193,21 @@ que la estimación de costo documentada cabe en el crédito con margen.
 
 ---
 
-### User Story 6 - Verificación manual y SC-007 en el servidor (Priority: P2)
+### User Story 6 - Verificación manual y SC-007 del Módulo 1 en el servidor (Priority: P2)
 
 El desarrollador repite en el servidor la verificación manual del Módulo 1 (quickstart §3) y mide
-SC-007 (crear una cuenta con rol en menos de 1 minuto), registrando cada intento y el peor caso.
+SC-007 del Módulo 1 (crear una cuenta con rol en menos de 1 minuto), registrando cada intento y el peor caso.
 
 **Why this priority**: Demuestra que el sistema se comporta igual en un entorno real que en local.
 
-**Independent Test**: Completar los 11 pasos de §3 y al menos 5 mediciones de SC-007 en la URL
+**Independent Test**: Completar los 11 pasos de §3 y al menos 5 mediciones de SC-007 del Módulo 1 en la URL
 pública y comprobar el registro de evidencia.
 
 **Acceptance Scenarios**:
 
 1. **Given** el servidor desplegado, **When** se ejecutan los 11 pasos de la verificación manual,
    **Then** cada paso queda registrado como cumplido o fallido con su observación.
-2. **Given** la medición de SC-007, **When** se realizan los intentos, **Then** se registra el tiempo
+2. **Given** la medición de SC-007 del Módulo 1, **When** se realizan los intentos, **Then** se registra el tiempo
    de cada uno y el peor caso, y se declara si el peor caso es inferior a 60 s.
 
 ---
@@ -305,7 +319,10 @@ sistema recupera el estado del respaldo.
 - **FR-012**: MUST existir un procedimiento documentado para volver a una versión anterior, que
   consiste en desplegar la etiqueta anterior, y su límite conocido (migraciones destructivas requieren restaurar un respaldo).
 - **FR-013**: Cada despliegue MUST registrar qué versión quedó activa (etiqueta/commit y fecha) de
-  forma consultable en el servidor.
+  forma consultable en el servidor, y la comprobación de salud pública que usa el script de
+  despliegue MUST informar la versión desplegada (etiqueta) en su respuesta, sin añadir ni cambiar
+  ninguna pantalla del Módulo 1. El despliegue solo se considera exitoso si la versión informada
+  coincide con la solicitada.
 - **FR-014**: El procedimiento MUST generar un respaldo de la base de datos antes de aplicar
   migraciones.
 
@@ -323,7 +340,7 @@ sistema recupera el estado del respaldo.
 **Prueba de carga**
 
 - **FR-018**: La prueba de carga completa (rampa 100 → 300 → 600 → 1000 usuarios virtuales, umbrales de
-  SC-006) MUST poder lanzarse manualmente, bajo demanda, desde GitHub, contra la URL del servidor, y
+  SC-006 del Módulo 1) MUST poder lanzarse manualmente, bajo demanda, desde GitHub, contra la URL del servidor, y
   MUST NOT ejecutarse automáticamente con push o pull request.
 - **FR-019**: La ejecución MUST guardar como evidencia: el resumen completo de resultados con la
   evaluación de cada umbral, la URL objetivo, la versión desplegada, el tamaño de la máquina, y las
@@ -340,7 +357,7 @@ sistema recupera el estado del respaldo.
 - **FR-022a**: La evidencia de una sesión de prueba de carga SOLO se considera completa si el
   registro del servidor muestra que la máquina regresó al tamaño diario; el procedimiento de la prueba
   MUST ser una lista de verificación cuyo último paso es ese regreso.
-- **FR-022**: Si los umbrales de SC-006 no se cumplen, el resultado y el análisis MUST registrarse; el
+- **FR-022**: Si los umbrales de SC-006 del Módulo 1 no se cumplen, el resultado y el análisis MUST registrarse; el
   criterio solo se declara cumplido con evidencia de una ejecución que lo satisfaga.
 
 **Costo**
@@ -359,7 +376,7 @@ sistema recupera el estado del respaldo.
 
 - **FR-026**: MUST repetirse en el servidor la verificación manual del Módulo 1 (quickstart §3, 11
   pasos) y registrarse el resultado de cada paso con fecha, versión desplegada y observaciones.
-- **FR-027**: MUST medirse SC-007 en el servidor con al menos 5 intentos, registrando el tiempo de
+- **FR-027**: MUST medirse SC-007 del Módulo 1 en el servidor con al menos 5 intentos, registrando el tiempo de
   cada intento y el peor caso, en un registro análogo al del Módulo 1.
 
 **Respaldo**
@@ -377,6 +394,15 @@ sistema recupera el estado del respaldo.
   MUST quedar en documentación del repositorio, en español, y la guía de inicio del Módulo 1 MUST
   enlazar a ella en lugar de usar direcciones de ejemplo.
 
+- **FR-031**: MUST ensayarse en staging, al menos una vez, la recuperación de un despliegue cuya
+  migración falla: desplegar una versión de ensayo con migración defectuosa, comprobar que el
+  despliegue falla sin dejar activa la versión defectuosa, y recuperarse restaurando el respaldo
+  previo y desplegando la etiqueta anterior, registrando el tiempo total.
+- **FR-032**: El contenedor de la aplicación MUST recibir únicamente las credenciales de su propio
+  usuario de base de datos; la contraseña root de MySQL MUST NOT estar disponible en él (solo en el
+  contenedor de base de datos y en las operaciones de respaldo/restauración que se ejecutan dentro de
+  ese contenedor).
+
 ### Key Entities
 
 - **Entorno staging**: máquina virtual única con sus recursos asociados (IP estática, nombre DNS,
@@ -389,37 +415,45 @@ sistema recupera el estado del respaldo.
   probada y fecha.
 - **Respaldo de base de datos**: archivo fechado con la información de staging, con retención de
   7 días.
-- **Registro de verificación**: resultado por paso de la verificación manual y tiempos de SC-007 con
+- **Registro de verificación**: resultado por paso de la verificación manual y tiempos de SC-007 del Módulo 1 con
   su peor caso.
 
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
 
-- **SC-001**: Desde una red ajena al desarrollador, el sistema carga por `https://` con certificado
+- **DC-001**: Desde una red ajena al desarrollador, el sistema carga por `https://` con certificado
   válido y sin advertencias, y el 100 % de las solicitudes `http://` terminan en `https://`.
-- **SC-002**: Desde internet, ningún puerto distinto de 22, 80 y 443 responde en la máquina, y la
+- **DC-002**: Desde internet, ningún puerto distinto de 22, 80 y 443 responde en la máquina, y la
   base de datos y la caché no son alcanzables (verificado con un escaneo externo).
-- **SC-003**: Una búsqueda en el repositorio no encuentra valores de `APP_KEY`, contraseñas de base de
+- **DC-003**: Una búsqueda en el repositorio no encuentra valores de `APP_KEY`, contraseñas de base de
   datos ni de `SGE_ADMIN_PASSWORD`; el 100 % de los secretos está solo en el servidor.
-- **SC-004**: Desplegar una versión etiquetada sobre un servidor ya preparado toma menos de 15 minutos
+- **DC-004**: Desplegar una versión etiquetada sobre un servidor ya preparado toma menos de 15 minutos
   siguiendo solo la documentación, y volver a la versión anterior toma menos de 10 minutos.
-- **SC-005**: En el 100 % de los push y pull requests se ejecutan la suite completa de pruebas y el
+- **DC-005**: En el 100 % de los push y pull requests se ejecutan la suite completa de pruebas y el
   estilo de código, y el resultado es visible en GitHub; una prueba o estilo roto deliberado se marca
   como fallido en el 100 % de los casos probados.
-- **SC-006 (cierra el SC-006 del Módulo 1)**: Una ejecución de la prueba de carga de 1000 usuarios
+- **DC-006 (cierra el SC-006 del Módulo 1)**: Una ejecución de la prueba de carga de 1000 usuarios
   virtuales contra el servidor, con la máquina en tamaño de 2 vCPU no burstable, cumple: 95 % de los
   inicios de sesión en menos de 3,5 s, 95 % de las consultas autenticadas en menos de 1,5 s y menos
   del 1 % de solicitudes fallidas, y su evidencia (resultados, tamaño de máquina, CPU y memoria) queda
   archivada.
-- **SC-007**: El gasto acumulado proyectado al 31 de diciembre de 2026 no supera el 80 % del crédito
+- **DC-007**: El gasto acumulado proyectado al 31 de diciembre de 2026 no supera el 80 % del crédito
   de 100 USD, y las tres alertas (50 %, 75 %, 90 %) existen y están verificadas.
-- **SC-008**: Los 11 pasos de la verificación manual del Módulo 1 se cumplen en el servidor, y el peor
-  caso de 5 o más mediciones de SC-007 del Módulo 1 es inferior a 60 s.
-- **SC-009**: Una restauración de respaldo en el servidor devuelve la base de datos al estado
+- **DC-008 (verifica en servidor el SC-007 del Módulo 1)**: Los 11 pasos de la verificación manual del
+  Módulo 1 se cumplen en el servidor, y el peor caso de 5 o más mediciones del SC-007 del Módulo 1
+  (crear cuenta con rol) es inferior a 60 s.
+- **DC-009**: Una restauración de respaldo en el servidor devuelve la base de datos al estado
   respaldado en menos de 15 minutos, y el Administrador puede iniciar sesión después.
-- **SC-010**: Un tercero puede reproducir el aprovisionamiento y el primer despliegue completo
+- **DC-010**: Un tercero puede reproducir el aprovisionamiento y el primer despliegue completo
   siguiendo únicamente la documentación, sin consultar al autor.
+- **DC-011**: En el 100 % de las sesiones de prueba de carga, la máquina vuelve al tamaño económico el
+  mismo día: el registro de tamaño del servidor muestra el tamaño diario después del fin de la prueba y
+  el cierre de la sesión queda marcado como evidencia completa; una sesión sin ese registro no se
+  acepta como evidencia de DC-006.
+- **DC-012**: Ante un despliegue cuya migración falla, el desarrollador recupera el servicio (restaurar
+  el respaldo previo y desplegar la etiqueta anterior) en menos de 25 minutos, con el Administrador
+  iniciando sesión y los datos del respaldo intactos; el ensayo se hizo al menos una vez en staging.
 
 ## Assumptions
 
@@ -433,10 +467,8 @@ sistema recupera el estado del respaldo.
   9,64 USD/mes) y carga **D2s_v4** (2 vCPU, 8 GB, no burstable, 97,92 USD/mes). D2s_v5 se descartó
   porque la cuota de su familia en la suscripción de estudiante es 0 y el aumento fue rechazado; la
   imagen Ubuntu Gen2 es compatible con ambos tamaños, de modo que el cambio no recrea la máquina.
-- El tamaño económico diario será de la serie B más pequeña que haga funcionar la pila completa de
-  forma estable para demostraciones y verificación manual; el tamaño de carga será uno de 2 vCPU no
-  burstable con al menos 4 GB de memoria, en consonancia con la constitución (VPS de 2 vCPU / 4 GB).
-  Los modelos exactos se fijan en el plan según disponibilidad y precio vigentes.
+- El tamaño de carga (8 GB) supera el mínimo de 2 vCPU / 4 GB de la constitución; el tamaño diario
+  (1 GB) solo debe sostener demostraciones y la verificación manual, no la prueba de carga.
 - Los costos de cómputo se pagan solo por las horas en que la máquina está asignada; detenerla sin
   liberar el cómputo sigue facturando, por lo que el procedimiento exige liberar el cómputo.
 - El repositorio está alojado en GitHub y el desarrollador puede definir secretos de Actions; el
@@ -447,7 +479,8 @@ sistema recupera el estado del respaldo.
 - El correo para alertas de presupuesto es el del desarrollador.
 - El staging contiene solo datos de prueba (usuarios sembrados y de carga); no se aplican requisitos
   de protección de datos personales reales, pero se mantienen buenas prácticas de secretos.
-- La verificación manual y SC-007 las ejecuta el desarrollador en un navegador contra la URL pública.
+- La verificación manual y SC-007 del Módulo 1 las ejecuta el desarrollador en un navegador contra la URL pública.
 - Este feature puede requerir ajustes menores no funcionales al código existente (por ejemplo,
-  variables de entorno, imagen de producción, cabeceras de proxy), sin cambiar el comportamiento del
+  variables de entorno, imagen de producción, cabeceras de proxy, informar la versión en la respuesta
+  de la comprobación de salud), sin cambiar el comportamiento del
   Módulo 1 ni sus pruebas.

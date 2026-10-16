@@ -11,7 +11,7 @@
   `pruebas`) → **Pint** `--test` (job `estilo`, en paralelo, solo requiere composer).
 - **Salida**: estado verde/rojo de `ci / pruebas` y `ci / estilo` en el commit y el PR; Pest en formato
   `--ci`; los fallos de Pint listan archivos.
-- **Garantía** (SC-005): corre en el 100 % de los push y PR; un fallo deliberado marca el estado como rojo.
+- **Garantía** (DC-005): corre en el 100 % de los push y PR; un fallo deliberado marca el estado como rojo.
 
 ## `release.yml` — nombre "release"
 
@@ -39,4 +39,4 @@
   → subida del artefacto **siempre** (`if: always()`), retención 90 días.
 - **Artefacto `evidencia-carga-<run_id>`**: `k6-resumen.json`, `k6-salida.txt`, `meta.json`
   (`base_url`, `version`, `tamano_vm`, `sha`, `run_id`, fecha UTC, modalidad).
-- **Resultado**: job rojo si algún umbral de SC-006 falla; igual se guarda la evidencia (FR-022).
+- **Resultado**: job rojo si algún umbral de SC-006 del Módulo 1 (DC-006) falla; igual se guarda la evidencia (FR-022).

@@ -84,9 +84,14 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
   con la versión; el script se re-ejecuta a sí mismo tras el checkout), (2) `docker compose pull` de las
   dos imágenes de esa etiqueta, (3) respaldo previo (`backup.sh pre-<etiqueta>`), (4) levanta `db` y
   `redis`, (5) `run --rm app php artisan migrate --force` con la imagen nueva, (6) `up -d app web`, cuyo
-  entrypoint ejecuta `php artisan optimize`, (7) comprobación de salud (`GET /up` por HTTPS, hasta 60 s),
-  (8) escribe `/opt/sge/VERSION` y agrega una línea a `/var/log/sge/despliegues.log`. Falla → sale con
+  entrypoint ejecuta `php artisan optimize`, (7) comprobación de salud (`GET /up` por HTTPS, hasta 60 s; el campo `version` debe coincidir con la
+  etiqueta, ver `contracts/salud.md`),
+  (8) escribe `/opt/sge/VERSION`, `SGE_VERSION` en `.env` y una línea en `/var/log/sge/despliegues.log` (solo si la verificación pasó). Falla → sale con
   error sin borrar la versión anterior; el mensaje indica el comando de vuelta atrás.
+- **Migración fallida**: la migración (paso 5) corre **antes** de recrear `app`/`web`; si falla, los
+  contenedores anteriores siguen sirviendo y `SGE_VERSION` no cambia. MySQL no revierte el DDL, así que
+  la base puede quedar parcialmente modificada: se restaura `pre-<etiqueta>` con `restore.sh` y se
+  despliega la etiqueta anterior. Se ensaya en staging con una etiqueta de ensayo (FR-031, DC-012).
 - **Vuelta atrás**: `deploy.sh <etiqueta-anterior>`; las migraciones **no** se revierten
   automáticamente (`down` no es fiable). Si la versión fallida aplicó una migración destructiva, se
   ejecuta `restore.sh` con el respaldo `pre-<etiqueta>`. Está documentado como límite (FR-012).
@@ -120,12 +125,14 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
 
 ## D-07 Secretos
 
+- **Mínimo privilegio (FR-032)**: `app` recibe una lista explícita de variables, sin la contraseña root
+  de MySQL; respaldo y restauración usan la root dentro del contenedor `db`.
 - **Decisión**: `/opt/sge/.env` (0600, propietario `sge`) creado desde `deploy/env.staging.example`
   con `APP_KEY` generada en el servidor (`docker run --rm sge-app php artisan key:generate --show`),
   contraseñas con `openssl rand -base64 24`. Compose lo usa tanto para interpolar como `env_file`.
   `.env` sigue ignorado por Git; `.env.example` agrega las variables nuevas sin valores reales.
   GitHub almacena solo un secreto/variable de la prueba de carga: la URL (variable, no secreto).
-- **Verificación de SC-003**: búsqueda en el repositorio y en las imágenes (`docker history`,
+- **Verificación de DC-003**: búsqueda en el repositorio y en las imágenes (`docker history`,
   `docker run … env`) de los valores sembrados.
 
 ## D-08 Integración continua
@@ -192,7 +199,7 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
 - **Alternativas**: snapshots de disco de Azure (costo y granularidad); Percona XtraBackup (innecesario).
 - Redis no se respalda (solo sesiones/caché; volátil por diseño).
 
-## D-12 Qué se mide y cómo se cierra SC-006
+## D-12 Qué se mide y cómo se cierra SC-006 del Módulo 1 (DC-006)
 
 - **Evidencia completa solo con regreso al tamaño diario**: un registro `/var/log/sge/tamano.log`
   (una línea `fecha-UTC vmSize` al arrancar y cada 5 min, vía cron/IMDS; sobrevive a los cambios de
@@ -200,15 +207,15 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
   verifica que, después de `stop`, la última línea sea `Standard_B2ats_v2`, y entonces escribe
   `cierre-carga.json` con `evidencia_completa: true` y las horas en D2s_v4; si no, imprime
   `EVIDENCIA INCOMPLETA: la VM sigue en <tamaño>` y sale ≠ 0. La prueba de carga se considera
-  cerrada (y SC-006 declarado) solo con `evidencia_completa: true`.
+  cerrada (y SC-006 del Módulo 1 declarado) solo con `evidencia_completa: true`.
 - La rampa completa dura ~15 min; el tiempo restante de las sesiones de 3–4 h es preparación,
-  repeticiones y la verificación manual/SC-007 hechas con la VM de carga (opcional; FR-026/027 se
+  repeticiones y la verificación manual/SC-007 del Módulo 1 hechas con la VM de carga (opcional; FR-026/027 se
   pueden hacer en B2ats_v2). Se hacen ≥3 ejecuciones; la de mejor evidencia que cumpla umbrales
-  cierra SC-006, y las fallidas se conservan (FR-022).
+  cierra SC-006 del Módulo 1, y las fallidas se conservan (FR-022).
 - Si D2s_v4 (2 vCPU) no alcanza los umbrales por bcrypt, la mitigación ya definida en el Módulo 1 es
   documentar el hallazgo; no se cambia el costo de bcrypt.
 
-## D-13 Verificación manual y SC-007 en el servidor
+## D-13 Verificación manual y SC-007 del Módulo 1 en el servidor
 
 - Se hacen en la VM en B2ats_v2 (no requieren carga), desde un navegador real. Formato de registro:
   `specs/001-auth-roles-rbac/evidencias/staging-verificacion-manual.md` (11 pasos, fecha, versión,

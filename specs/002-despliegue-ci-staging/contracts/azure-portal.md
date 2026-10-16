@@ -98,7 +98,7 @@ Cost Management + Billing → Cost Management → *Budgets* → Add (ámbito: la
 Opcional: alerta adicional *Forecasted* al 100 % para anticipar. ⚠ Algunas suscripciones de Azure for
 Students no exponen *Budgets*; en ese caso, usar *Cost alerts* del propio crédito y dejar constancia
 (captura) en la evidencia, y revisar *Credits* semanalmente. Verificar con captura de la lista de
-alertas (SC-007).
+alertas (DC-007).
 
 ## 7. Lista de verificación de la prueba de carga (el último paso es volver a B2ats_v2)
 

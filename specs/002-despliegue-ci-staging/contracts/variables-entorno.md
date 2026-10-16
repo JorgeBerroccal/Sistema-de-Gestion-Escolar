@@ -2,6 +2,16 @@
 
 Valores `<…>` = secreto o dato propio del servidor (nunca en el repositorio).
 
+## Qué recibe cada contenedor (mínimo privilegio, FR-032)
+
+- `app`: lista explícita `environment:` en `docker-compose.prod.yml` con las variables de aplicación
+  (`APP_*`, `LOG_*`, `BCRYPT_ROUNDS`, `SESSION_*`, `CACHE_STORE`, `DB_HOST/PORT/DATABASE/USERNAME/PASSWORD`,
+  `REDIS_*`, `SGE_ADMIN_*`, `SGE_VERSION`, `OPCACHE_VALIDATE_TIMESTAMPS`, `FPM_*`, `PHP_MEMORY_LIMIT`).
+  **No** recibe `DB_ROOT_PASSWORD` ni `MYSQL_ROOT_PASSWORD`, ni `REGISTRO`/`FQDN`.
+- `db`: `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD` (de `DB_PASSWORD` y
+  `DB_ROOT_PASSWORD`); es el único contenedor con la clave root.
+- `.env` se usa en el host solo para interpolar Compose; no se pasa completo con `env_file`.
+
 ## Aplicación
 
 | Variable | Valor en staging |

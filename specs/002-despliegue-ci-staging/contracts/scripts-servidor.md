@@ -22,21 +22,30 @@ Salida: resumen de verificación (swap, ufw, fail2ban, certificado, fecha de exp
 | `deploy.sh --reconfigurar` | Recrea contenedores con el perfil actual de `.env` sin cambiar de versión. |
 | `deploy.sh --estado` | Imprime versión activa, tamaño de VM, estado de contenedores y días a la expiración del certificado. |
 
+Verificación de versión: `GET https://<fqdn>/up` responde JSON `{"status":"ok","version":"<etiqueta>"}`
+(ver `salud.md`); el despliegue es exitoso solo si `version` == etiqueta solicitada. `SGE_VERSION` se
+pasa a Compose por entorno durante el despliegue y solo se escribe en `.env` **después** de que la
+verificación pase, de modo que un fallo (p. ej. migración defectuosa) deja la versión anterior como
+activa y registrada.
+
 Precondiciones: `/opt/sge/.env` existe (0600) y no tiene `APP_KEY` vacío; la etiqueta existe en Git y
-sus imágenes en GHCR (si no: error claro antes de tocar nada). Postcondición exitosa: `GET /up` = 200,
-`VERSION` actualizado, línea en `despliegues.log`, `php artisan optimize` ejecutado. Fallo: sale ≠ 0 e
+sus imágenes en GHCR (si no: error claro antes de tocar nada). Postcondición exitosa: `GET /up` = 200 con la versión pedida,
+`VERSION` actualizado, línea en `despliegues.log`, `php artisan optimize` ejecutado. Fallo (incluida una migración que falla, que se ejecuta antes de recrear `app`/`web`): sale ≠ 0, deja
+los contenedores anteriores en marcha e
 imprime el comando exacto de vuelta atrás (`./deploy/deploy.sh <anterior>`) y el respaldo `pre-<etiqueta>`.
 Avisa si el tamaño de VM es D2s_v4 y `PERFIL_TAMANO=diario` (o a la inversa).
 
 ## `backup.sh [origen]`
 
-`origen` ∈ `diario` (default) | `manual` | `pre-<etiqueta>`. Crea
+`origen` ∈ `diario` (default) | `manual` | `pre-<etiqueta>`. Ejecuta `mysqldump` dentro del contenedor
+`db` con su propia `MYSQL_ROOT_PASSWORD` (sin pasarla por la línea de comandos del host). Crea
 `/var/backups/sge/sge-AAAAMMDD-HHMMSS-<origen>.sql.gz` (0600), verifica que no esté vacío y que
 `gzip -t` pase, borra los de más de 7 días, imprime la ruta y el tamaño.
 
 ## `restore.sh <archivo.sql.gz>`
 
-Pide confirmación escribiendo `RESTAURAR`. Modo mantenimiento → detiene `app` y `web` → recrea la base
+Usa la contraseña root solo dentro del contenedor `db`, nunca en el de la aplicación (FR-032). Pide
+confirmación escribiendo `RESTAURAR`. Modo mantenimiento → detiene `app` y `web` → recrea la base
 `sge` → carga el volcado → `up -d` → `GET /up` → sale del mantenimiento. Imprime el número de usuarios
 restaurados como comprobación. No toca Redis (las sesiones previas se invalidan).
 
