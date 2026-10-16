@@ -121,10 +121,10 @@ Monolito Laravel 13 existente. Archivos nuevos: `.github/workflows/`, `docker/*/
 
 **Goal**: la documentación operativa completa para que un tercero pueda aprovisionar y operar (DC-010).
 
-- [ ] T040 [P] [US5] Crear `docs/despliegue/costo-y-tamano.md` (en español): tabla de costo de `plan.md` con cómo actualizarla con los precios reales de la calculadora (disco e IP), alertas 50/75/90 %, procedimiento de cambio de tamaño en ambos sentidos con verificación y duración, detener/reactivar la VM (Stop con *deallocated*), riesgo de olvidar D2s_v4 (22,54 USD/semana) y recordatorios (FR-023, FR-024, FR-025)
-- [ ] T041 [P] [US1] Crear `docs/despliegue/aprovisionamiento-azure.md` (en español) a partir de `contracts/azure-portal.md` §0–§6: verificaciones previas (regiones, cuotas BASv2/DSv4, precios), grupo de recursos, VM, IP estática con DNS, NSG 22/80/443, clave SSH, alertas; con la tabla exacta de valores (FR-003, FR-004)
-- [ ] T042 [P] [US3] Crear `docs/despliegue/README.md` (índice en español de todos los procedimientos) y enlazarlo desde `README.md` raíz, reemplazando las URLs de ejemplo `https://staging.ejemplo.pe` en `README.md` y `specs/001-auth-roles-rbac/quickstart.md` por `https://<fqdn>` con un enlace a `docs/despliegue/` (FR-030)
-- [ ] T043 [P] [US6] Crear plantillas `specs/001-auth-roles-rbac/evidencias/staging-verificacion-manual-plantilla.md` (11 pasos de quickstart §3 con columnas fecha/versión/resultado/observaciones) y `staging-sc007-plantilla.md` (≥5 intentos, tiempo, peor caso, veredicto < 60 s) (FR-026, FR-027)
+- [x] T040 [P] [US5] Crear `docs/despliegue/costo-y-tamano.md` (en español): tabla de costo de `plan.md` con cómo actualizarla con los precios reales de la calculadora (disco e IP), alertas 50/75/90 %, procedimiento de cambio de tamaño en ambos sentidos con verificación y duración, detener/reactivar la VM (Stop con *deallocated*), riesgo de olvidar D2s_v4 (22,54 USD/semana) y recordatorios (FR-023, FR-024, FR-025)
+- [x] T041 [P] [US1] Crear `docs/despliegue/aprovisionamiento-azure.md` (en español) a partir de `contracts/azure-portal.md` §0–§6: verificaciones previas (regiones, cuotas BASv2/DSv4, precios), grupo de recursos, VM, IP estática con DNS, NSG 22/80/443, clave SSH, alertas; con la tabla exacta de valores (FR-003, FR-004)
+- [x] T042 [P] [US3] Crear `docs/despliegue/README.md` (índice en español de todos los procedimientos) y enlazarlo desde `README.md` raíz, reemplazando las URLs de ejemplo `https://staging.ejemplo.pe` en `README.md` y `specs/001-auth-roles-rbac/quickstart.md` por `https://<fqdn>` con un enlace a `docs/despliegue/` (FR-030)
+- [x] T043 [P] [US6] Crear plantillas `specs/001-auth-roles-rbac/evidencias/staging-verificacion-manual-plantilla.md` (11 pasos de quickstart §3 con columnas fecha/versión/resultado/observaciones) y `staging-sc007-plantilla.md` (≥5 intentos, tiempo, peor caso, veredicto < 60 s) (FR-026, FR-027)
 
 ---
 
