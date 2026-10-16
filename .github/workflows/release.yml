@@ -59,9 +59,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # La caché de capas vive en la caché de GitHub Actions (type=gha, mode=max guarda también las
-      # etapas intermedias): sin cambios en composer.lock/package-lock.json/Dockerfile, la compilación
-      # de extensiones de PHP, composer y npm se reutilizan y la construcción baja de ~7 min a ~1-2 min.
+      # Caché de capas en GHCR (tag `cache` de cada paquete, mode=max guarda también las etapas
+      # intermedias: extensiones de PHP, composer, npm). NO se usa type=gha: la caché de Actions está
+      # limitada a la referencia que la creó y cada etiqueta de versión es una referencia distinta, así que
+      # una etiqueta nueva nunca encontraría la caché de la anterior. La caché en el registro se comparte
+      # entre etiquetas: sin cambios en Dockerfile/composer.lock/package-lock.json se reutiliza todo lo pesado.
       - name: Imagen sge-app (PHP-FPM con el código)
         id: app
         uses: docker/build-push-action@v7
@@ -71,8 +73,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.registro }}/sge-app:${{ steps.meta.outputs.etiqueta }}
-          cache-from: type=gha,scope=sge-app
-          cache-to: type=gha,mode=max,scope=sge-app
+          cache-from: type=registry,ref=${{ steps.meta.outputs.registro }}/sge-app:cache
+          cache-to: type=registry,ref=${{ steps.meta.outputs.registro }}/sge-app:cache,mode=max,image-manifest=true,oci-mediatypes=true
 
       # sge-web toma public/ (con public/build) de la imagen sge-app recién publicada: los assets
       # servidos coinciden siempre con el manifiesto de Vite del código.
@@ -87,8 +89,8 @@ jobs:
           build-args: |
             APP_IMAGE=${{ steps.meta.outputs.registro }}/sge-app:${{ steps.meta.outputs.etiqueta }}
           tags: ${{ steps.meta.outputs.registro }}/sge-web:${{ steps.meta.outputs.etiqueta }}
-          cache-from: type=gha,scope=sge-web
-          cache-to: type=gha,mode=max,scope=sge-web
+          cache-from: type=registry,ref=${{ steps.meta.outputs.registro }}/sge-web:cache
+          cache-to: type=registry,ref=${{ steps.meta.outputs.registro }}/sge-web:cache,mode=max,image-manifest=true,oci-mediatypes=true
 
       - name: Resumen
         env:
