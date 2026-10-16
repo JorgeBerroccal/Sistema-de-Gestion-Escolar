@@ -212,6 +212,9 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
   repeticiones y la verificación manual/SC-007 del Módulo 1 hechas con la VM de carga (opcional; FR-026/027 se
   pueden hacer en B2ats_v2). Se hacen ≥3 ejecuciones; la de mejor evidencia que cumpla umbrales
   cierra SC-006 del Módulo 1, y las fallidas se conservan (FR-022).
+- **Servidor colgado durante la prueba**: se reinicia desde el portal y se vuelve a B2ats_v2 aunque la
+  prueba haya fallado (`contracts/azure-portal.md` §7); la evidencia parcial se conserva (FR-022) y el
+  cierre exige igualmente `evidencia_completa: true`.
 - Si D2s_v4 (2 vCPU) no alcanza los umbrales por bcrypt, la mitigación ya definida en el Módulo 1 es
   documentar el hallazgo; no se cambia el costo de bcrypt.
 

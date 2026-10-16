@@ -120,6 +120,23 @@ se considera completa mientras la casilla 14 no esté marcada **y** `metrics.sh 
 - [ ] 13. `.env`: `PERFIL_TAMANO=diario`; `./deploy/deploy.sh --reconfigurar`.
 - [ ] 14. **Volver a B2ats_v2**: ver §8; terminar con `./deploy/metrics.sh cierre` → `evidencia_completa: true`; solo entonces commitear `cierre-carga.json` junto a la evidencia.
 
+### Si el servidor se cuelga durante la prueba
+
+Síntomas: `/up` no responde, SSH no entra o `metrics.sh` deja de escribir. Aunque la prueba haya
+fallado, **la sesión no termina hasta volver a B2ats_v2**:
+
+1. Dejar que el workflow `carga` termine o cancelarlo (*Cancel workflow*); su artefacto se sube igual.
+2. Portal → VM → **Restart** (o **Stop** → **Start** si no responde); esperar a poder entrar por SSH.
+3. Si `metrics.sh` quedó a medias, ejecutar `./deploy/metrics.sh stop` y descargar el CSV parcial: la
+   evidencia hasta el punto de falla se conserva y se anota como "servidor colgado" (FR-022).
+4. Verificar `docker compose -f docker-compose.prod.yml ps` y `curl https://<fqdn>/up`; si algún contenedor
+   no volvió, `./deploy/deploy.sh --reconfigurar`.
+5. Continuar en el paso 13 de la lista: perfil `diario`, **Stop (deallocated) → Size B2ats_v2 → Start**
+   y `./deploy/metrics.sh cierre` hasta obtener `evidencia_completa: true`. No dejar la VM en D2s_v4 a
+   la espera de "reintentar mañana": un nuevo intento empieza otra sesión desde el paso 1.
+6. Registrar en el registro de la sesión la hora del fallo, la causa probable (memoria/swap/CPU en el
+   CSV) y las medidas para el próximo intento.
+
 ## 7b. Detalle de los pasos de cambio de tamaño (antes)
 
 1. **48 h antes**: confirmar cuota DSv4 (§0.3) y que el gasto acumulado deja ≥ 5 USD de holgura.
