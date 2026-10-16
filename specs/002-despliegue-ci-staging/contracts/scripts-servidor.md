@@ -26,7 +26,7 @@ Precondiciones: `/opt/sge/.env` existe (0600) y no tiene `APP_KEY` vacío; la et
 sus imágenes en GHCR (si no: error claro antes de tocar nada). Postcondición exitosa: `GET /up` = 200,
 `VERSION` actualizado, línea en `despliegues.log`, `php artisan optimize` ejecutado. Fallo: sale ≠ 0 e
 imprime el comando exacto de vuelta atrás (`./deploy/deploy.sh <anterior>`) y el respaldo `pre-<etiqueta>`.
-Avisa si el tamaño de VM es D2s_v5 y `PERFIL_TAMANO=diario` (o a la inversa).
+Avisa si el tamaño de VM es D2s_v4 y `PERFIL_TAMANO=diario` (o a la inversa).
 
 ## `backup.sh [origen]`
 
@@ -44,12 +44,12 @@ restaurados como comprobación. No toca Redis (las sesiones previas se invalidan
 
 - `start`: lanza en segundo plano un muestreo cada 5 s hacia `/var/log/sge/metricas-AAAAMMDD-HHMM.csv`
   con columnas `ts,cpu_pct,load1,mem_usada_mb,mem_total_mb,swap_usada_mb,ctr_app_cpu,ctr_app_mem_mb,ctr_db_cpu,ctr_db_mem_mb,ctr_redis_cpu,ctr_redis_mem_mb,ctr_web_cpu,ctr_web_mem_mb`
-  y escribe `meta-servidor.json` (`vm_size`, vCPU, RAM, versión desplegada, perfil, inicio).
+  y escribe `meta-servidor.json` (`vm_size`, vCPU, RAM, modelo de CPU de `/proc/cpuinfo` —la serie Dsv4 corre sobre distintos procesadores Intel según el host—, versión desplegada, perfil, inicio).
 - `stop`: detiene el muestreo, agrega `fin` a `meta-servidor.json`, imprime rutas y los máximos/p95
   de CPU y memoria para copiarlos al registro.
 - `tamano`: imprime `vmSize` del servicio de metadatos de Azure (`169.254.169.254`).
 - `cierre`: lee `/var/log/sge/tamano.log` (registro de tamaño: lo escribe un cron al arrancar y cada
   5 min con `vmSize`). Si, posterior al `stop` de la última prueba, la última línea es
   `Standard_B2ats_v2`, escribe `/var/log/sge/cierre-carga.json` (`evidencia_completa: true`, horas
-  totales en D2s_v5, costo estimado) y sale 0. Si no, imprime `EVIDENCIA INCOMPLETA` y sale 1.
+  totales en D2s_v4, costo estimado) y sale 0. Si no, imprime `EVIDENCIA INCOMPLETA` y sale 1.
 - Descarga: `scp sge@<fqdn>:/var/log/sge/metricas-*.csv .`

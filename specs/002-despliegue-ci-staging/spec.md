@@ -429,6 +429,10 @@ sistema recupera el estado del respaldo.
 - La política de la suscripción de estudiante restringe regiones y tamaños; la región final y los
   tamaños concretos se confirman en el portal durante el plan, con la región permitida más cercana a
   Perú como criterio y una alternativa documentada.
+- Tamaños confirmados con datos del portal (región Chile Central): diario **B2ats_v2** (2 vCPU, 1 GB,
+  9,64 USD/mes) y carga **D2s_v4** (2 vCPU, 8 GB, no burstable, 97,92 USD/mes). D2s_v5 se descartó
+  porque la cuota de su familia en la suscripción de estudiante es 0 y el aumento fue rechazado; la
+  imagen Ubuntu Gen2 es compatible con ambos tamaños, de modo que el cambio no recrea la máquina.
 - El tamaño económico diario será de la serie B más pequeña que haga funcionar la pila completa de
   forma estable para demostraciones y verificación manual; el tamaño de carga será uno de 2 vCPU no
   burstable con al menos 4 GB de memoria, en consonancia con la constitución (VPS de 2 vCPU / 4 GB).

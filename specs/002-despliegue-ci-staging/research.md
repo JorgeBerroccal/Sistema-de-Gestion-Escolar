@@ -7,15 +7,30 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
 ## D-01 Región, sistema operativo y tamaños
 
 - **Decisión**: Chile Central; Ubuntu Server 24.04 LTS x64 Gen2; diario **B2ats_v2** (2 vCPU, 1 GB,
-  9,64 USD/mes); carga **D2s_v5** (2 vCPU, 8 GB, no burstable, 97,82 USD/mes) solo por horas.
+  9,64 USD/mes); carga **D2s_v4** (2 vCPU, 8 GB, no burstable, 97,92 USD/mes) solo por horas.
 - **Justificación**: Chile es la región con menor latencia hacia Perú entre las permitidas por la
   suscripción. B2ats_v2 es el único B asequible (B2als_v2 38,40 y B2ls_v2 42,49 USD/mes consumirían el
-  crédito). D2s_v5 supera lo exigido por la constitución (2 vCPU / 4 GB) y no limita CPU sostenida.
-- **Alternativas**: B2als_v2/B2ls_v2 (costo), D2as_v5/F2s_v2 (no consultados), Brasil Sur (más lejos,
-  posiblemente no permitida).
+  crédito). D2s_v4 supera lo exigido por la constitución (2 vCPU / 4 GB) y no limita CPU sostenida.
+- **Cambio de tamaño de carga (2026-10-16)**: la prueba de carga usaba originalmente **D2s_v5**
+  (97,82 USD/mes). **Se descartó por falta de cuota**: la cuota de la familia **DSv5** en Chile Central
+  de la suscripción de estudiante es **0** y la **solicitud automática de aumento fue rechazada**. La
+  familia **DSv4** sí tiene cuota (0 de 4 usados), por lo que el tamaño de carga es **Standard_D2s_v4**
+  (2 vCPU, 8 GiB, Intel, no burstable, **97,92 USD/mes** en Chile Central, ≈ 0,1341 USD/h; +0,10 USD/mes
+  frente a v5, impacto despreciable en el costo total). Los procesadores de la serie Dsv4 varían según el
+  host (Cascade Lake, Ice Lake, Sapphire Rapids o Emerald Rapids): `metrics.sh` registra el modelo de CPU
+  en `meta-servidor.json` para que la evidencia lo documente.
+- **Compatibilidad de imagen Gen2 (verificada en la documentación de Microsoft Learn, 2026-10-16)**: la
+  serie **Basv2** (B2ats_v2) soporta VM Generación 1 y 2; la serie **Dsv4** (D2s_v4) soporta Generación 1
+  y 2. Ambas son x86-64, **sin disco local temporal** (el swap y los datos viven en el disco del SO),
+  con Standard SSD admitido, redes aceleradas y controlador SCSI. Por tanto la imagen **Ubuntu 24.04 LTS
+  x64 Gen2** es compatible con los dos tamaños y el cambio se hace con *Resize* sin recrear la VM. Queda
+  la confirmación práctica en el portal (la lista de tamaños de la VM debe mostrar D2s_v4) y ya no la
+  corrección previa que suponía que Basv2 era solo Gen2: soporta ambas.
+- **Alternativas**: B2als_v2/B2ls_v2 (costo), D2s_v5 (sin cuota, rechazada), D2as_v5/F2s_v2 (no
+  consultados), Brasil Sur (más lejos, posiblemente no permitida).
 - ⚠ **Verificar antes de crear la VM**: (a) *Usage + quotas* en Chile Central: cuota regional de vCPU
-  ≥ 4 y cuota por familia ≥ 2 para **BASv2** y para **DSv5** (las suscripciones de estudiante suelen
-  traer cuotas bajas o en 0; solicitar aumento con tiempo); (b) que el cambio B2ats_v2 ↔ D2s_v5 aparezca
+  ≥ 4 y cuota por familia ≥ 2 para **BASv2** y para **DSv4** (la de DSv5 era 0 y no se pudo aumentar;
+  DSv4 tiene 4); (b) que el cambio B2ats_v2 ↔ D2s_v4 aparezca
   en la lista de tamaños disponibles de la VM (ambas Gen2 x64; si no aparece, el recurso: crear la VM de
   carga desde un snapshot del disco, ver D-12 alternativa).
 
@@ -25,7 +40,7 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
   como capacidad. Presupuesto en B2ats_v2: SO+Docker ≈ 250 MB, MySQL ≈ 350 MB
   (`innodb_buffer_pool_size=128M`, `performance_schema=OFF`, `max_connections=40`), PHP-FPM ≈ 150 MB
   (`pm.max_children=4`, ~35 MB por worker; OPcache 128 MB compartida), Redis ≈ 40 MB
-  (`maxmemory 64mb`), nginx ≈ 10 MB. En D2s_v5: buffer pool 2 GB, `max_children=40`, `max_connections=200`, Redis 512 MB.
+  (`maxmemory 64mb`), nginx ≈ 10 MB. En D2s_v4: buffer pool 2 GB, `max_children=40`, `max_connections=200`, Redis 512 MB.
   Los valores se pasan por variables (`FPM_*`, `MYSQL_*`, `REDIS_MAXMEMORY`) con un perfil por tamaño
   (ver `contracts/variables-entorno.md`); `docker/php/fpm-pool.conf` sustituye `pm.*` desde el entorno
   con defaults iguales a los actuales para no cambiar el desarrollo local.
@@ -35,7 +50,7 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
   MySQL al desplegar).
 - **Riesgo aceptado**: el disco Standard SSD de 30 GiB tiene pocos IOPS (≈500); el swap activo
   degrada la respuesta. Para demostraciones y la verificación manual es suficiente; la prueba de carga
-  corre en D2s_v5.
+  corre en D2s_v4.
 
 ## D-03 Imágenes: construir en GitHub, publicar en GHCR
 
@@ -132,7 +147,7 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
 ## D-09 Prueba de carga desde GitHub
 
 - **Decisión**: `carga.yml` solo `workflow_dispatch`, entradas: `base_url` (por defecto
-  `vars.STAGING_URL`), `tamano_vm` (texto libre que se registra, p. ej. `Standard_D2s_v5`),
+  `vars.STAGING_URL`), `tamano_vm` (texto libre que se registra, p. ej. `Standard_D2s_v4`),
   `version` (etiqueta desplegada). Pasos: verifica que `base_url` sea igual a `vars.STAGING_URL`
   (única URL permitida → evita apuntar a producción), `GET /up`, ejecuta `grafana/k6` con
   `carga.js` y `--summary-export=resumen.json --out csv` + salida de texto, y sube artefacto
@@ -157,13 +172,13 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
 ## D-10 Cambio de tamaño
 
 - **Decisión**: procedimiento manual desde el portal con VM **liberada**: *Stop* (Deallocate) →
-  *Size* → D2s_v5 → *Resize* → *Start*; se mantiene IP estática y DNS (IP Standard estática no cambia);
+  *Size* → D2s_v4 → *Resize* → *Start*; se mantiene IP estática y DNS (IP Standard estática no cambia);
   disco y datos persisten. Tras arrancar: `docker compose` vuelve solo (`restart: unless-stopped`);
   se cambia `PERFIL_TAMANO=carga` en `.env`, `deploy.sh --reconfigurar` recrea los contenedores con
   los valores completos, y se verifica con `/up`. Vuelta: perfil `diario`, Stop → B2ats_v2 → Start.
   Duración esperada 3–6 minutos cada cambio. El tamaño se confirma con `metrics.sh` (lee IMDS).
 - **Costo mientras tanto**: VM liberada no factura cómputo; sí disco e IP (incluido en la estimación).
-- ⚠ Si el portal no lista D2s_v5 como destino válido (D-01b): *Snapshot* del disco → nueva VM D2s_v5
+- ⚠ Si el portal no lista D2s_v4 como destino válido (D-01b): *Snapshot* del disco → nueva VM D2s_v4
   con ese disco y la misma IP; se documenta como contingencia, no como camino principal.
 
 ## D-11 Respaldo y restauración
@@ -183,14 +198,14 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
   (una línea `fecha-UTC vmSize` al arrancar y cada 5 min, vía cron/IMDS; sobrevive a los cambios de
   tamaño porque está en el disco) demuestra el tamaño real en cada momento. `metrics.sh cierre`
   verifica que, después de `stop`, la última línea sea `Standard_B2ats_v2`, y entonces escribe
-  `cierre-carga.json` con `evidencia_completa: true` y las horas en D2s_v5; si no, imprime
+  `cierre-carga.json` con `evidencia_completa: true` y las horas en D2s_v4; si no, imprime
   `EVIDENCIA INCOMPLETA: la VM sigue en <tamaño>` y sale ≠ 0. La prueba de carga se considera
   cerrada (y SC-006 declarado) solo con `evidencia_completa: true`.
 - La rampa completa dura ~15 min; el tiempo restante de las sesiones de 3–4 h es preparación,
   repeticiones y la verificación manual/SC-007 hechas con la VM de carga (opcional; FR-026/027 se
   pueden hacer en B2ats_v2). Se hacen ≥3 ejecuciones; la de mejor evidencia que cumpla umbrales
   cierra SC-006, y las fallidas se conservan (FR-022).
-- Si D2s_v5 (2 vCPU) no alcanza los umbrales por bcrypt, la mitigación ya definida en el Módulo 1 es
+- Si D2s_v4 (2 vCPU) no alcanza los umbrales por bcrypt, la mitigación ya definida en el Módulo 1 es
   documentar el hallazgo; no se cambia el costo de bcrypt.
 
 ## D-13 Verificación manual y SC-007 en el servidor

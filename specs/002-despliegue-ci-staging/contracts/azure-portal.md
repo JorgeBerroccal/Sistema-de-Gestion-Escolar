@@ -9,7 +9,7 @@ pantalla antes de crear. Nombres sugeridos entre comillas; cámbialos si prefier
 2. **Regiones permitidas**: al crear el grupo de recursos, "Chile Central" debe aparecer; si no, usar la
    región permitida más cercana (alternativa: Brazil South) y repetir los precios.
 3. **Cuotas** (Suscripción → *Usage + quotas* → filtrar por Chile Central): "Total Regional vCPUs" ≥ 4;
-   "Standard BASv2 Family vCPUs" ≥ 2; "Standard DSv5 Family vCPUs" ≥ 2. Si alguna es 0 o insuficiente,
+   "Standard BASv2 Family vCPUs" ≥ 2; "Standard DSv4 Family vCPUs" ≥ 2. Si alguna es 0 o insuficiente,
    *Request increase* (puede tardar horas) **antes** del día de la prueba de carga.
 4. **Calculadora de precios** (Chile Central): anotar disco Standard SSD 30 GiB (E4) y IP pública
    Standard estática; ajustar la tabla de costo del plan si difieren mucho.
@@ -105,13 +105,13 @@ alertas (SC-007).
 Marcar cada casilla en el registro de la sesión (`evidencias/k6-sesion-<fecha>.md`). La evidencia no
 se considera completa mientras la casilla 14 no esté marcada **y** `metrics.sh cierre` lo confirme.
 
-- [ ] 1. 48 h antes: cuota DSv5 confirmada y gasto acumulado con ≥ 5 USD de holgura.
+- [ ] 1. 48 h antes: cuota DSv4 confirmada y gasto acumulado con ≥ 5 USD de holgura.
 - [ ] 2. Respaldo manual (`./deploy/backup.sh manual`).
 - [ ] 3. Portal: **Stop** (esperar "Stopped (deallocated)"; solo "Stopped" sigue facturando).
-- [ ] 4. Portal → *Size* → **D2s_v5** → *Resize*. Anotar hora de inicio de facturación D2s_v5.
+- [ ] 4. Portal → *Size* → **D2s_v4** → *Resize*. Anotar hora de inicio de facturación D2s_v4.
 - [ ] 5. Portal: **Start**; `ssh`; IP y FQDN sin cambios.
 - [ ] 6. `.env`: `PERFIL_TAMANO=carga`; `./deploy/deploy.sh --reconfigurar`; `curl https://<fqdn>/up` = 200.
-- [ ] 7. `./deploy/metrics.sh tamano` imprime `Standard_D2s_v5`.
+- [ ] 7. `./deploy/metrics.sh tamano` imprime `Standard_D2s_v4`.
 - [ ] 8. Siembra: `LoadTestSeeder` (solo staging).
 - [ ] 9. Humo (`humo=true` en el workflow `carga`) correcto.
 - [ ] 10. `./deploy/metrics.sh start`; lanzar `carga` (rampa completa) con `tamano_vm` y `version`.
@@ -122,15 +122,15 @@ se considera completa mientras la casilla 14 no esté marcada **y** `metrics.sh 
 
 ## 7b. Detalle de los pasos de cambio de tamaño (antes)
 
-1. **48 h antes**: confirmar cuota DSv5 (§0.3) y que el gasto acumulado deja ≥ 5 USD de holgura.
+1. **48 h antes**: confirmar cuota DSv4 (§0.3) y que el gasto acumulado deja ≥ 5 USD de holgura.
 2. En tu PC: `ssh sge@<fqdn> 'cd /opt/sge && ./deploy/backup.sh manual'` (respaldo previo).
 3. Portal → VM → **Stop** (espera "Stopped (deallocated)"; *Stopped* sin "deallocated" **sigue
    facturando**).
-4. VM → *Availability + scale* → **Size** → buscar **D2s_v5** (2 vCPU, 8 GiB) → *Resize*. Si no aparece,
+4. VM → *Availability + scale* → **Size** → buscar **D2s_v4** (2 vCPU, 8 GiB) → *Resize*. Si no aparece,
    ver la contingencia de `research.md` D-10.
 5. VM → **Start**. Esperar ≈ 2 min; `ssh sge@<fqdn>`; la IP y el FQDN no cambian.
 6. En el servidor: editar `/opt/sge/.env` → `PERFIL_TAMANO=carga`; `./deploy/deploy.sh --reconfigurar`.
-7. Comprobar: `curl -sS https://<fqdn>/up`; `./deploy/metrics.sh tamano` imprime `Standard_D2s_v5`.
+7. Comprobar: `curl -sS https://<fqdn>/up`; `./deploy/metrics.sh tamano` imprime `Standard_D2s_v4`.
 8. Seguir `docs/despliegue/prueba-de-carga.md` (siembra de usuarios, `metrics.sh start`, lanzar el
    workflow, `metrics.sh stop`, descargar evidencias).
 
@@ -139,10 +139,10 @@ se considera completa mientras la casilla 14 no esté marcada **y** `metrics.sh 
 1. En el servidor: `PERFIL_TAMANO=diario` en `.env`; `./deploy/deploy.sh --reconfigurar`.
 2. Portal → VM → **Stop** (deallocated) → **Size** → **B2ats_v2** → *Resize* → **Start**.
 3. Comprobar `./deploy/metrics.sh tamano` → `Standard_B2ats_v2` y `curl https://<fqdn>/up`.
-4. Anotar en el registro de despliegues la hora de inicio y fin en D2s_v5 (costo: horas × 0,134 USD).
+4. Anotar en el registro de despliegues la hora de inicio y fin en D2s_v4 (costo: horas × 0,1341 USD).
 5. Ejecutar `./deploy/metrics.sh cierre`: debe imprimir `evidencia_completa: true`. Si imprime
    `EVIDENCIA INCOMPLETA`, la VM no volvió al tamaño diario: repetir §8 antes de cualquier otra cosa.
-6. Mirar *Cost analysis*: sin cargos nuevos de D2s_v5 desde el paso 2.
+6. Mirar *Cost analysis*: sin cargos nuevos de D2s_v4 desde el paso 2.
 
 ## 9. Detener la VM cuando no se use
 

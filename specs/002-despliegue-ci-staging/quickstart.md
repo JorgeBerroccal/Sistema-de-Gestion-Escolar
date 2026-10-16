@@ -51,12 +51,12 @@ Ejecutar los 11 pasos de [../001-auth-roles-rbac/quickstart.md](../001-auth-role
 contra `https://<fqdn>` y registrarlos en `specs/001-auth-roles-rbac/evidencias/staging-verificacion-manual.md`;
 medir ≥5 intentos de SC-007 en `staging-sc007.md` (peor caso < 60 s).
 
-## 6. Prueba de carga (US4, SC-006) — sesión de 3–4 h en D2s_v5
+## 6. Prueba de carga (US4, SC-006) — sesión de 3–4 h en D2s_v4
 
 1. Cambiar el tamaño (contracts/azure-portal.md §7) y poner `PERFIL_TAMANO=carga`.
 2. Sembrar usuarios: `docker compose -f docker-compose.prod.yml exec app php artisan db:seed --class=LoadTestSeeder --force`.
 3. Humo primero: workflow `carga` con `humo=true`.
-4. `./deploy/metrics.sh start`; lanzar `carga` con `tamano_vm=Standard_D2s_v5`, `version=<etiqueta>`; al
+4. `./deploy/metrics.sh start`; lanzar `carga` con `tamano_vm=Standard_D2s_v4`, `version=<etiqueta>`; al
    terminar, `./deploy/metrics.sh stop`.
 5. Descargar el artefacto y el CSV (`scp`), copiarlos a `specs/001-auth-roles-rbac/evidencias/` con
    fecha, y resumir umbrales y picos de CPU/memoria. Repetir hasta 3 veces.

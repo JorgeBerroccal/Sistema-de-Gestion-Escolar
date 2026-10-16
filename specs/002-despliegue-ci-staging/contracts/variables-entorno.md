@@ -34,7 +34,7 @@ Valores `<…>` = secreto o dato propio del servidor (nunca en el repositorio).
 
 ## Perfiles de tamaño (los aplica `deploy.sh` leyendo `PERFIL_TAMANO`)
 
-| Variable | `diario` (B2ats_v2, 1 GB) | `carga` (D2s_v5, 8 GB) |
+| Variable | `diario` (B2ats_v2, 1 GB) | `carga` (D2s_v4, 8 GB) |
 |---|--:|--:|
 | `FPM_MAX_CHILDREN` | 4 | 40 |
 | `FPM_START_SERVERS` | 2 | 10 |
