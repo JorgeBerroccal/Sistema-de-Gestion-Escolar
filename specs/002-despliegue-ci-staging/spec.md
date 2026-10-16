@@ -99,8 +99,10 @@ procedimiento igualmente documentado.
 **Why this priority**: Un despliegue manual no reproducible es la principal fuente de fallos antes de
 una sustentación; la vuelta atrás es la red de seguridad.
 
-**Independent Test**: Desplegar `v0.1.0`, luego una versión posterior con un cambio visible,
-verificarlo, y volver a `v0.1.0` comprobando que el cambio desaparece y los datos persisten.
+**Independent Test**: Desplegar una versión etiquetada, luego una posterior con un cambio visible,
+verificarlo, y volver a la primera comprobando que el cambio desaparece y los datos persisten.
+(La etiqueta `v0.1.0` es anterior a la imagen de producción y no tiene imagen publicada; las dos
+versiones de la prueba serán las primeras publicadas por el nuevo proceso.)
 
 **Acceptance Scenarios**:
 
@@ -217,8 +219,8 @@ sistema recupera el estado del respaldo.
    **Then** la base de datos queda con los datos del respaldo y el Administrador puede iniciar sesión.
 3. **Given** una restauración, **When** se verifica, **Then** se comprobó al menos una vez en el
    servidor y quedó el resultado registrado.
-4. **Given** el uso continuo, **When** pasan los días, **Then** los respaldos antiguos se limitan a
-   una cantidad fija para no llenar el disco.
+4. **Given** el uso continuo, **When** pasan los días, **Then** los respaldos con más de 7 días se
+   eliminan para no llenar el disco.
 
 ---
 
@@ -244,8 +246,8 @@ sistema recupera el estado del respaldo.
   La ejecución falla pronto con un mensaje claro, sin exponer valores.
 - ¿Qué pasa si un pull request proviene de una bifurcación? No debe tener acceso a secretos ni al
   servidor.
-- ¿Qué pasa con la memoria limitada de la máquina económica al construir o desplegar? El
-  procedimiento no debe requerir compilar dependencias pesadas en el servidor si no cabe en memoria.
+- ¿Qué pasa con la memoria limitada (1 GB) de la máquina económica? El servidor nunca construye
+  imágenes ni instala dependencias; usa swap y una configuración reducida de los servicios.
 
 ## Requirements *(mandatory)*
 
@@ -263,21 +265,25 @@ sistema recupera el estado del respaldo.
   cercana posible a Perú, con alternativa), imagen Ubuntu LTS x86, tamaño económico diario (serie B),
   tamaño de carga (no burstable, 2 vCPU, memoria suficiente para la pila), tipo y tamaño de disco, IP
   pública estática, etiqueta de nombre DNS, y reglas de red.
-- **FR-004**: Solo MUST estar abierto a internet: SSH (acceso restringido por clave pública, sin
-  contraseña, y preferiblemente limitado a la IP del desarrollador), HTTP (80) para el desafío y la
+- **FR-004**: Solo MUST estar abierto a internet: SSH (22) únicamente con clave pública, sin
+  contraseña y con bloqueo automático de intentos fallidos (fail2ban); no se limita por IP de origen
+  porque la conexión del desarrollador tiene IP dinámica; HTTP (80) para el desafío y la
   redirección, y HTTPS (443). La base de datos, la caché y cualquier otro puerto interno MUST NOT ser
   accesibles desde internet.
 - **FR-005**: El procedimiento MUST incluir el endurecimiento básico del servidor (usuario no raíz con
-  clave, cortafuegos, actualizaciones de seguridad automáticas).
+  clave, cortafuegos, fail2ban, actualizaciones de seguridad automáticas) y memoria de intercambio
+  (swap) de 2 GB por la poca RAM del tamaño diario.
 
 **Pila y configuración**
 
 - **FR-006**: El despliegue MUST usar la misma pila de Docker Compose del proyecto (nginx, PHP-FPM,
   MySQL, Redis) con la configuración de producción de la constitución: OPcache activo y
   `php artisan optimize` ejecutado en cada despliegue; `APP_ENV=staging`, `APP_DEBUG` desactivado.
-- **FR-007**: En el servidor, el código MUST provenir de la versión desplegada (imagen construida del
-  repositorio) y MUST NOT montarse desde un directorio de desarrollo; las herramientas de desarrollo
-  no deben estar instaladas en el servicio de producción.
+- **FR-007**: En el servidor, el código MUST provenir de la versión desplegada (imagen de producción
+  construida por la integración continua y publicada en GitHub Container Registry, etiquetada por
+  versión) y MUST NOT montarse desde un directorio de desarrollo; las herramientas de desarrollo no
+  deben estar en la imagen de producción. El servidor MUST NOT construir imágenes ni ejecutar
+  gestores de dependencias (por su RAM de 1 GB).
 - **FR-008**: Los datos de MySQL y Redis MUST persistir entre reinicios y despliegues, y esos
   servicios MUST NOT publicar puertos hacia el exterior de la máquina.
 - **FR-009**: Los secretos (`APP_KEY`, contraseñas de base de datos, `SGE_ADMIN_PASSWORD` y los demás
@@ -290,11 +296,12 @@ sistema recupera el estado del respaldo.
 
 **Despliegue y vuelta atrás**
 
-- **FR-011**: MUST existir un procedimiento documentado y repetible para desplegar una versión
-  identificada por etiqueta o commit de Git, que aplique migraciones, regenere cachés de
+- **FR-011**: MUST existir un procedimiento documentado y repetible, ejecutado por el desarrollador
+  por SSH mediante un script que descarga la imagen de la etiqueta indicada (GitHub no necesita
+  acceso al servidor), para desplegar una versión identificada por etiqueta de Git, que aplique migraciones, regenere cachés de
   configuración/rutas/vistas y verifique que el sitio responde antes de darlo por exitoso.
-- **FR-012**: MUST existir un procedimiento documentado para volver a una versión anterior indicando
-  su etiqueta, y su límite conocido (migraciones destructivas requieren restaurar un respaldo).
+- **FR-012**: MUST existir un procedimiento documentado para volver a una versión anterior, que
+  consiste en desplegar la etiqueta anterior, y su límite conocido (migraciones destructivas requieren restaurar un respaldo).
 - **FR-013**: Cada despliegue MUST registrar qué versión quedó activa (etiqueta/commit y fecha) de
   forma consultable en el servidor.
 - **FR-014**: El procedimiento MUST generar un respaldo de la base de datos antes de aplicar
@@ -318,9 +325,10 @@ sistema recupera el estado del respaldo.
   MUST NOT ejecutarse automáticamente con push o pull request.
 - **FR-019**: La ejecución MUST guardar como evidencia: el resumen completo de resultados con la
   evaluación de cada umbral, la URL objetivo, la versión desplegada, el tamaño de la máquina, y las
-  series de uso de CPU y memoria del servidor durante la prueba. La evidencia MUST quedar disponible
-  como archivo descargable de la ejecución y MUST registrarse en el repositorio en
-  `specs/001-auth-roles-rbac/evidencias/`.
+  series de uso de CPU y memoria del servidor durante la prueba. Como GitHub no tiene acceso al
+  servidor, el resumen queda como archivo descargable de la ejecución y las series de CPU/memoria y
+  el tamaño de máquina los registra un script en el servidor durante la prueba; el desarrollador
+  reúne ambos y los registra en el repositorio en `specs/001-auth-roles-rbac/evidencias/`.
 - **FR-020**: La siembra de usuarios de carga y la prueba completa MUST rechazarse cuando el entorno
   no sea staging (o local para la prueba de humo).
 - **FR-021**: La documentación MUST describir el procedimiento completo de la prueba: cambiar a
@@ -352,7 +360,7 @@ sistema recupera el estado del respaldo.
 **Respaldo**
 
 - **FR-028**: MUST existir un respaldo de la base de datos, manual y programado (al menos diario),
-  guardado fuera del contenedor de base de datos, con retención limitada, y con una forma documentada
+  guardado fuera del contenedor de base de datos, con retención de 7 días, y con una forma documentada
   de copiarlo fuera del servidor.
 - **FR-029**: MUST existir un procedimiento de restauración documentado y comprobado al menos una vez
   en el servidor, con el resultado registrado.
@@ -374,8 +382,8 @@ sistema recupera el estado del respaldo.
   request.
 - **Evidencia de carga**: resumen de resultados, tamaño de máquina, series de CPU/memoria, versión
   probada y fecha.
-- **Respaldo de base de datos**: archivo fechado con la información de staging, con retención
-  limitada.
+- **Respaldo de base de datos**: archivo fechado con la información de staging, con retención de
+  7 días.
 - **Registro de verificación**: resultado por paso de la verificación manual y tiempos de SC-007 con
   su peor caso.
 
