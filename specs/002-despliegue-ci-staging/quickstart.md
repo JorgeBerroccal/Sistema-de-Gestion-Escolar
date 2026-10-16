@@ -21,6 +21,10 @@ nombre DNS de la IP pública (contracts/azure-portal.md §3).
 1. `ssh azureuser@<fqdn>` → ejecutar `deploy/bootstrap-servidor.sh <fqdn> <correo>` (ver docs).
 2. Crear `/opt/sge/.env` desde `deploy/env.staging.example` (0600).
 3. Etiquetar `v0.2.0` y esperar a `release` verde (imágenes en GHCR).
+   **Verificar visibilidad (primera publicación)**: desde un equipo sin sesión en GHCR,
+   `docker logout ghcr.io; docker pull ghcr.io/jorgeberroccal/sge-app:v0.2.0` y lo mismo con `sge-web`.
+   Si responde `denied`, cambiar el paquete a **Public** (perfil → Packages → paquete → *Package
+   settings* → *Change visibility*) y repetir el pull hasta que funcione.
 4. `./deploy/deploy.sh v0.2.0` → termina con "Desplegada v0.2.0" en < 15 min.
 5. Sembrar el Administrador inicial: `docker compose -f docker-compose.prod.yml exec app php artisan db:seed --class=AdministradorInicialSeeder --force`.
 6. Navegador externo: `https://<fqdn>` → candado válido; `http://<fqdn>` redirige (SC-001).
@@ -56,7 +60,9 @@ medir ≥5 intentos de SC-007 en `staging-sc007.md` (peor caso < 60 s).
    terminar, `./deploy/metrics.sh stop`.
 5. Descargar el artefacto y el CSV (`scp`), copiarlos a `specs/001-auth-roles-rbac/evidencias/` con
    fecha, y resumir umbrales y picos de CPU/memoria. Repetir hasta 3 veces.
-6. Volver a B2ats_v2 (§8) **el mismo día**.
+6. Seguir la lista de verificación de 14 pasos de [contracts/azure-portal.md §7](contracts/azure-portal.md);
+   el último paso es volver a B2ats_v2 **el mismo día** y confirmarlo con `./deploy/metrics.sh cierre`.
+   La evidencia solo está completa si `cierre-carga.json` dice `evidencia_completa: true`.
 
 ## 7. Costo (US5, SC-007)
 

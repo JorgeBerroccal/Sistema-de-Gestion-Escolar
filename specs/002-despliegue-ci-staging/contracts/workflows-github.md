@@ -22,7 +22,9 @@
   `.../sge-web:<etiqueta>` (`docker/nginx/Dockerfile.prod`), `linux/amd64`, caché de capas en GHA.
 - **Condición**: no corre en pull requests; opcionalmente exige que `ci` esté verde para el SHA
   etiquetado (job que consulta el estado antes de publicar).
-- **Salida**: imágenes con la etiqueta; resumen del job con los *digests*.
+- **Salida**: imágenes con la etiqueta; resumen del job con los *digests* y un recordatorio, solo en
+  la primera publicación de cada paquete, de **verificar y poner en público** la visibilidad en GHCR
+  (el paquete se crea privado por defecto).
 
 ## `carga.yml` — nombre "carga"
 

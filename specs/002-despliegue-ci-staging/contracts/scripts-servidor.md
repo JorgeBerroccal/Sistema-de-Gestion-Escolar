@@ -40,7 +40,7 @@ Pide confirmación escribiendo `RESTAURAR`. Modo mantenimiento → detiene `app`
 `sge` → carga el volcado → `up -d` → `GET /up` → sale del mantenimiento. Imprime el número de usuarios
 restaurados como comprobación. No toca Redis (las sesiones previas se invalidan).
 
-## `metrics.sh start | stop | tamano`
+## `metrics.sh start | stop | tamano | cierre`
 
 - `start`: lanza en segundo plano un muestreo cada 5 s hacia `/var/log/sge/metricas-AAAAMMDD-HHMM.csv`
   con columnas `ts,cpu_pct,load1,mem_usada_mb,mem_total_mb,swap_usada_mb,ctr_app_cpu,ctr_app_mem_mb,ctr_db_cpu,ctr_db_mem_mb,ctr_redis_cpu,ctr_redis_mem_mb,ctr_web_cpu,ctr_web_mem_mb`
@@ -48,4 +48,8 @@ restaurados como comprobación. No toca Redis (las sesiones previas se invalidan
 - `stop`: detiene el muestreo, agrega `fin` a `meta-servidor.json`, imprime rutas y los máximos/p95
   de CPU y memoria para copiarlos al registro.
 - `tamano`: imprime `vmSize` del servicio de metadatos de Azure (`169.254.169.254`).
+- `cierre`: lee `/var/log/sge/tamano.log` (registro de tamaño: lo escribe un cron al arrancar y cada
+  5 min con `vmSize`). Si, posterior al `stop` de la última prueba, la última línea es
+  `Standard_B2ats_v2`, escribe `/var/log/sge/cierre-carga.json` (`evidencia_completa: true`, horas
+  totales en D2s_v5, costo estimado) y sale 0. Si no, imprime `EVIDENCIA INCOMPLETA` y sale 1.
 - Descarga: `scp sge@<fqdn>:/var/log/sge/metricas-*.csv .`

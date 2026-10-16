@@ -279,6 +279,8 @@ sistema recupera el estado del respaldo.
 - **FR-006**: El despliegue MUST usar la misma pila de Docker Compose del proyecto (nginx, PHP-FPM,
   MySQL, Redis) con la configuración de producción de la constitución: OPcache activo y
   `php artisan optimize` ejecutado en cada despliegue; `APP_ENV=staging`, `APP_DEBUG` desactivado.
+- **FR-006a**: Tras la primera publicación de cada imagen, el procedimiento MUST verificar que el
+  paquete sea público (descarga anónima) y cambiarlo a público si se creó como privado.
 - **FR-007**: En el servidor, el código MUST provenir de la versión desplegada (imagen de producción
   construida por la integración continua y publicada en GitHub Container Registry, etiquetada por
   versión) y MUST NOT montarse desde un directorio de desarrollo; las herramientas de desarrollo no
@@ -335,6 +337,9 @@ sistema recupera el estado del respaldo.
   tamaño no burstable de 2 vCPU, esperar que el servicio vuelva, sembrar usuarios, lanzar la prueba,
   recoger evidencia y regresar al tamaño económico. El generador de carga MUST ejecutarse fuera del
   servidor probado.
+- **FR-022a**: La evidencia de una sesión de prueba de carga SOLO se considera completa si el
+  registro del servidor muestra que la máquina regresó al tamaño diario; el procedimiento de la prueba
+  MUST ser una lista de verificación cuyo último paso es ese regreso.
 - **FR-022**: Si los umbrales de SC-006 no se cumplen, el resultado y el análisis MUST registrarse; el
   criterio solo se declara cumplido con evidencia de una ejecución que lo satisfaga.
 

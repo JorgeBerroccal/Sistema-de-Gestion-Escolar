@@ -50,11 +50,13 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
   es la que corre; la etiqueta de la imagen es la versión (vuelta atrás = otra etiqueta).
 - **Alternativas**: construir en el servidor (agota RAM); copiar un tar de la imagen por SSH (sin
   historial ni caché); Docker Hub (límites de pull y cuenta extra); registro propio (complejidad).
-- **Visibilidad del paquete**: ⚠ el repositorio es `JorgeBerroccal/Sistema-de-Gestion-Escolar`;
-  si es **público**, los paquetes pueden hacerse públicos (sin credenciales en el servidor). Si es
-  privado, el servidor hace `docker login ghcr.io` con un PAT de solo `read:packages` guardado solo en
-  el servidor (no en GitHub ni en el repositorio). Las imágenes no contienen secretos (`.env` no se copia:
-  `.dockerignore`).
+- **Visibilidad del paquete**: el repositorio `JorgeBerroccal/Sistema-de-Gestion-Escolar` es
+  **público** (confirmado por el desarrollador), pero GHCR puede crear el paquete como **privado** en la
+  primera publicación. Paso obligatorio tras la primera publicación de cada imagen (`sge-app` y
+  `sge-web`): verificar con un pull anónimo (`docker logout ghcr.io; docker pull ghcr.io/<propietario>/sge-app:<etiqueta>`
+  desde cualquier equipo) y, si falla con `denied`/`unauthorized`, ir a GitHub → perfil → Packages →
+  el paquete → *Package settings* → *Change visibility* → **Public**. Así el servidor no guarda
+  credenciales. Las imágenes no contienen secretos (`.env` no se copia: `.dockerignore`).
 - **Hallazgo**: la etiqueta `v0.1.0` no tiene `Dockerfile.prod`, por lo que **no se puede publicar su
   imagen**. Las primeras versiones desplegables serán las de este feature (p. ej. `v0.2.0`, y `v0.2.1`
   para probar vuelta atrás).
@@ -177,6 +179,13 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
 
 ## D-12 Qué se mide y cómo se cierra SC-006
 
+- **Evidencia completa solo con regreso al tamaño diario**: un registro `/var/log/sge/tamano.log`
+  (una línea `fecha-UTC vmSize` al arrancar y cada 5 min, vía cron/IMDS; sobrevive a los cambios de
+  tamaño porque está en el disco) demuestra el tamaño real en cada momento. `metrics.sh cierre`
+  verifica que, después de `stop`, la última línea sea `Standard_B2ats_v2`, y entonces escribe
+  `cierre-carga.json` con `evidencia_completa: true` y las horas en D2s_v5; si no, imprime
+  `EVIDENCIA INCOMPLETA: la VM sigue en <tamaño>` y sale ≠ 0. La prueba de carga se considera
+  cerrada (y SC-006 declarado) solo con `evidencia_completa: true`.
 - La rampa completa dura ~15 min; el tiempo restante de las sesiones de 3–4 h es preparación,
   repeticiones y la verificación manual/SC-007 hechas con la VM de carga (opcional; FR-026/027 se
   pueden hacer en B2ats_v2). Se hacen ≥3 ejecuciones; la de mejor evidencia que cumpla umbrales

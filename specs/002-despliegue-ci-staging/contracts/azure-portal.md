@@ -100,7 +100,27 @@ Students no exponen *Budgets*; en ese caso, usar *Cost alerts* del propio crédi
 (captura) en la evidencia, y revisar *Credits* semanalmente. Verificar con captura de la lista de
 alertas (SC-007).
 
-## 7. Cambio de tamaño para la prueba de carga (antes)
+## 7. Lista de verificación de la prueba de carga (el último paso es volver a B2ats_v2)
+
+Marcar cada casilla en el registro de la sesión (`evidencias/k6-sesion-<fecha>.md`). La evidencia no
+se considera completa mientras la casilla 14 no esté marcada **y** `metrics.sh cierre` lo confirme.
+
+- [ ] 1. 48 h antes: cuota DSv5 confirmada y gasto acumulado con ≥ 5 USD de holgura.
+- [ ] 2. Respaldo manual (`./deploy/backup.sh manual`).
+- [ ] 3. Portal: **Stop** (esperar "Stopped (deallocated)"; solo "Stopped" sigue facturando).
+- [ ] 4. Portal → *Size* → **D2s_v5** → *Resize*. Anotar hora de inicio de facturación D2s_v5.
+- [ ] 5. Portal: **Start**; `ssh`; IP y FQDN sin cambios.
+- [ ] 6. `.env`: `PERFIL_TAMANO=carga`; `./deploy/deploy.sh --reconfigurar`; `curl https://<fqdn>/up` = 200.
+- [ ] 7. `./deploy/metrics.sh tamano` imprime `Standard_D2s_v5`.
+- [ ] 8. Siembra: `LoadTestSeeder` (solo staging).
+- [ ] 9. Humo (`humo=true` en el workflow `carga`) correcto.
+- [ ] 10. `./deploy/metrics.sh start`; lanzar `carga` (rampa completa) con `tamano_vm` y `version`.
+- [ ] 11. `./deploy/metrics.sh stop`; descargar CSV y `meta-servidor.json` (`scp`) y el artefacto de GitHub.
+- [ ] 12. Copiar la evidencia al repositorio y resumir umbrales y picos (si hay otra repetición, volver al 10).
+- [ ] 13. `.env`: `PERFIL_TAMANO=diario`; `./deploy/deploy.sh --reconfigurar`.
+- [ ] 14. **Volver a B2ats_v2**: ver §8; terminar con `./deploy/metrics.sh cierre` → `evidencia_completa: true`; solo entonces commitear `cierre-carga.json` junto a la evidencia.
+
+## 7b. Detalle de los pasos de cambio de tamaño (antes)
 
 1. **48 h antes**: confirmar cuota DSv5 (§0.3) y que el gasto acumulado deja ≥ 5 USD de holgura.
 2. En tu PC: `ssh sge@<fqdn> 'cd /opt/sge && ./deploy/backup.sh manual'` (respaldo previo).
@@ -120,7 +140,9 @@ alertas (SC-007).
 2. Portal → VM → **Stop** (deallocated) → **Size** → **B2ats_v2** → *Resize* → **Start**.
 3. Comprobar `./deploy/metrics.sh tamano` → `Standard_B2ats_v2` y `curl https://<fqdn>/up`.
 4. Anotar en el registro de despliegues la hora de inicio y fin en D2s_v5 (costo: horas × 0,134 USD).
-5. Mirar *Cost analysis*: sin cargos nuevos de D2s_v5 desde el paso 2.
+5. Ejecutar `./deploy/metrics.sh cierre`: debe imprimir `evidencia_completa: true`. Si imprime
+   `EVIDENCIA INCOMPLETA`, la VM no volvió al tamaño diario: repetir §8 antes de cualquier otra cosa.
+6. Mirar *Cost analysis*: sin cargos nuevos de D2s_v5 desde el paso 2.
 
 ## 9. Detener la VM cuando no se use
 
