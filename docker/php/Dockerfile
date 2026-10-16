@@ -28,7 +28,8 @@ COPY docker/php/fpm-pool.conf /usr/local/etc/php-fpm.d/zz-sge.conf
 ENV FPM_MAX_CHILDREN=20 \
     FPM_START_SERVERS=6 \
     FPM_MIN_SPARE=4 \
-    FPM_MAX_SPARE=10
+    FPM_MAX_SPARE=10 \
+    PHP_MEMORY_LIMIT=128M
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 

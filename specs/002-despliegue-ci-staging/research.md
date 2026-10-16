@@ -60,7 +60,7 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
   `Dockerfile.prod` multi-stage: (1) `node:20-alpine`: `npm ci && npm run build`; (2) `composer:2`:
   `composer install --no-dev --classmap-authoritative --no-scripts`; (3) `php:8.3-fpm` con las mismas
   extensiones que el Dockerfile de desarrollo, código copiado, `vendor` de (2), `public/build` de (1),
-  usuario no root, `OPCACHE_VALIDATE_TIMESTAMPS=0`. `nginx/Dockerfile.prod` copia `public/` de (1)+(código).
+  usuario no root, `OPCACHE_VALIDATE_TIMESTAMPS=0`. `nginx/Dockerfile.prod` copia `public/` (con `public/build`) de la imagen `sge-app` de la misma etiqueta (`--build-arg APP_IMAGE`), de modo que los assets servidos coinciden siempre con el manifiesto de Vite del código; por eso `release.yml` construye primero `sge-app` y después `sge-web`.
 - **Justificación**: el servidor (1 GB) no puede ejecutar composer/npm; la misma imagen que se probó
   es la que corre; la etiqueta de la imagen es la versión (vuelta atrás = otra etiqueta).
 - **Alternativas**: construir en el servidor (agota RAM); copiar un tar de la imagen por SSH (sin

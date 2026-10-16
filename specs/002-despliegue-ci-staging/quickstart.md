@@ -26,7 +26,7 @@ nombre DNS de la IP pública (contracts/azure-portal.md §3).
    Si responde `denied`, cambiar el paquete a **Public** (perfil → Packages → paquete → *Package
    settings* → *Change visibility*) y repetir el pull hasta que funcione.
 4. `./deploy/deploy.sh v0.2.0` → termina con "Desplegada v0.2.0" en < 15 min.
-5. Sembrar el Administrador inicial: `docker compose -f docker-compose.prod.yml exec app php artisan db:seed --class=AdministradorInicialSeeder --force`.
+5. Sembrar el Administrador inicial: `docker compose -f docker-compose.prod.yml exec app php artisan db:seed --force` (DatabaseSeeder: roles, permisos y Administrador inicial; los usuarios de demostración solo se crean en `local`)``.
 6. Navegador externo: `https://<fqdn>` → candado válido; `http://<fqdn>` redirige (DC-001).
 7. `nmap -Pn -p 22,80,443,3306,6379 <fqdn>` desde fuera → solo 22, 80, 443 abiertos (DC-002).
 8. Servidor: `grep -rE 'APP_KEY=base64|DB_PASSWORD=.+' <repo>` no encuentra nada; `stat -c %a /opt/sge/.env` = 600 (DC-003).
