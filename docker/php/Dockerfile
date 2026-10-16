@@ -24,6 +24,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/zz-opcache.ini
 COPY docker/php/fpm-pool.conf /usr/local/etc/php-fpm.d/zz-sge.conf
 
+# Valores por defecto de desarrollo; en staging se sobrescriben por variables de entorno.
+ENV FPM_MAX_CHILDREN=20 \
+    FPM_START_SERVERS=6 \
+    FPM_MIN_SPARE=4 \
+    FPM_MAX_SPARE=10
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 RUN groupadd --force --gid ${GID} sge \
