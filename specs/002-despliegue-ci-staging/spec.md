@@ -467,6 +467,11 @@ sistema recupera el estado del respaldo.
   9,64 USD/mes) y carga **D2s_v4** (2 vCPU, 8 GB, no burstable, 97,92 USD/mes). D2s_v5 se descartó
   porque la cuota de su familia en la suscripción de estudiante es 0 y el aumento fue rechazado; la
   imagen Ubuntu Gen2 es compatible con ambos tamaños, de modo que el cambio no recrea la máquina.
+- ⚠ **Decisión pendiente (2026-10-20)**: `D2s_v4` resultó `NotAvailableForSubscription` en Chile Central
+  (restricción del catálogo de la suscripción, no de cuota). El único tamaño no burstable de 2 vCPU
+  disponible es `DS2_v2` (2 vCPU, 7 GB, 196,37 USD/mes, con disco temporal local, retiro previsto 05/2028).
+  Hasta cerrar la decisión (research D-01c), la mención de D2s_v4 en esta spec y en los contratos es el
+  tamaño de carga *previsto*, no confirmado. DS2_v2 también supera el mínimo de 2 vCPU / 4 GB.
 - El tamaño de carga (8 GB) supera el mínimo de 2 vCPU / 4 GB de la constitución; el tamaño diario
   (1 GB) solo debe sostener demostraciones y la verificación manual, no la prueba de carga.
 - Los costos de cómputo se pagan solo por las horas en que la máquina está asignada; detenerla sin

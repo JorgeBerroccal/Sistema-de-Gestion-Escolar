@@ -162,8 +162,8 @@ Monolito Laravel 13 existente. Archivos nuevos: `.github/workflows/`, `docker/*/
 
 **Independent Test**: quickstart §2 pasos 6–10.
 
-- [ ] T054 [US1] (manual) Crear `rg-sge-staging` (Chile Central), la IP pública estática Standard `pip-sge-staging` con etiqueta DNS y el NSG con solo 22/80/443 según `contracts/azure-portal.md` §1, §3, §4; anotar el FQDN exacto (FR-001, FR-004)
-- [ ] T055 [US1] (manual) Crear `vm-sge-staging`: Ubuntu 24.04 LTS x64 Gen2, **Standard_B2ats_v2**, disco **Standard SSD** 30 GiB, clave SSH (guardar el `.pem` fuera del repositorio con `chmod 600`), sin puertos públicos adicionales, según `contracts/azure-portal.md` §2 (FR-003)
+- [x] T054 [US1] (manual) Crear `rg-sge-staging` (Chile Central), la IP pública estática Standard `pip-sge-staging` con etiqueta DNS y el NSG con solo 22/80/443 según `contracts/azure-portal.md` §1, §3, §4; anotar el FQDN exacto (FR-001, FR-004)
+- [x] T055 [US1] (manual) Crear `vm-sge-staging`: Ubuntu 24.04 LTS x64 Gen2, **Standard_B2ats_v2**, disco **Standard SSD** 30 GiB, clave SSH (guardar el `.pem` fuera del repositorio con `chmod 600`), sin puertos públicos adicionales, según `contracts/azure-portal.md` §2 (FR-003) — hecho 2026-10-20 con otros nombres (`sge-staging`, FQDN `sge-peru.chilecentral.cloudapp.azure.com`), ver `evidencias/vm-azure.md`
 - [ ] T056 [US1] Conectar por SSH y ejecutar `deploy/bootstrap-servidor.sh <fqdn> <correo>`; comprobar el resumen (swap 2 GB activo con `swapon --show`, `ufw status`, `fail2ban-client status sshd`, SSH sin contraseña, certificado emitido y su expiración) (FR-002, FR-005)
 - [ ] T057 [US1] Crear `/opt/sge/.env` (0600) desde `deploy/env.staging.example` con secretos generados en el servidor (`openssl rand -base64 24`, `APP_KEY` generada con la imagen publicada), `APP_URL=https://<fqdn>`, `FQDN`, `REGISTRO`, `PERFIL_TAMANO=diario`; confirmar que nada de esto está en el repositorio (FR-009, FR-010)
 - [ ] T058 [US3] Ejecutar `./deploy/deploy.sh v0.2.0` en el servidor; sembrar el Administrador inicial con `php artisan db:seed --force` (DatabaseSeeder: roles, permisos y Administrador inicial; los usuarios de demostración solo se crean en `local`); cronometrar el despliegue (< 15 min, DC-004) (FR-011)
@@ -206,6 +206,7 @@ Monolito Laravel 13 existente. Archivos nuevos: `.github/workflows/`, `docker/*/
 
 **Independent Test**: quickstart §6.
 
+- [ ] T071a [US4] (manual) **Decisión pendiente D-01c**: D2s_v4 no disponible; antes de poner datos, probar Stop → Size `Standard_DS2_v2` → Start → (revisar `/etc/fstab`, `free -m`) → Stop → B2ats_v2 → Start, o decidir el rodeo por snapshot; después actualizar scripts/contratos al tamaño elegido (`deploy.sh`, `metrics.sh` L16 y L145, `carga.yml`, `env.staging.example`, `contracts/*`, `docs/despliegue/*`)
 - [ ] T072 [US4] (manual) Preparación (casillas 1–3 de la lista): confirmar cuota DSv4 y holgura de crédito ≥ 5 USD, `./deploy/backup.sh manual`, y duplicar la plantilla T038 como `specs/001-auth-roles-rbac/evidencias/k6-sesion-<fecha>.md` (FR-021)
 - [ ] T073 [US4] (manual) Cambio a D2s_v4 (casillas 4–7): Stop (*deallocated*) → Size D2s_v4 → Start; `PERFIL_TAMANO=carga` y `./deploy/deploy.sh --reconfigurar`; `/up` = 200 y `metrics.sh tamano` = `Standard_D2s_v4`; anotar la hora de inicio de facturación (FR-025)
 - [ ] T074 [US4] (manual) Siembra y humo (casillas 8–9): `LoadTestSeeder` en staging y workflow `carga` con `humo=true` correcto (FR-020)

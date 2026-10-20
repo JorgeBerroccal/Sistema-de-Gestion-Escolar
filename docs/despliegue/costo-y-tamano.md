@@ -8,6 +8,14 @@ sustentación del curso (diciembre de 2026 como máximo). Tope de planificación
 | **Standard_B2ats_v2** (2 vCPU, 1 GB) | Día a día (demos, verificación manual) | 9,64 USD/mes |
 | **Standard_D2s_v4** (2 vCPU, 8 GB, sin CPU limitada) | Solo durante la prueba de carga | 97,92 USD/mes (≈ 0,1341 USD/h) |
 
+> ⚠ **Decisión pendiente (2026-10-20)**: D2s_v4 no está disponible para esta suscripción en Chile Central
+> (`NotAvailableForSubscription`). Candidato: **Standard_DS2_v2** (2 vCPU, 7 GB, 196,37 USD/mes ≈ 0,2690
+> USD/h, con disco temporal). Con él el total estimado sube de 45,18 a **47,33 USD**, pero olvidarla
+> encendida cuesta 45,19 USD por semana y 196,37 por mes (más que el crédito). Microsoft documenta que en
+> Linux se puede cambiar entre tamaños con y sin disco temporal; falta probarlo (research D-01c). Hasta
+> cerrar la decisión, los pasos de abajo y los scripts siguen diciendo D2s_v4: sustituye por DS2_v2 solo
+> cuando se confirme.
+
 Descartados: B2als_v2 (38,40 USD/mes) y B2ls_v2 (42,49) por costo; D2s_v5 por falta de cuota.
 
 ## Estimación de costo hasta el 31/12/2026

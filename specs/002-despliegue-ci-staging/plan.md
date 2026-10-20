@@ -88,6 +88,26 @@ permitiendo hasta ≈+30 USD antes de tocar el 80 %. Las pruebas de 3–4 h de l
 completa: cambio de tamaño, siembra, rampa de ~15 min, recogida de evidencia) se contabilizan enteras
 a tarifa D2s_v4 aunque la rampa dure menos.
 
+### ⚠ Escenario con DS2_v2 — decisión pendiente (2026-10-20, research D-01c)
+
+D2s_v4 no está disponible para la suscripción (`NotAvailableForSubscription`). Si el tamaño de carga fuera
+**Standard_DS2_v2** (2 vCPU, 7 GB, 196,37 USD/mes = 0,2690 USD/h, «se retirará pronto»; Microsoft fija su
+retiro en 05/2028, posterior al curso), la tabla cambia solo en la fila de carga:
+
+| Concepto | D2s_v4 (plan vigente) | DS2_v2 (pendiente) |
+|---|--:|--:|
+| Cómputo de carga, 16 h | 2,15 | 4,30 |
+| **Total hasta el 31/12/2026** | 45,18 (45,2 %) | **47,33 (47,3 %)** |
+| Con 20 % de holgura | 54,21 | 56,80 |
+| Olvidada una semana | 22,54 | **45,19** |
+| Olvidada un mes | 97,92 | **196,37** (> crédito) |
+
+El gasto previsto sigue muy por debajo del tope del 80 % (80 USD); el riesgo es el olvido: con DS2_v2, una
+semana encendida consume casi la mitad del crédito. Las alertas 50/75/90 % y el aviso de `deploy.sh` pasan a
+ser críticos. La decisión sigue **abierta** hasta probar el cambio B2ats_v2 ↔ DS2_v2 (Linux lo admite aunque
+uno tenga disco temporal y el otro no; ver research D-01c). Los scripts y contratos conservan D2s_v4 hasta
+cerrarla.
+
 ## Project Structure
 
 ### Documentation (this feature)

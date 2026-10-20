@@ -34,6 +34,51 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
   en la lista de tamaños disponibles de la VM (ambas Gen2 x64; si no aparece, el recurso: crear la VM de
   carga desde un snapshot del disco, ver D-12 alternativa).
 
+## D-01c Tamaño de carga: D2s_v4 no disponible — **DECISIÓN PENDIENTE** (2026-10-20)
+
+- **Hallazgo** (del portal, aportado por el desarrollador): en Chile Central `Standard_D2s_v4` figura
+  `NotAvailableForSubscription` aunque la familia DSv4 tiene cuota; es una restricción del catálogo de la
+  suscripción de estudiante, no de cuota (no se arregla con *Request increase*). Esto invalida el supuesto de
+  D-01 y D-10 («el cambio B2ats_v2 ↔ D2s_v4 aparece en la lista»). El único tamaño no burstable de 2 vCPU
+  disponible es **Standard_DS2_v2** (2 vCPU, 7 GB, **196,37 USD/mes ≈ 0,2690 USD/h**, marcado «se retirará
+  pronto»), que **tiene disco temporal local**, a diferencia de B2ats_v2 (Basv2, sin disco temporal).
+- **¿Se puede cambiar de tamaño entre B2ats_v2 y DS2_v2 en Linux? Sí según la documentación vigente de
+  Microsoft Learn** (la información contradictoria es real, pero se explica):
+  - *Resize a virtual machine* (act. 2026-04), «Limitations» 1: «Resizing between VM sizes that have a local
+    temp disk and VM sizes that have no local temp disk is supported for Linux VMs. For Windows VMs, only
+    [con↔con y sin↔sin] are allowed». La FAQ de tamaños sin disco temporal dice lo mismo («Resize between
+    disk and diskless sizes is supported for Linux VMs»). La restricción antigua («no se puede») sigue
+    vigente solo para **Windows**, y es la que aparece en respuestas y artículos anteriores.
+  - Salvedad de la FAQ: si un archivo de intercambio o la imagen dependen del disco de recursos, las
+    imágenes sin disco no funcionan. **No nos afecta**: el swap es `/swapfile` en el disco del SO
+    (`bootstrap-servidor.sh`) y los datos están en el disco del SO; nada usa `/mnt`.
+  - Otra limitación documentada (SCSI → NVMe remoto no admitido) no aplica: ambos son SCSI.
+  - Es **resize en frío** (VM liberada), como ya prevé D-10.
+  - ⚠ **No verificado en documentación** (comprobar en la práctica): (a) que `Standard_DS2_v2` aparezca en
+    *Size* de la VM (`az vm list-vm-resize-options -g rg-sge-staging -n sge-staging --query "[?name=='Standard_DS2_v2']"`);
+    (b) que DSv2 admita Gen2 con esta imagen (se cree que sí); (c) al pasar a DS2_v2 cloud-init/waagent monta
+    el disco temporal en `/mnt` con entrada en `/etc/fstab`; al volver a B2ats_v2 esa entrada debe ser `nofail`
+    o el arranque podría quedar en modo emergencia (revisar `grep mnt /etc/fstab` antes de volver).
+- **Prueba de bajo costo recomendada (antes de poner datos o certificados)**: con el servidor aún vacío,
+  *Stop* → *Size* DS2_v2 → *Start* → `lsblk`/`free -m`/`grep mnt /etc/fstab` → *Stop* → B2ats_v2 → *Start*
+  → SSH. Cuesta < 0,10 USD y convierte (a)–(c) en hechos. Es la forma de cerrar esta decisión.
+- **Alternativa si el cambio no se puede**: *Snapshot* del disco del SO → crear disco → VM nueva DS2_v2 con
+  ese disco y la misma IP pública estática (documentado por Microsoft como el rodeo; D-10 ya lo prevé). La
+  IP estática y el DNS se reasignan a la NIC nueva; hay que quitarlos de la VM original primero.
+- **Otras alternativas (no evaluadas)**: otro tamaño no burstable del catálogo si aparece
+  (`az vm list-skus -l chilecentral --resource-type virtualMachines --query "[?restrictions==\`[]\`]"`), otra
+  región permitida (Brazil South; más latencia, hay que repetir cuotas y precios) o ejecutar la rampa en
+  B2ats_v2 y documentar que no alcanza SC-006 (descartada: la constitución exige la prueba en ≥ 2 vCPU / 4 GB
+  y B2ats_v2 es burstable y tiene 1 GB).
+- **Impacto en costo**: ver `plan.md` («Costo estimado»). DS2_v2 cuesta el doble por hora que D2s_v4: 16 h
+  pasan de 2,15 a 4,30 USD (total 47,33 USD, 47,3 %), pero **dejarla encendida es mucho más grave**: una
+  semana = 45,19 USD y un mes = 196,37 USD (el doble del crédito).
+- **Impacto en el diseño**: los scripts y flujos aún dicen D2s_v4 (`deploy.sh`, `metrics.sh`, `carga.yml`,
+  `env.staging.example`, contratos, `docs/despliegue/`). **No se tocan** hasta cerrar la decisión; el perfil
+  `carga` (buffer pool 2 GB, `max_children=40`) cabe en 7 GB. Si se confirma DS2_v2, un único cambio:
+  tamaño, tarifa por hora (0,2690) y expresión de `metrics.sh` línea 145.
+- **Estado**: ABIERTA. Se cierra tras la prueba de ida y vuelta o al decidir el rodeo.
+
 ## D-02 Memoria de 1 GB: swap y dimensionado por variables
 
 - **Decisión**: archivo de swap de 2 GB (`/swapfile`, `vm.swappiness=10`) como red de seguridad, no
