@@ -5,6 +5,8 @@
 #   metrics.sh stop     detiene el muestreo, resume máximos/p95 y actualiza meta-servidor.json
 #   metrics.sh tamano   imprime el tamaño de la VM (servicio de metadatos de Azure)
 #   metrics.sh cierre   la evidencia solo es completa si la VM volvió a Standard_B2ats_v2 (escribe cierre-carga.json)
+# Los créditos de CPU de la serie B ("CPU Credits Remaining") son métricas de Azure Monitor, no del sistema
+# operativo: se descargan desde tu PC con deploy/creditos-cpu.sh (el servidor no tiene credenciales de Azure).
 # Contrato: specs/002-despliegue-ci-staging/contracts/scripts-servidor.md
 set -euo pipefail
 DIR_SCRIPT="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
@@ -13,7 +15,8 @@ source "$DIR_SCRIPT/lib.sh"
 
 INTERVALO="${SGE_METRICS_INTERVAL:-5}"
 TAMANO_ECONOMICO="Standard_B2ats_v2"
-TARIFA_HORA_CARGA="0.1341"   # USD/h de D2s_v4 en Chile Central (97,92 USD/mes ÷ 730 h)
+TAMANO_CARGA="Standard_B2als_v2"
+TARIFA_HORA_CARGA="0.0526"   # USD/h de B2als_v2 en Chile Central (38,40 USD/mes ÷ 730 h)
 PID_FILE="$SGE_LOG_DIR/metrics.pid"
 ACTUAL_FILE="$SGE_LOG_DIR/metrics.actual"
 META_FILE="$SGE_LOG_DIR/meta-servidor.json"
@@ -108,6 +111,7 @@ case "$comando" in
         echo "$csv" > "$ACTUAL_FILE"
         log "Muestreo iniciado (PID $(cat "$PID_FILE"), cada ${INTERVALO}s): $csv"
         log "Tamaño de la VM: $(tamano_vm) · ahora lanza el workflow 'carga' en GitHub."
+        log "Inicio de la rampa (UTC): $(cat "$SGE_LOG_DIR/ultimo-start") · anótalo: lo necesita deploy/creditos-cpu.sh en tu PC."
         ;;
     stop)
         [[ -f "$PID_FILE" ]] || die "No hay muestreo en curso (no existe $PID_FILE)."
@@ -128,6 +132,7 @@ case "$comando" in
             printf '%-26s %10s %10s\n' "${par%:*}" "$p95" "$maximo"
         done
         log "Metadatos: $META_FILE · descarga: scp sge@<fqdn>:$csv $META_FILE ."
+        log "Créditos de CPU (en tu PC): ./deploy/creditos-cpu.sh <desde-utc> $fin $inicio  (desde = hora del Start tras el Resize)"
         ;;
     tamano)
         tamano_vm
@@ -142,7 +147,8 @@ case "$comando" in
         parada="$(cat "$SGE_LOG_DIR/ultimo-stop")"
         if [[ "$tamano_actual" == "$TAMANO_ECONOMICO" && ! "$fecha_ultima" < "$parada" ]]; then
             # Muestras (una cada 5 min) del último tramo en tamaño de carga; las horas con la VM liberada no cuentan.
-            n_carga="$(awk '$2 ~ /D2s_v4/ { if (prev != "D2") c = 0; c++; prev = "D2"; next } { prev = $2 } END { print c + 0 }' "$SGE_LOG_DIR/tamano.log")"
+            n_carga="$(awk -v t="$TAMANO_CARGA" '$2 == t { if (prev != "C") c = 0; c++; prev = "C"; next } { prev = $2 } END { print c + 0 }' "$SGE_LOG_DIR/tamano.log")"
+            # Incluye la espera para acumular créditos con la VM encendida en el tamaño de carga: se factura igual.
             horas="$(awk -v n="$n_carga" 'BEGIN { printf "%.2f", n * 5 / 60 }')"
             costo="$(awk -v h="$horas" -v t="$TARIFA_HORA_CARGA" 'BEGIN { printf "%.2f", h * t }')"
             cat > "$SGE_LOG_DIR/cierre-carga.json" <<JSON
@@ -155,7 +161,8 @@ case "$comando" in
   "costo_aprox_usd": $costo
 }
 JSON
-            log "evidencia_completa: true — la VM volvió a $tamano_actual (≈ $horas h en D2s_v4, ≈ $costo USD)."
+            log "evidencia_completa: true — la VM volvió a $tamano_actual (≈ $horas h en $TAMANO_CARGA, ≈ $costo USD)."
+            log "Falta la evidencia de créditos de CPU: ejecuta deploy/creditos-cpu.sh en tu PC (ver docs/despliegue/prueba-de-carga.md, paso 13)."
             log "Escrito $SGE_LOG_DIR/cierre-carga.json: descárgalo junto al CSV y a meta-servidor.json."
         else
             log "EVIDENCIA INCOMPLETA: la VM sigue en '$tamano_actual' (última muestra $fecha_ultima; fin de la prueba $parada)." >&2

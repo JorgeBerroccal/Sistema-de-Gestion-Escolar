@@ -21,9 +21,18 @@ deben leerse con esos nombres.
 `gh variable set STAGING_URL --body "https://sge-peru.chilecentral.cloudapp.azure.com"` → `gh variable list`
 muestra `STAGING_URL` con ese valor (2026-10-20 21:17 UTC). Falta ejecutar `carga.yml` con `humo=true` (T061).
 
-## Hallazgo: D2s_v4 no disponible (decisión pendiente)
+## Hallazgo y decisión sobre el tamaño de carga (2026-10-20)
 
 En Chile Central, `Standard_D2s_v4` aparece como `NotAvailableForSubscription` aunque la familia DSv4 tiene
-cuota: es una restricción del catálogo de la suscripción de estudiante. El único tamaño no burstable de
-2 vCPU disponible es `Standard_DS2_v2` (2 vCPU, 7 GB, 196,37 USD/mes, «se retirará pronto», con disco temporal
-local). Análisis y estado en `research.md` D-01c. **Sin cerrar.**
+cuota (restricción del catálogo de la suscripción de estudiante). El único no burstable de 2 vCPU disponible era
+`Standard_DS2_v2` (2 vCPU, 7 GB, 196,37 USD/mes, «se retirará pronto», con disco temporal local). **Decisión del
+desarrollador**: descartar DS2_v2 y toda familia no burstable; la prueba de carga se hace en
+`Standard_B2als_v2` (2 vCPU, 4 GB, 38,40 USD/mes, misma familia Basv2, cuota de 10 vCPU) con control de los
+créditos de CPU. Detalle y razones: `research.md` D-01c.
+
+## Prueba de ida y vuelta B2ats_v2 ↔ B2als_v2 con el servidor vacío (T071a)
+
+Pendiente. Registrar aquí al hacerla (horas en UTC): `az vm list-vm-resize-options` muestra B2als_v2 · Stop →
+Size B2als_v2 → Start (hora) · SSH y `free -m` (≈ 4 GB) · **«CPU Credits Remaining» justo después de arrancar**
+(¿se conserva, ≈ 60 o 0?) · la métrica aparece en *Metrics* · Stop → Size B2ats_v2 → Start · SSH. Costo esperado
+< 0,05 USD.

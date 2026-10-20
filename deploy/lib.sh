@@ -56,8 +56,8 @@ aplicar_perfil() {
             : "${MYSQL_BUFFER_POOL:=128M}" "${MYSQL_MAX_CONNECTIONS:=40}" "${REDIS_MAXMEMORY:=64mb}" "${PHP_MEMORY_LIMIT:=128M}"
             ;;
         carga)
-            : "${FPM_MAX_CHILDREN:=40}" "${FPM_START_SERVERS:=10}" "${FPM_MIN_SPARE:=6}" "${FPM_MAX_SPARE:=16}"
-            : "${MYSQL_BUFFER_POOL:=2G}" "${MYSQL_MAX_CONNECTIONS:=200}" "${REDIS_MAXMEMORY:=512mb}" "${PHP_MEMORY_LIMIT:=256M}"
+            : "${FPM_MAX_CHILDREN:=20}" "${FPM_START_SERVERS:=6}" "${FPM_MIN_SPARE:=4}" "${FPM_MAX_SPARE:=10}"
+            : "${MYSQL_BUFFER_POOL:=1G}" "${MYSQL_MAX_CONNECTIONS:=100}" "${REDIS_MAXMEMORY:=256mb}" "${PHP_MEMORY_LIMIT:=256M}"
             ;;
         *) die "PERFIL_TAMANO='$perfil' no es válido (usa 'diario' o 'carga')." ;;
     esac

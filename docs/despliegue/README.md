@@ -27,7 +27,7 @@ Evidencias: `specs/001-auth-roles-rbac/evidencias/` (Módulo 1) y `specs/002-des
 
 - Los secretos (`APP_KEY`, contraseñas de base de datos, `SGE_ADMIN_PASSWORD`) viven **solo** en
   `/opt/sge/.env` del servidor (permisos 600), nunca en el repositorio ni en las imágenes.
-- El servidor **nunca construye** imágenes (tiene 1 GB de RAM): descarga las de GHCR por etiqueta.
+- El servidor **nunca construye** imágenes (tiene 1 GB de RAM en el tamaño diario): descarga las de GHCR por etiqueta.
 - La prueba de carga termina siempre volviendo a **B2ats_v2**; sin `metrics.sh cierre` →
   `evidencia_completa: true` la evidencia no cuenta.
 - Solo están abiertos los puertos 22 (solo clave + fail2ban), 80 y 443; MySQL y Redis no se publican.

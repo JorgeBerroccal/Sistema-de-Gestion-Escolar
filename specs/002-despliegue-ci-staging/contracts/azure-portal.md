@@ -9,7 +9,7 @@ pantalla antes de crear. Nombres sugeridos entre comillas; cámbialos si prefier
 2. **Regiones permitidas**: al crear el grupo de recursos, "Chile Central" debe aparecer; si no, usar la
    región permitida más cercana (alternativa: Brazil South) y repetir los precios.
 3. **Cuotas** (Suscripción → *Usage + quotas* → filtrar por Chile Central): "Total Regional vCPUs" ≥ 4;
-   "Standard BASv2 Family vCPUs" ≥ 2; "Standard DSv4 Family vCPUs" ≥ 2 (DSv5 tiene cuota 0 y su aumento fue rechazado: no usarla). Si alguna es 0 o insuficiente,
+   "Standard BASv2 Family vCPUs" ≥ 2 (la VM es una sola: el cambio B2ats_v2 ↔ B2als_v2 no suma vCPU; disponibles 10). No se usan DSv5, DSv4 ni DSv2: ver `research.md` D-01c. Si alguna es 0 o insuficiente,
    *Request increase* (puede tardar horas) **antes** del día de la prueba de carga.
 4. **Calculadora de precios** (Chile Central): anotar disco Standard SSD 30 GiB (E4) y IP pública
    Standard estática; ajustar la tabla de costo del plan si difieren mucho.
@@ -103,22 +103,26 @@ alertas (DC-007).
 ## 7. Lista de verificación de la prueba de carga (el último paso es volver a B2ats_v2)
 
 Marcar cada casilla en el registro de la sesión (`evidencias/k6-sesion-<fecha>.md`). La evidencia no
-se considera completa mientras la casilla 14 no esté marcada **y** `metrics.sh cierre` lo confirme.
+se considera completa mientras la casilla 16 no esté marcada **y** `metrics.sh cierre` lo confirme. El
+tamaño de carga es **B2als_v2** (serie B, CPU *burstable*): se registra «CPU Credits Remaining» durante la prueba
+y se exige un mínimo de créditos de partida (casilla 10).
 
-- [ ] 1. 48 h antes: cuota DSv4 confirmada y gasto acumulado con ≥ 5 USD de holgura.
+- [ ] 1. 48 h antes: cuota BASv2 confirmada y gasto acumulado con ≥ 5 USD de holgura.
 - [ ] 2. Respaldo manual (`./deploy/backup.sh manual`).
 - [ ] 3. Portal: **Stop** (esperar "Stopped (deallocated)"; solo "Stopped" sigue facturando).
-- [ ] 4. Portal → *Size* → **D2s_v4** → *Resize*. Anotar hora de inicio de facturación D2s_v4.
-- [ ] 5. Portal: **Start**; `ssh`; IP y FQDN sin cambios.
+- [ ] 4. Portal → *Size* → **B2als_v2** → *Resize*. Anotar hora UTC de inicio de facturación B2als_v2.
+- [ ] 5. Portal: **Start**; `ssh`; IP y FQDN sin cambios. Anotar la hora UTC del arranque (`<desde-utc>`).
 - [ ] 6. `.env`: `PERFIL_TAMANO=carga`; `./deploy/deploy.sh --reconfigurar`; `curl https://<fqdn>/up` = 200.
-- [ ] 7. `./deploy/metrics.sh tamano` imprime `Standard_D2s_v4`.
+- [ ] 7. `./deploy/metrics.sh tamano` imprime `Standard_B2als_v2`.
 - [ ] 8. Siembra: `LoadTestSeeder` (solo staging).
 - [ ] 9. Humo (`humo=true` en el workflow `carga`) correcto.
-- [ ] 10. `./deploy/metrics.sh start`; lanzar `carga` (rampa completa) con `tamano_vm` y `version`.
-- [ ] 11. `./deploy/metrics.sh stop`; descargar CSV y `meta-servidor.json` (`scp`) y el artefacto de GitHub.
-- [ ] 12. Copiar la evidencia al repositorio y resumir umbrales y picos (si hay otra repetición, volver al 10).
-- [ ] 13. `.env`: `PERFIL_TAMANO=diario`; `./deploy/deploy.sh --reconfigurar`.
-- [ ] 14. **Volver a B2ats_v2**: ver §8; terminar con `./deploy/metrics.sh cierre` → `evidencia_completa: true`; solo entonces commitear `cierre-carga.json` junto a la evidencia.
+- [ ] 10. **Créditos de partida**: Portal → VM → *Metrics* → «CPU Credits Remaining» **≥ 200** (recomendado ≥ 400); si no, esperar con la VM encendida y sin carga (36 créditos/h) y anotar valor y hora UTC. Se repite antes de cada rampa.
+- [ ] 11. `./deploy/metrics.sh start` (anotar la hora UTC de inicio de la rampa); lanzar `carga` (rampa completa) con `tamano_vm` y `version`.
+- [ ] 12. `./deploy/metrics.sh stop`; descargar CSV y `meta-servidor.json` (`scp`) y el artefacto de GitHub.
+- [ ] 13. En el PC, ≥ 10 min después: `./deploy/creditos-cpu.sh <desde-utc> <fin-utc> <inicio-rampa-utc>` → `creditos-resumen.json` (¿agotados?, ¿en qué minuto de la rampa?).
+- [ ] 14. Copiar la evidencia al repositorio y resumir umbrales, picos y créditos (si hay otra repetición, volver al 10).
+- [ ] 15. `.env`: `PERFIL_TAMANO=diario`; `./deploy/deploy.sh --reconfigurar`.
+- [ ] 16. **Volver a B2ats_v2**: ver §8; terminar con `./deploy/metrics.sh cierre` → `evidencia_completa: true`; solo entonces commitear `cierre-carga.json` junto a la evidencia.
 
 ### Si el servidor se cuelga durante la prueba
 
@@ -131,23 +135,24 @@ fallado, **la sesión no termina hasta volver a B2ats_v2**:
    evidencia hasta el punto de falla se conserva y se anota como "servidor colgado" (FR-022).
 4. Verificar `docker compose -f docker-compose.prod.yml ps` y `curl https://<fqdn>/up`; si algún contenedor
    no volvió, `./deploy/deploy.sh --reconfigurar`.
-5. Continuar en el paso 13 de la lista: perfil `diario`, **Stop (deallocated) → Size B2ats_v2 → Start**
-   y `./deploy/metrics.sh cierre` hasta obtener `evidencia_completa: true`. No dejar la VM en D2s_v4 a
+5. Continuar en el paso 15 de la lista: perfil `diario`, **Stop (deallocated) → Size B2ats_v2 → Start**
+   y `./deploy/metrics.sh cierre` hasta obtener `evidencia_completa: true`. No dejar la VM en B2als_v2 a
    la espera de "reintentar mañana": un nuevo intento empieza otra sesión desde el paso 1.
 6. Registrar en el registro de la sesión la hora del fallo, la causa probable (memoria/swap/CPU en el
    CSV) y las medidas para el próximo intento.
 
 ## 7b. Detalle de los pasos de cambio de tamaño (antes)
 
-1. **48 h antes**: confirmar cuota DSv4 (§0.3) y que el gasto acumulado deja ≥ 5 USD de holgura.
+1. **48 h antes**: confirmar cuota BASv2 (§0.3) y que el gasto acumulado deja ≥ 5 USD de holgura.
 2. En tu PC: `ssh sge@<fqdn> 'cd /opt/sge && ./deploy/backup.sh manual'` (respaldo previo).
 3. Portal → VM → **Stop** (espera "Stopped (deallocated)"; *Stopped* sin "deallocated" **sigue
    facturando**).
-4. VM → *Availability + scale* → **Size** → buscar **D2s_v4** (2 vCPU, 8 GiB) → *Resize*. Si no aparece,
+4. VM → *Availability + scale* → **Size** → buscar **B2als_v2** (2 vCPU, 4 GiB) → *Resize*. Si no aparece,
    ver la contingencia de `research.md` D-10.
 5. VM → **Start**. Esperar ≈ 2 min; `ssh sge@<fqdn>`; la IP y el FQDN no cambian.
 6. En el servidor: editar `/opt/sge/.env` → `PERFIL_TAMANO=carga`; `./deploy/deploy.sh --reconfigurar`.
-7. Comprobar: `curl -sS https://<fqdn>/up`; `./deploy/metrics.sh tamano` imprime `Standard_D2s_v4`.
+7. Comprobar: `curl -sS https://<fqdn>/up`; `./deploy/metrics.sh tamano` imprime `Standard_B2als_v2`.
+7b. Comprobar los **créditos de CPU** y esperar si hacen falta (casilla 10 de §7).
 8. Seguir `docs/despliegue/prueba-de-carga.md` (siembra de usuarios, `metrics.sh start`, lanzar el
    workflow, `metrics.sh stop`, descargar evidencias).
 
@@ -156,10 +161,10 @@ fallado, **la sesión no termina hasta volver a B2ats_v2**:
 1. En el servidor: `PERFIL_TAMANO=diario` en `.env`; `./deploy/deploy.sh --reconfigurar`.
 2. Portal → VM → **Stop** (deallocated) → **Size** → **B2ats_v2** → *Resize* → **Start**.
 3. Comprobar `./deploy/metrics.sh tamano` → `Standard_B2ats_v2` y `curl https://<fqdn>/up`.
-4. Anotar en el registro de despliegues la hora de inicio y fin en D2s_v4 (costo: horas × 0,1341 USD).
+4. Anotar en el registro de despliegues la hora de inicio y fin en B2als_v2 (costo: horas × 0,0526 USD).
 5. Ejecutar `./deploy/metrics.sh cierre`: debe imprimir `evidencia_completa: true`. Si imprime
    `EVIDENCIA INCOMPLETA`, la VM no volvió al tamaño diario: repetir §8 antes de cualquier otra cosa.
-6. Mirar *Cost analysis*: sin cargos nuevos de D2s_v4 desde el paso 2.
+6. Mirar *Cost analysis*: sin cargos nuevos de B2als_v2 desde el paso 2.
 
 ## 9. Detener la VM cuando no se use
 

@@ -12,7 +12,7 @@ on:
         default: ''
         type: string
       tamano_vm:
-        description: 'Tamaño de la VM durante la prueba, p. ej. Standard_D2s_v4 (queda en la evidencia)'
+        description: 'Tamaño de la VM durante la prueba, p. ej. Standard_B2als_v2 (queda en la evidencia)'
         required: true
         type: string
       version:
@@ -117,7 +117,7 @@ jobs:
             "commit": "$GITHUB_SHA",
             "run_id": "$GITHUB_RUN_ID",
             "fecha_utc": "$(date -u +%FT%TZ)",
-            "nota": "CPU/memoria del servidor y regreso a B2ats_v2: ver metrics.sh y cierre-carga.json en el servidor"
+            "nota": "CPU/memoria del servidor y regreso a B2ats_v2: ver metrics.sh y cierre-carga.json en el servidor; créditos de CPU (serie B): deploy/creditos-cpu.sh en el PC"
           }
           JSON
 

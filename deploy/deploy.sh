@@ -32,10 +32,10 @@ avisar_si_tamano_no_coincide() {
     [[ -n "$tamano" ]] || return 0
     log "Tamaño de la máquina: $tamano · perfil: $PERFIL_TAMANO"
     case "$tamano:$PERFIL_TAMANO" in
-        *D2s_v4*:diario)
-            log "AVISO: la VM está en D2s_v4 (97,92 USD/mes) con perfil 'diario'. Si no es una sesión de carga, vuelve a B2ats_v2." >&2 ;;
+        *B2als_v2*:diario)
+            log "AVISO: la VM está en B2als_v2 (38,40 USD/mes) con perfil 'diario'. Si no es una sesión de carga, vuelve a B2ats_v2." >&2 ;;
         *B2ats_v2*:carga)
-            log "AVISO: perfil 'carga' en B2ats_v2 (1 GB): la pila no cabe en memoria. Cambia primero la VM a D2s_v4." >&2 ;;
+            log "AVISO: perfil 'carga' en B2ats_v2 (1 GB): la pila no cabe en memoria. Cambia primero la VM a B2als_v2 (4 GB)." >&2 ;;
     esac
 }
 
