@@ -18,4 +18,10 @@ Incidencia previa al despliegue: la comprobación de marcadores `<...>` de `lib.
 plantilla del `.env`; se corrigió en el repositorio (commit `174d11d`) y, como `v0.2.0` conserva el `lib.sh` antiguo,
 se borraron del `.env` del servidor esas líneas de comentario antes de desplegar.
 
-Pendiente de T058: `php artisan db:seed --force` (roles, permisos y Administrador inicial).
+Siembra (21/10/2026): `docker compose -p sge -f docker-compose.prod.yml exec app php artisan db:seed --force`.
+
+| Verificación | Resultado |
+|---|---|
+| `RolesYPermisosSeeder` / `AdministradorInicialSeeder` | DONE (388 ms / 253 ms) |
+| Conteos (`tinker`) | roles=5 · permisos=7 · usuarios=1 (sin usuarios demo: `APP_ENV=staging`) |
+| Inicio de sesión del Administrador | Correcto; la pantalla de inicio muestra la bienvenida y los accesos a Usuarios, Roles y Permisos |
