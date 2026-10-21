@@ -16,8 +16,19 @@
 
 Nota: `sge` no tiene `sudo` sin contraseña; los comandos con `sudo` (como `certbot renew`) se ejecutan como `azureuser`.
 
-Pendientes de T059: candado sin advertencias en el navegador (visto en la raíz y en `/up`, falta captura), `opcache.validate_timestamps=0`
-y la búsqueda de secretos en el repositorio.
+| `opcache.validate_timestamps` (`php -r 'echo ini_get(...)'` en el contenedor `app`, CLI) | 0 |
+| Candado en el navegador | Emitido por Let's Encrypt, válido hasta el 19/01/2027, sin advertencias: ![Candado](https-candado.png) (`https-candado.png`) |
+| Búsqueda de secretos en el repositorio (FR-009) | Sin resultados, ver abajo |
+
+### Búsqueda de secretos (21/10/2026)
+
+Patrones: `APP_KEY` con `base64:` + 40 caracteres o más, claves privadas PEM, tokens `ghp_`/`github_pat_`, claves AWS `AKIA…`, tokens Slack `xox[bp]-`
+y asignaciones `PASSWORD|SECRET|TOKEN|API_KEY=` con 16 o más caracteres.
+
+- Árbol rastreado (`git grep -IE`, sin `vendor` ni *lockfiles*): **0 coincidencias**.
+- Historial completo (68 *commits*, `git grep` sobre `git rev-list --all`): **0 coincidencias**.
+- Ningún `.env`, `.pem` ni clave SSH fue añadido nunca al repositorio; `.env` está en `.gitignore`.
+- Los secretos del servidor se generaron allí (`openssl rand`, `key:generate --show`) y nunca se vieron ni se pegaron fuera de él.
 
 ## Memoria en reposo con la pila corriendo (T060)
 
