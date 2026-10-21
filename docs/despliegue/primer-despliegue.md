@@ -81,7 +81,7 @@ Probar la renovación del certificado con la pila ya en marcha (el desafío HTTP
 webroot `/var/www/certbot`, sin detener nada; el gancho recarga nginx):
 
 ```bash
-sudo certbot renew --dry-run     # debe terminar con "Congratulations, all simulated renewals succeeded"
+sudo certbot renew --dry-run     # como azureuser: sge no tiene sudo; debe terminar con "Congratulations, all simulated renewals succeeded"
 ```
 
 Antes del primer despliegue esta prueba falla porque nada atiende el puerto 80 (el certificado inicial se
