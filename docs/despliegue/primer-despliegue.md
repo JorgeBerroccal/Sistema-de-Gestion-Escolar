@@ -54,7 +54,10 @@ nano .env    # reemplazar TODOS los marcadores <...>: APP_KEY, APP_URL, DB_*, SG
 ```
 
 `SGE_ADMIN_PASSWORD` debe ser fuerte (≥ 16 caracteres). El `.env` nunca se sube al repositorio y solo
-existe en el servidor (permisos 600). `deploy.sh` se niega a ejecutarse si quedan marcadores `<...>`.
+existe en el servidor (permisos 600). `deploy.sh` se niega a ejecutarse si quedan marcadores `<...>` fuera de los comentarios. Comprobación: `grep -v '^#' .env | grep -c '<[^>]*>'` debe dar 0.
+
+> Las etiquetas `v0.2.0` y `v0.2.1` llevan un `lib.sh` que también cuenta los comentarios de la plantilla (líneas 2 y 4):
+> al usarlas, borra del `.env` del servidor esas dos líneas (`sed -i '/^#.*<.*>/d' .env`).
 
 ## 4. Primer despliegue
 

@@ -44,7 +44,7 @@ cargar_env() {
     [[ -n "${APP_KEY:-}" && "${APP_KEY}" != *"<"* ]] || die "APP_KEY está vacía o sin reemplazar en $SGE_ENV_FILE."
     [[ -n "${REGISTRO:-}" && "${REGISTRO}" != *"<"* ]] || die "REGISTRO está vacío o sin reemplazar en $SGE_ENV_FILE."
     [[ -n "${FQDN:-}" && "${FQDN}" != *"<"* ]] || die "FQDN está vacío o sin reemplazar en $SGE_ENV_FILE."
-    ! grep -q '<[^>]*>' "$SGE_ENV_FILE" || die "$SGE_ENV_FILE todavía contiene marcadores <...> sin reemplazar."
+    ! grep -v '^[[:space:]]*#' "$SGE_ENV_FILE" | grep -q '<[^>]*>' || die "$SGE_ENV_FILE todavía contiene marcadores <...> sin reemplazar."
 }
 
 # Perfiles de tamaño (contracts/variables-entorno.md). Un valor ya definido en el .env tiene prioridad.
