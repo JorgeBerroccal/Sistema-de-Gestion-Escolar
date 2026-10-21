@@ -33,7 +33,7 @@ Resource groups → Create → Suscripción *Azure for Students*; nombre `rg-sge
 | Size | **Standard_B2ats_v2** (2 vCPU, 1 GiB) — 9,64 USD/mes |
 | Authentication type | SSH public key |
 | Username | `azureuser` (el script crea luego el usuario `sge`) |
-| SSH public key source | Generate new key pair (nombre `sge-staging-key`, **descargar el `.pem` y guardarlo fuera del repositorio**, `chmod 600`), o pegar tu clave pública existente (`~/.ssh/id_ed25519.pub`) |
+| SSH public key source | Use existing public key: pegar tu clave pública (`~/.ssh/id_ed25519.pub`; es la usada en este proyecto, no hay `.pem`) |
 | Public inbound ports | **None** (las reglas se definen en §4) |
 | OS disk type | **Standard SSD (locally-redundant storage)** — no Premium |
 | OS disk size | 30 GiB (default de la imagen) |
@@ -74,8 +74,7 @@ fail2ban (el script de arranque los configura).
 ## 5. Primer ingreso
 
 ```bash
-chmod 600 ~/Descargas/sge-staging-key.pem
-ssh -i ~/Descargas/sge-staging-key.pem azureuser@<fqdn>
+ssh azureuser@<fqdn>
 ```
 
 Luego sigue `docs/despliegue/primer-despliegue.md` (ejecuta `deploy/bootstrap-servidor.sh`: swap 2 GB,

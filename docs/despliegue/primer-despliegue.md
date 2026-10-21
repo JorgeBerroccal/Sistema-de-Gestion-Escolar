@@ -25,7 +25,7 @@ publicadas (workflow `release`). `<fqdn>` es el nombre DNS de la IP pública.
 ## 2. Preparar el servidor (una sola vez)
 
 ```bash
-ssh -i ~/Descargas/sge-staging-key.pem azureuser@<fqdn>
+ssh azureuser@<fqdn>
 sudo apt-get update && sudo apt-get install -y git
 git clone https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar.git ~/sge-src
 sudo bash ~/sge-src/deploy/bootstrap-servidor.sh <fqdn> <tu-correo>
@@ -39,7 +39,7 @@ vencimiento del certificado).
 
 ## 3. Crear el `.env` del servidor (secretos)
 
-Desde ahora trabaja como `sge`: `ssh -i ~/Descargas/sge-staging-key.pem sge@<fqdn>`.
+Desde ahora trabaja como `sge`: `ssh sge@<fqdn>`.
 
 ```bash
 cd /opt/sge
