@@ -73,3 +73,13 @@ curl -s https://<fqdn>/up              # {"status":"ok","version":"v0.2.0"}
 ```
 
 Abrir `https://<fqdn>` en un navegador: candado válido y `http://` redirige a `https://`.
+
+Probar la renovación del certificado con la pila ya en marcha (el desafío HTTP-01 lo atiende nginx por el
+webroot `/var/www/certbot`, sin detener nada; el gancho recarga nginx):
+
+```bash
+sudo certbot renew --dry-run     # debe terminar con "Congratulations, all simulated renewals succeeded"
+```
+
+Antes del primer despliegue esta prueba falla porque nada atiende el puerto 80 (el certificado inicial se
+emitió con `--standalone`; las renovaciones usan webroot).

@@ -63,3 +63,24 @@ Notas:
   (las casillas de la prueba de carga que usan `ssh sge@<fqdn>` valen solo después del bootstrap).
 - Ida y vuelta completa: 14:44:57 (Start en B2als_v2) → 15:14:41 (Start en B2ats_v2); ≈ 30 min en B2als_v2, < 0,05 USD.
 - El banner de Azure Advisor que sugiere migrar a la serie D se ignora: ver `research.md` D-01c.
+
+## Bootstrap del servidor (T056)
+
+Hecho el 21/10/2026 (hora de Lima) con `sudo bash ~/sge-src/deploy/bootstrap-servidor.sh sge-peru.chilecentral.cloudapp.azure.com <correo>`
+dentro de tmux, como `azureuser` con la clave `~/.ssh/id_ed25519` (no hay `.pem`). Terminó sin errores y se entró como `sge`
+desde una segunda terminal antes de cerrar la primera.
+
+| Verificación | Resultado |
+|---|---|
+| `ufw` | solo 22, 80 y 443 |
+| `fail2ban` | jail `sshd` activo, 0 fallos |
+| SSH | `permitrootlogin no`, `passwordauthentication no` |
+| Docker / Compose | 29.9.2 / v5.6.1 |
+| Certificado | `sge-peru.chilecentral.cloudapp.azure.com`, válido hasta 2027-01-19 |
+| `free -m` (como `sge`) | total 887 · usado 301 · libre 50 · caché 561 · disponible 585 · swap 2047 (usado 0) |
+
+Renovación del certificado: se emitió con `--standalone` (el puerto 80 estaba libre) y el script cambió después el
+archivo de renovación a `webroot` (`/var/www/certbot`), que `docker-compose.prod.yml` monta en el contenedor `web`
+y `docker/nginx/prod.conf` sirve en `/.well-known/acme-challenge/`. `certbot.timer` renueva sin parar nginx y el gancho
+`/etc/letsencrypt/renewal-hooks/deploy/sge-recargar-nginx.sh` recarga nginx. Se prueba con `sudo certbot renew --dry-run`
+**una vez desplegada la pila** (T059; antes del despliegue fallaría porque nadie atiende el puerto 80).
