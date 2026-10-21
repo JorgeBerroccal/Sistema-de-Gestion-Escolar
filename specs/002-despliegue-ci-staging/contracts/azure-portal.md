@@ -109,14 +109,14 @@ y se exige un mínimo de créditos de partida (casilla 10).
 
 - [ ] 1. 48 h antes: cuota BASv2 confirmada y gasto acumulado con ≥ 5 USD de holgura.
 - [ ] 2. Respaldo manual (`./deploy/backup.sh manual`).
-- [ ] 3. Portal: **Stop** (esperar "Stopped (deallocated)"; solo "Stopped" sigue facturando).
+- [ ] 3. *La noche anterior* (≥ 10 h antes de la rampa; el *Resize* reinicia los créditos a ≈ 60): Portal: **Stop** (esperar "Stopped (deallocated)"; solo "Stopped" sigue facturando).
 - [ ] 4. Portal → *Size* → **B2als_v2** → *Resize*. Anotar hora UTC de inicio de facturación B2als_v2.
 - [ ] 5. Portal: **Start**; `ssh`; IP y FQDN sin cambios. Anotar la hora UTC del arranque (`<desde-utc>`).
 - [ ] 6. `.env`: `PERFIL_TAMANO=carga`; `./deploy/deploy.sh --reconfigurar`; `curl https://<fqdn>/up` = 200.
 - [ ] 7. `./deploy/metrics.sh tamano` imprime `Standard_B2als_v2`.
 - [ ] 8. Siembra: `LoadTestSeeder` (solo staging).
 - [ ] 9. Humo (`humo=true` en el workflow `carga`) correcto.
-- [ ] 10. **Créditos de partida**: Portal → VM → *Metrics* → «CPU Credits Remaining» **≥ 200** (recomendado ≥ 400); si no, esperar con la VM encendida y sin carga (36 créditos/h) y anotar valor y hora UTC. Se repite antes de cada rampa.
+- [ ] 10. **Créditos de partida**: Portal → VM → *Metrics* → «CPU Credits Remaining» **≥ 200** (recomendado ≥ 400); si no, esperar con la VM encendida y sin carga (36 créditos/h; de 60 a 400 ≈ 9–10 h) y anotar valor y hora UTC. Se repite antes de cada rampa.
 - [ ] 11. `./deploy/metrics.sh start` (anotar la hora UTC de inicio de la rampa); lanzar `carga` (rampa completa) con `tamano_vm` y `version`.
 - [ ] 12. `./deploy/metrics.sh stop`; descargar CSV y `meta-servidor.json` (`scp`) y el artefacto de GitHub.
 - [ ] 13. En el PC, ≥ 10 min después: `./deploy/creditos-cpu.sh <desde-utc> <fin-utc> <inicio-rampa-utc>` → `creditos-resumen.json` (¿agotados?, ¿en qué minuto de la rampa?).

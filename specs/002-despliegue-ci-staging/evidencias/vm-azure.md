@@ -32,7 +32,34 @@ créditos de CPU. Detalle y razones: `research.md` D-01c.
 
 ## Prueba de ida y vuelta B2ats_v2 ↔ B2als_v2 con el servidor vacío (T071a)
 
-Pendiente. Registrar aquí al hacerla (horas en UTC): `az vm list-vm-resize-options` muestra B2als_v2 · Stop →
-Size B2als_v2 → Start (hora) · SSH y `free -m` (≈ 4 GB) · **«CPU Credits Remaining» justo después de arrancar**
-(¿se conserva, ≈ 60 o 0?) · la métrica aparece en *Metrics* · Stop → Size B2ats_v2 → Start · SSH. Costo esperado
-< 0,05 USD.
+Paso D (B2ats_v2 → B2als_v2) hecho el 21/10/2026, hora de Lima (UTC−5):
+
+| Verificación | Resultado |
+|---|---|
+| (a) B2als_v2 en *Size* | Aparece y el *Resize* se aplicó |
+| (b) Arranque, IP/DNS y SSH | *Start*: 14:44:57 (Registro de actividad). SSH sin advertencias de identidad |
+| `free -m` | total 3906 MB · usado 488 · disponible 3417 · swap 0 |
+| (d) Métrica «CPU Credits Remaining» | Sí aparece en *Metrics* (Métricas de host de máquina virtual) |
+| (c) Créditos tras el *Resize* | ≈ 60 a las 14:47 → ≈ 69 a las 15:02 (promedio 65,27 en 30 min): **no se conservan; se parte de 60** y se acumulan 36/h, como en una VM nueva |
+
+Conclusión (c): el saldo que tuviera la VM en B2ats_v2 no se traslada. Para llegar a ≥ 200 créditos hacen falta
+≈ 4 h en reposo, para ≥ 400 ≈ 9–10 h y para 864 ≈ 22 h. Consecuencia: el cambio a B2als_v2 se hace **la noche
+anterior** a la rampa (lista de verificación, casillas 3–5 y 10). El costo no cambia: el presupuesto ya contempla
+24 h de acumulación por sesión (`plan.md`); con ≈ 12 h bastan (≈ 0,63 USD).
+
+Paso E (B2als_v2 → B2ats_v2) hecho el 21/10/2026, hora de Lima (UTC−5, Registro de actividad):
+
+| Verificación | Resultado |
+|---|---|
+| *Deallocate* | 15:08:41 |
+| *Resize* (Create or Update Virtual Machine) | 15:12:54 |
+| *Start* | 15:14:41 |
+| *Overview* | Standard B2ats v2 (2 vCPU, 1 GiB), En ejecución, IP 57.156.62.36 y DNS `sge-peru.chilecentral.cloudapp.azure.com` sin cambios |
+| SSH | como `azureuser`, sin advertencias de identidad |
+| `free -m` | total 887 MB · usado 228 · disponible 658 · swap 0 |
+
+Notas:
+- El usuario `sge` **aún no existe**: lo crea `bootstrap-servidor.sh`. Hasta entonces el acceso es con `azureuser`
+  (las casillas de la prueba de carga que usan `ssh sge@<fqdn>` valen solo después del bootstrap).
+- Ida y vuelta completa: 14:44:57 (Start en B2als_v2) → 15:14:41 (Start en B2ats_v2); ≈ 30 min en B2als_v2, < 0,05 USD.
+- El banner de Azure Advisor que sugiere migrar a la serie D se ignora: ver `research.md` D-01c.

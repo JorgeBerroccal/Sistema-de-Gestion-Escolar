@@ -83,11 +83,11 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
   prueba **una ida y vuelta corta con el servidor vacío** (T071a) para confirmar en la práctica: (a) que B2als_v2
   aparezca en *Size* (`az vm list-vm-resize-options -g rg-sge-staging -n sge-staging --query "[?name=='Standard_B2als_v2']"`);
   (b) que la VM arranque y conserve IP/DNS y SSH; (c) **con cuántos créditos arranca la VM tras el Resize**
-  (⚠ la documentación no dice si el saldo se conserva, se reinicia a 60 o se pierde); (d) que «CPU Credits
+  (**medido el 21/10/2026: no se conserva; arranca en ≈ 60** → el cambio se hace la noche anterior); (d) que «CPU Credits
   Remaining» aparezca en *Metrics* para este tamaño. El resultado se anota en `evidencias/vm-azure.md`.
 - **Alternativa si el cambio no funcionara**: *Snapshot* del disco → crear disco → VM nueva B2als_v2 con ese disco
   y la misma IP pública estática (y volver igual). No se espera necesitarla.
-- **Estado**: CERRADA, salvo los puntos (a)–(d) que verifica T071a.
+- **Estado**: CERRADA. T071a verificó (a)–(d) en el paso D (`evidencias/vm-azure.md`); falta solo el regreso a B2ats_v2.
 
 ## D-02 Memoria de 1 GB: swap y dimensionado por variables
 

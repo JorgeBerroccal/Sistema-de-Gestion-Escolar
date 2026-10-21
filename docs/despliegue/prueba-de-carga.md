@@ -21,13 +21,14 @@ tamaño no suma, porque la VM es una sola) y la CLI de Azure (`az login`) en tu 
 
 B2als_v2 solo garantiza el **30 %** de su CPU (base); por encima de eso gasta *créditos* (1 crédito = 1 vCPU
 al 100 % durante 1 minuto). Con 2 vCPU al 100 % el consumo neto es `(30×2 − 100×2)/100 = −1,4 créditos/min`.
-Con la VM encendida y ociosa acumula **36 créditos/hora** hasta un máximo de **864**; una VM nueva (o
-redimensionada, ⚠ por confirmar con la prueba de ida y vuelta) parte de ≈ **60**. Si los créditos llegan a
+Con la VM encendida y ociosa acumula **36 créditos/hora** hasta un máximo de **864**; una VM nueva o
+redimensionada parte de ≈ **60** (confirmado el 21/10/2026: el *Resize* **no conserva** el saldo). Si los créditos llegan a
 cero, la CPU **queda limitada al 30 %** y la prueba deja de medir lo que el servidor puede dar con CPU plena.
 Por eso:
 
 - Antes de la rampa hay que tener **≥ 200 créditos** (≈ 143 min de CPU al 100 %; recomendado ≥ 400). De 60 a
-  200 tardan ≈ 4 h con la VM encendida y sin carga; hasta 864, ≈ 22 h (≈ 1,2 USD). Los créditos **no se
+  200 tardan ≈ 4 h con la VM encendida y sin carga; a 400, ≈ 9–10 h; hasta 864, ≈ 22 h (≈ 1,2 USD).
+  **Cambia el tamaño la noche anterior** (≥ 10 h antes de la rampa) para llegar a 400. Los créditos **no se
   acumulan con la VM liberada**: la espera es con la VM en B2als_v2 y en marcha.
 - Durante toda la prueba se registra «CPU Credits Remaining» (paso 13). La evidencia debe decir si llegaron a
   cero y en qué minuto de la rampa. **Si se agotan, la prueba se registra igual**, con el minuto desde el que
@@ -42,7 +43,7 @@ las casillas a medida que avanzas.
 
 - [ ] **1.** 48 h antes: cuota BASv2 confirmada y gasto acumulado con ≥ 5 USD de holgura.
 - [ ] **2.** Respaldo manual: `./deploy/backup.sh manual`.
-- [ ] **3.** Portal: **Stop** de la VM y esperar *Stopped (deallocated)* (solo «Stopped» sigue facturando).
+- [ ] **3.** *La noche anterior* (≥ 10 h antes de la rampa; el *Resize* reinicia los créditos a ≈ 60): Portal: **Stop** de la VM y esperar *Stopped (deallocated)* (solo «Stopped» sigue facturando).
 - [ ] **4.** Portal → VM → *Size* → **B2als_v2** → *Resize*. Anotar la hora (UTC) de inicio de facturación.
 - [ ] **5.** Portal: **Start**. La IP y el nombre DNS no cambian; `ssh sge@<fqdn>`. Anotar la hora UTC del arranque (será `<desde-utc>` del paso 13).
 - [ ] **6.** `.env`: `PERFIL_TAMANO=carga` → `./deploy/deploy.sh --reconfigurar` → `curl https://<fqdn>/up` correcto.
