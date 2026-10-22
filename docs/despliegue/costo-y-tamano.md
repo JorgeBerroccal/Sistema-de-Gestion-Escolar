@@ -18,17 +18,17 @@ consultados por el desarrollador en el portal; **disco e IP son estimaciones** (
 deben confirmarse en la calculadora de precios de Azure para Chile Central.
 
 Cada sesión de carga incluye hasta **24 h de acumulación de créditos** (VM encendida y sin carga) más 4 h de
-prueba; 4 sesiones = 112 h en B2als_v2.
+prueba; 2 sesiones = 56 h en B2als_v2.
 
 | Concepto | Supuesto | USD |
 |---|---|--:|
-| B2ats_v2 continua | 9,64/730 = 0,013205 USD/h × (1848 − 112) h | 22,92 |
-| B2als_v2 en sesiones | 0,052603 USD/h × 112 h (4 × (24 h de créditos + 4 h de prueba)) | 5,89 |
+| B2ats_v2 continua | 9,64/730 = 0,013205 USD/h × (1848 − 56) h | 23,66 |
+| B2als_v2 en sesiones | 0,052603 USD/h × 56 h (2 × (24 h de créditos + 4 h de prueba)) | 2,95 |
 | Disco Standard SSD 30 GiB (E4) | ≈ 3,00 USD/mes × 2,53 meses (se factura aunque la VM esté liberada) | 7,60 |
 | IP pública estática (Standard) | ≈ 0,005 USD/h × 1848 h (se factura aunque la VM esté liberada) | 9,24 |
 | Tráfico de salida | Dentro del cupo gratuito mensual; reserva | 2,00 |
-| **Total** | | **47,65 (47,7 %)** |
-| Con 20 % de holgura | | 57,18 (57,2 %) |
+| **Total** | | **45,45 (45,5 %)** |
+| Con 20 % de holgura | | 54,54 (54,5 %) |
 | **Tope DC-007 de la spec (80 %)** | | 80,00 |
 
 Lectura: el margen contra el tope es de ≈23 USD **incluso con holgura**. Olvidar B2als_v2 encendida cuesta
@@ -55,7 +55,7 @@ Cost Management + Billing → Cost Management → **Budgets** → Add, ámbito: 
 | Alerta 3 | *Actual* 90 % (90 USD) → mismo correo |
 
 Opcional: una alerta *Forecasted* al 100 %. Verificar: captura de la lista de alertas guardada en
-`specs/002-despliegue-ci-staging/evidencias/presupuesto-alertas.png`. ⚠ Si la suscripción de estudiante no
+`specs/002-despliegue-ci-staging/evidencias/Presupuestos.png`. ⚠ Si la suscripción de estudiante no
 expone *Budgets*, usar *Cost alerts* del propio crédito y dejar constancia con una captura.
 
 ## Cambio de tamaño de la máquina

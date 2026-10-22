@@ -76,7 +76,7 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
 - **Perfil `carga` para 4 GB** (antes 8 GB): `FPM_MAX_CHILDREN=20` (START 6, spare 4–10), `MYSQL_BUFFER_POOL=1G`,
   `MYSQL_MAX_CONNECTIONS=100`, `REDIS_MAXMEMORY=256mb`, `PHP_MEMORY_LIMIT=256M`; ≈ 2,6 GB estimados, con el swap de
   2 GB de red de seguridad. El cuello esperado es la CPU (bcrypt), no la memoria; se ajusta con lo observado.
-- **Costo**: `plan.md` («Costo estimado»): 47,65 USD (47,7 %) con 4 sesiones de hasta 24 h de acumulación + 4 h de
+- **Costo**: `plan.md` («Costo estimado»): 45,45 USD (45,5 %) con 2 sesiones de hasta 24 h de acumulación + 4 h de
   prueba; olvidarla una semana cuesta 8,84 USD (6,62 sobre el diario) y un mes 38,40 USD, sin riesgo para el crédito.
 - **Cambio B2ats_v2 ↔ B2als_v2**: misma serie, ambas SCSI y sin disco temporal; Microsoft permite además el
   cambio entre tamaños con y sin disco temporal en Linux. Cualquier *Resize* es en frío (Stop → Size → Start). Se
@@ -270,7 +270,7 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
   cerrada (y SC-006 del Módulo 1 declarado) solo con `evidencia_completa: true`.
 - La rampa completa dura ~15 min; el tiempo restante de las sesiones de 3–4 h es preparación,
   repeticiones y la verificación manual/SC-007 del Módulo 1 hechas con la VM de carga (opcional; FR-026/027 se
-  pueden hacer en B2ats_v2). Se hacen ≥3 ejecuciones; la de mejor evidencia que cumpla umbrales
+  pueden hacer en B2ats_v2). Se hacen 2 sesiones (una completa y una de repetición para comprobar la reproducibilidad); la de mejor evidencia que cumpla umbrales
   cierra SC-006 del Módulo 1, y las fallidas se conservan (FR-022).
 - **Servidor colgado durante la prueba**: se reinicia desde el portal y se vuelve a B2ats_v2 aunque la
   prueba haya fallado (`contracts/azure-portal.md` §7); la evidencia parcial se conserva (FR-022) y el

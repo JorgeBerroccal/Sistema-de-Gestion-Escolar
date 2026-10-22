@@ -20,7 +20,7 @@ rampa de 1000 VUs de k6 contra la URL pública. El día a día corre en **B2ats_
 USD/mes) con swap de 2 GB y servicios dimensionados por variables de entorno; para la prueba se
 cambia la VM a **B2als_v2** (2 vCPU, 4 GB, 38,40 USD/mes, CPU burstable con control de créditos) solo por horas. Un script en el servidor
 registra CPU/memoria/tamaño durante la prueba. Respaldo diario con retención de 7 días y restauración
-documentada. Costo estimado hasta el 31/12/2026: **≈48 USD (47,7 %)**, 57 USD con 20 % de holgura; por
+documentada. Costo estimado hasta el 31/12/2026: **≈45 USD (45,5 %)**, 55 USD con 20 % de holgura; por
 debajo del tope de 80 %.
 
 ## Technical Context
@@ -70,20 +70,20 @@ deben confirmarse en la calculadora de precios de Azure para Chile Central.
 
 Tamaño de carga **B2als_v2** (decisión del 2026-10-20, research D-01c): 38,40/730 = 0,0526 USD/h. Cada sesión
 incluye hasta **24 h de acumulación de créditos** con la VM encendida y sin carga (de ≈60 a 864 créditos a
-36/h) más 4 h de prueba; 4 sesiones (3 + 1 de repetición) = **112 h**.
+36/h) más 4 h de prueba; 2 sesiones (1 completa + 1 de repetición para comprobar que los resultados se reproducen) = **56 h**.
 
 | Concepto | Supuesto | USD |
 |---|---|--:|
-| B2ats_v2 continua | 9,64/730 = 0,013205 USD/h × (1848 − 112) h | 22,92 |
-| B2als_v2 en sesiones | 0,052603 USD/h × 112 h (4 × (24 h de créditos + 4 h de prueba)) | 5,89 |
+| B2ats_v2 continua | 9,64/730 = 0,013205 USD/h × (1848 − 56) h | 23,66 |
+| B2als_v2 en sesiones | 0,052603 USD/h × 56 h (2 × (24 h de créditos + 4 h de prueba)) | 2,95 |
 | Disco Standard SSD 30 GiB (E4) | ≈ 3,00 USD/mes × 2,53 meses (se factura aunque la VM esté liberada) | 7,60 |
 | IP pública estática (Standard) | ≈ 0,005 USD/h × 1848 h (se factura aunque la VM esté liberada) | 9,24 |
 | Tráfico de salida | Dentro del cupo gratuito mensual; reserva | 2,00 |
-| **Total** | | **47,65 (47,7 %)** |
-| Con 20 % de holgura | | 57,18 (57,2 %) |
+| **Total** | | **45,45 (45,5 %)** |
+| Con 20 % de holgura | | 54,54 (54,5 %) |
 | **Tope DC-007 de la spec (80 %)** | | 80,00 |
 
-Lectura: el margen contra el tope es de ≈23 USD **incluso con holgura**. Olvidar B2als_v2 encendida cuesta
+Lectura: el margen contra el tope es de ≈25 USD **incluso con holgura**. Olvidar B2als_v2 encendida cuesta
 8,84 USD por semana (6,62 USD por encima del diario) y 38,40 USD por mes: ya no amenaza el crédito, a
 diferencia de los tamaños no burstable considerados antes (D2s_v4: 97,92 USD/mes; DS2_v2: 196,37). Mitigaciones:
 alertas 50/75/90 % (50/75/90 USD), recordatorio al final del procedimiento de prueba y comprobación de tamaño en

@@ -96,5 +96,5 @@ sesión no termina hasta volver a B2ats_v2**:
 ## Costo de la sesión
 
 Horas en B2als_v2 × 0,0526 USD (lo calcula `cierre`, **incluida la espera para acumular créditos**; contrástalo con
-*Cost analysis*). El presupuesto contempla 4 sesiones con hasta 24 h de acumulación y 4 h de prueba cada una
-(112 h ≈ 5,89 USD en total).
+*Cost analysis*). El presupuesto contempla 2 sesiones (una completa y una de repetición) con hasta 24 h de acumulación y 4 h de prueba cada una
+(56 h ≈ 2,95 USD en total).

@@ -439,7 +439,7 @@ sistema recupera el estado del respaldo.
   del 1 % de solicitudes fallidas, y su evidencia (resultados, tamaño de máquina, CPU y memoria) queda
   archivada.
 - **DC-007**: El gasto acumulado proyectado al 31 de diciembre de 2026 no supera el 80 % del crédito
-  de 100 USD, y las tres alertas (50 %, 75 %, 90 %) existen y están verificadas.
+  de 100 USD, y las tres alertas (50 %, 75 %, 90 %) existen y están verificadas; además existe un presupuesto mensual de 25 USD con alertas al 80 % y 100 % como aviso temprano.
 - **DC-008 (verifica en servidor el SC-007 del Módulo 1)**: Los 11 pasos de la verificación manual del
   Módulo 1 se cumplen en el servidor, y el peor caso de 5 o más mediciones del SC-007 del Módulo 1
   (crear cuenta con rol) es inferior a 60 s.
