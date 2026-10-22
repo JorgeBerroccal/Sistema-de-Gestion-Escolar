@@ -195,8 +195,8 @@ Monolito Laravel 13 existente. Archivos nuevos: `.github/workflows/`, `docker/*/
 
 ## Phase 12: User Story 6 — Verificación manual y SC-007 del Módulo 1 en el servidor (Priority: P2)
 
-- [ ] T070 [US6] (manual) Ejecutar los 11 pasos de `specs/001-auth-roles-rbac/quickstart.md` §3 contra `https://<fqdn>` desde un navegador real, registrando cada paso en `specs/001-auth-roles-rbac/evidencias/staging-verificacion-manual.md` (basado en la plantilla T043) con fecha, versión desplegada y observaciones (FR-026, DC-008)
-- [ ] T071 [US6] (manual) Medir SC-007 del Módulo 1 en el servidor con **al menos 5 intentos** de crear una cuenta con rol, anotando el tiempo de cada uno y el peor caso en `specs/001-auth-roles-rbac/evidencias/staging-sc007.md`; declarar cumplido solo si el peor caso es < 60 s (FR-027, DC-008)
+- [x] T070 [US6] (manual) Ejecutar los 11 pasos de `specs/001-auth-roles-rbac/quickstart.md` §3 contra `https://<fqdn>` desde un navegador real, registrando cada paso en `specs/001-auth-roles-rbac/evidencias/staging-verificacion-manual.md` (basado en la plantilla T043) con fecha, versión desplegada y observaciones (FR-026, DC-008)
+- [x] T071 [US6] (manual) Medir SC-007 del Módulo 1 en el servidor con **al menos 5 intentos** de crear una cuenta con rol, anotando el tiempo de cada uno y el peor caso en `specs/001-auth-roles-rbac/evidencias/staging-sc007.md`; declarar cumplido solo si el peor caso es < 60 s (FR-027, DC-008)
 
 ---
 
