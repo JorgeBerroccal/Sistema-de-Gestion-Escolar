@@ -11,7 +11,7 @@ description: "Task list for 002-despliegue-ci-staging (Despliegue en staging e i
 
 **Tests**: El único código de aplicación que cambia (guarda del `LoadTestSeeder` y la ruta `/up` con la versión desplegada, sin tocar vistas) lleva pruebas Pest escritas primero (Principio V). Scripts, Dockerfiles y workflows se validan con `shellcheck`, `actionlint` y una ejecución local de la pila de producción (Fase 2); lo que depende del servidor se valida con [quickstart.md](quickstart.md).
 
-**Organization**: Las fases están ordenadas por **dependencia de infraestructura**, no solo por prioridad: las Fases 1–8 se pueden hacer **sin servidor** (en el equipo del desarrollador y en GitHub); las Fases 9–15 **requieren la máquina de Azure** y su crédito. Dentro de cada fase, las tareas llevan la etiqueta de la historia de usuario de spec.md.
+**Organization**: Las fases están ordenadas por **dependencia de infraestructura**, no solo por prioridad: las Fases 1–7 se pueden hacer **sin servidor** (en el equipo del desarrollador y en GitHub); las Fases 8–14 **requieren la máquina de Azure** y su crédito. Dentro de cada fase, las tareas llevan la etiqueta de la historia de usuario de spec.md.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -138,7 +138,6 @@ Monolito Laravel 13 existente. Archivos nuevos: `.github/workflows/`, `docker/*/
 - [x] T047 (manual) Comprobar en local que la imagen publicada `v0.2.0` arranca con la pila de producción de T015 (descarga anónima, `GET /up` informa `"version":"v0.2.0"` si el `.env` temporal define `SGE_VERSION=v0.2.0`)
 - [x] T048 Crear un commit de documentación sin cambios de comportamiento (por ejemplo, fecha en `docs/despliegue/README.md`), integrarlo a `main` y etiquetar `v0.2.1`; esperar `release` verde. Esta etiqueta permite probar el despliegue y la vuelta atrás: la respuesta de `/up` pasará de `v0.2.0` a `v0.2.1` (DC-004, US3)
 - [x] T049 (manual) Preparar la etiqueta de ensayo de migración fallida (FR-031): crear una rama desechable `prueba/migracion-falla` desde `main` con una migración `database/migrations/<fecha>_prueba_migracion_falla.php` que primero añada una columna a `usuarios` y luego lance una excepción (DDL parcial), **sin integrarla a `main`**; etiquetar `v0.2.9-prueba-falla`, esperar `release` verde y verificar la visibilidad pública de las imágenes como en T046; anotar en `specs/002-despliegue-ci-staging/evidencias/ghcr.md`. Después del ensayo (T069) borrar la etiqueta y la rama
-- [ ] T050 (manual) Definir en GitHub la variable de repositorio `STAGING_URL` con la URL del servidor **solo cuando el FQDN exista** (tarea T061) y comprobar que `carga.yml` en modo humo falla con mensaje claro mientras no exista (edge case "secretos no configurados")
 
 **Checkpoint (fin de la Parte A)**: imágenes `v0.2.0` y `v0.2.1` públicas en GHCR, CI en verde, scripts y documentación listos. No se ha gastado crédito.
 
@@ -169,7 +168,7 @@ Monolito Laravel 13 existente. Archivos nuevos: `.github/workflows/`, `docker/*/
 - [x] T058 [US3] Ejecutar `./deploy/deploy.sh v0.2.0` en el servidor; sembrar el Administrador inicial con `php artisan db:seed --force` (DatabaseSeeder: roles, permisos y Administrador inicial; los usuarios de demostración solo se crean en `local`); cronometrar el despliegue (< 15 min, DC-004) (FR-011)
 - [x] T059 [US1] Validar en el servidor y desde fuera: candado válido sin advertencias, `http`→`https`, inicio de sesión del Administrador y `curl -s https://<fqdn>/up` con `"version":"v0.2.0"`; escaneo externo (`nmap -Pn -p 22,80,443,3306,6379 <fqdn>`) con solo 22/80/443; `certbot renew --dry-run` correcto; `opcache.validate_timestamps=0`; `.env` con permisos 600; `exec app env | grep -ci root` = 0; búsqueda de secretos en el repositorio sin resultados; registrar en `specs/002-despliegue-ci-staging/evidencias/https-y-red.md` (DC-001, DC-002, DC-003, FR-032)
 - [x] T060 [US1] Probar con `free -m` y `docker stats` en reposo que la pila cabe en 1 GB con swap (uso de swap, memoria disponible); ajustar `PERFIL_TAMANO=diario` si fuera necesario y anotar los valores finales en `contracts/variables-entorno.md` (research D-02)
-- [ ] T061 [US4] (manual) Definir la variable de repositorio `STAGING_URL=https://<fqdn>` en GitHub y ejecutar `carga.yml` con `humo=true` (10 VUs) tras sembrar `LoadTestSeeder`; comprobar el artefacto y el funcionamiento del login desde internet (FR-018)
+- [ ] T061 [US4] (manual) Definir la variable de repositorio `STAGING_URL=https://<fqdn>` en GitHub (antes, comprobar que `carga.yml` en modo humo falla con mensaje claro sin la variable: edge case "secretos no configurados"; absorbe la antigua T050) y ejecutar `carga.yml` con `humo=true` (10 VUs) tras sembrar `LoadTestSeeder`; comprobar el artefacto y el funcionamiento del login desde internet (FR-018)
 
 **Checkpoint**: US1 completa. El sistema está en internet con HTTPS.
 
