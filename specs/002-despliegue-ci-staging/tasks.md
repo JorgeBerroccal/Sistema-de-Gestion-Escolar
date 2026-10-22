@@ -176,10 +176,10 @@ Monolito Laravel 13 existente. Archivos nuevos: `.github/workflows/`, `docker/*/
 
 ## Phase 10: User Story 3 (validación en servidor) — Despliegue repetible y vuelta atrás (Priority: P1)
 
-- [ ] T062 [US3] Desplegar `v0.2.1` con `./deploy/deploy.sh v0.2.1`: `/up` pasa a informar `v0.2.1`, los usuarios siguen existiendo y hay un respaldo `pre-v0.2.1` (< 15 min) (FR-011, FR-013, FR-014)
-- [ ] T063 [US3] Volver a la anterior con `./deploy/deploy.sh v0.2.0`: `/up` vuelve a informar `v0.2.0`, datos intactos, `--estado` y `despliegues.log` reflejan ambos pasos (< 10 min, DC-004) (FR-012)
-- [ ] T064 [US3] Probar fallo controlado: `./deploy/deploy.sh v9.9.9` (etiqueta inexistente) termina con error claro y sin cambiar los contenedores en marcha; reiniciar la VM desde el portal y comprobar que la pila vuelve sola y la versión activa se mantiene (FR-008)
-- [ ] T065 [US3] Registrar tiempos y resultados en `specs/002-despliegue-ci-staging/evidencias/despliegue-y-vuelta-atras.md` (DC-004)
+- [x] T062 [US3] Desplegar `v0.2.1` con `./deploy/deploy.sh v0.2.1`: `/up` pasa a informar `v0.2.1`, los usuarios siguen existiendo y hay un respaldo `pre-v0.2.1` (< 15 min) (FR-011, FR-013, FR-014)
+- [x] T063 [US3] Volver a la anterior con `./deploy/deploy.sh v0.2.0`: `/up` vuelve a informar `v0.2.0`, datos intactos, `--estado` y `despliegues.log` reflejan ambos pasos (< 10 min, DC-004) (FR-012)
+- [x] T064 [US3] Probar fallo controlado: `./deploy/deploy.sh v9.9.9` (etiqueta inexistente) termina con error claro y sin cambiar los contenedores en marcha; reiniciar la VM desde el portal y comprobar que la pila vuelve sola y la versión activa se mantiene (FR-008)
+- [x] T065 [US3] Registrar tiempos y resultados en `specs/002-despliegue-ci-staging/evidencias/despliegue-y-vuelta-atras.md` (DC-004)
 
 ---
 

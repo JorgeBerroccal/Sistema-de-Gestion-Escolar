@@ -30,42 +30,45 @@ Siembra (21/10/2026): `docker compose -p sge -f docker-compose.prod.yml exec app
 
 | Dato | Valor |
 |---|---|
-| Fecha | _ |
-| Versión activa (`/up` y `./deploy/deploy.sh --estado`) | `v0.2.0` |
-| Usuarios (`tinker`) | _ |
-| Respaldo previo manual (`backup.sh manual`) | _ (archivo, tamaño, permisos 0600, `gzip -t`) |
+| Fecha | 22/10/2026 (hora de Lima, UTC−5) |
+| Versión activa (`/up` y `./deploy/deploy.sh --estado`) | `v0.2.0`; pila estable desde hacía 16 h |
+| Usuarios (`tinker`) | 11 |
+| Respaldo previo manual (`backup.sh manual`) | `sge-20261022-085943-manual.sql.gz`, 2796 bytes, 0600, `gzip -t` correcto |
+
+El respaldo `diario` de las 03:00 de ese día (`sge-20261022-030002-diario.sql.gz`, 0600) ya existía: el cron funciona (adelanta T066).
 
 ## Despliegue de v0.2.1 (T062)
 
 | Verificación | Resultado |
 |---|---|
-| Hora de inicio / duración informada (DC-004: < 15 min) | _ |
-| Respaldo `pre-v0.2.1` creado | _ |
-| Migraciones | _ |
-| `/up` informa `v0.2.1` | _ |
-| Usuarios siguen existiendo (mismo conteo) | _ |
-| Inicio de sesión del Administrador | _ |
+| Hora de inicio / duración informada (DC-004: < 15 min) | 09:05 · **27 s** |
+| Respaldo `pre-v0.2.1` creado | `sge-20261022-090534-pre-v0.2.1.sql.gz`, 2797 bytes, 0600 |
+| Migraciones | «Nothing to migrate» (sin cambios de esquema entre v0.2.0 y v0.2.1) |
+| `/up` informa `v0.2.1` | Sí (`deploy.sh` y `--estado`) |
+| Usuarios siguen existiendo (mismo conteo) | 11 = 11 |
+| Inicio de sesión del Administrador | Correcto (navegador) |
 
 ## Vuelta atrás a v0.2.0 (T063)
 
 | Verificación | Resultado |
 |---|---|
-| Hora de inicio / duración informada (DC-004: < 10 min) | _ |
-| `/up` informa `v0.2.0` | _ |
-| Datos intactos (conteo de usuarios) | _ |
-| `--estado` refleja v0.2.0 | _ |
-| `/var/log/sge/despliegues.log` registra ambos pasos | _ |
+| Hora de inicio / duración informada (DC-004: < 10 min) | 09:15 · **22 s** |
+| `/up` informa `v0.2.0` | Sí |
+| Datos intactos (conteo de usuarios) | 11 = 11 |
+| `--estado` refleja v0.2.0 | Sí (activa y servida por `/up`) |
+| `/var/log/sge/despliegues.log` registra ambos pasos | Sí: v0.2.0 (81 s) → v0.2.1 (27 s) → v0.2.0 (22 s), todas OK; respaldo `pre-v0.2.0` creado (`sge-20261022-091502-pre-v0.2.0.sql.gz`) |
 
 ## Fallo controlado (T064)
 
 | Verificación | Resultado |
 |---|---|
-| `./deploy/deploy.sh v9.9.9`: mensaje de error y código de salida | _ |
-| Contenedores sin cambios (`docker compose ps`, tiempos de arranque) y `/up` sigue en `v0.2.0` | _ |
-| Reinicio de la VM desde el portal: la pila vuelve sola | _ |
-| Versión activa tras el reinicio | _ |
+| `./deploy/deploy.sh v9.9.9`: mensaje de error y código de salida | 09:20 · «La etiqueta v9.9.9 no existe en Git (¿ya la subiste con git push origin v9.9.9?)», código de salida **1** |
+| Contenedores sin cambios y `/up` sigue en `v0.2.0` | `app` y `web` seguían con la imagen `v0.2.0` y sin recrearse; `/up` → `{"status":"ok","version":"v0.2.0"}` |
+| Reinicio de la VM desde el portal: la pila vuelve sola | *Restart* a las 09:36 (Lima); a los 3 min `app`, `db`, `redis` y `web` estaban en marcha (`db`, `redis` y `web` saludables) sin intervención |
+| Versión activa tras el reinicio | `v0.2.0` (activa y servida por `/up`); certificado vigente (89 días); tamaño `Standard_B2ats_v2` |
 
 ## Conclusión (T065)
 
-- DC-004: _ (despliegue < 15 min, vuelta atrás < 10 min)
-- FR-008, FR-011 a FR-014: _
+- DC-004: **cumplido**. El despliegue (27 s) y la vuelta atrás (22 s) están muy por debajo de 15 y 10 minutos.
+- FR-008 (persistencia y reinicio), FR-011 a FR-014: **cumplidos** (versión consultable en `--estado` y `despliegues.log`, respaldo previo en cada despliegue, `/up` informa la versión).
+- Nota: entre v0.2.0 y v0.2.1 no hubo migraciones, por lo que esta prueba no cubre la vuelta atrás con cambios de esquema; eso lo cubre T069 (migración fallida).
