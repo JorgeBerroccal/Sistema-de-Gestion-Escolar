@@ -31,7 +31,7 @@ prueba; 2 sesiones = 56 h en B2als_v2.
 | Con 20 % de holgura | | 54,54 (54,5 %) |
 | **Tope DC-007 de la spec (80 %)** | | 80,00 |
 
-Lectura: el margen contra el tope es de ≈23 USD **incluso con holgura**. Olvidar B2als_v2 encendida cuesta
+Lectura: el margen contra el tope es de ≈25 USD **incluso con holgura**. Olvidar B2als_v2 encendida cuesta
 8,84 USD por semana (6,62 por encima del diario) y 38,40 USD por mes. Mitigaciones: alertas 50/75/90 %
 (50/75/90 USD), recordatorio al final del procedimiento de prueba y comprobación de tamaño en `deploy.sh`
 (advierte si detecta B2als_v2 con el perfil `diario`). Las horas de espera de créditos se facturan como B2als_v2:
