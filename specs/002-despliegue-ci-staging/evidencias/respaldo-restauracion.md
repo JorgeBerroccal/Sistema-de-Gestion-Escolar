@@ -40,3 +40,16 @@ Hora de Lima (UTC−5) del 22/10/2026; comandos como `sge` en el servidor, salvo
 | Copia al equipo | Desde la laptop: `scp sge@<fqdn>:/var/backups/sge/<archivo> ~/respaldos-sge/`, seguido de `gzip -t` → correcto; permisos 0600 |
 
 Conclusión: la retención de 7 días elimina solo lo que supera el plazo y la copia al equipo con `scp` funciona (FR-028).
+
+## Respaldo diario automático (T066, FR-028)
+
+Comprobado el 23/10/2026 por la persona responsable en el servidor.
+
+| Comprobación | Resultado |
+|---|---|
+| Respaldo `diario` del 22/10 | `sge-20261022-030002-diario.sql.gz`, 1896 bytes, `-rw-------`, 03:00 |
+| Respaldo `diario` del 23/10 | `sge-20261023-030002-diario.sql.gz`, 2808 bytes, `-rw-------`, 03:00 |
+| Registro | «Respaldo creado» a las 03:00:03 (22/10) y 03:00:02 (23/10) |
+| `gzip -t` | Correcto |
+
+Conclusión: el cron `diario` de las 03:00 funciona en dos días seguidos, con permisos 0600 y archivos íntegros (FR-028).
