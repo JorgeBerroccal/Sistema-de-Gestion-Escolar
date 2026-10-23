@@ -56,16 +56,16 @@ Ejecutar los 11 pasos de [../001-auth-roles-rbac/quickstart.md](../001-auth-role
 contra `https://<fqdn>` y registrarlos en `specs/001-auth-roles-rbac/evidencias/staging-verificacion-manual.md`;
 medir ≥5 intentos de SC-007 del Módulo 1 en `staging-sc007.md` (peor caso < 60 s).
 
-## 6. Prueba de carga (US4, SC-006 del Módulo 1 = DC-006) — sesión de 3–4 h en D2s_v4
+## 6. Prueba de carga (US4, SC-006 del Módulo 1 = DC-006) — sesión en B2als_v2 (4 h de prueba más la espera para acumular créditos de CPU)
 
-1. Cambiar el tamaño (contracts/azure-portal.md §7) y poner `PERFIL_TAMANO=carga`.
+1. Cambiar el tamaño (contracts/azure-portal.md §7) y poner `PERFIL_TAMANO=carga`; comprobar que «CPU Credits Remaining» ≥ 200 antes de la rampa.
 2. Sembrar usuarios: `docker compose -f docker-compose.prod.yml exec app php artisan db:seed --class=LoadTestSeeder --force`.
 3. Humo primero: workflow `carga` con `humo=true`.
-4. `./deploy/metrics.sh start`; lanzar `carga` con `tamano_vm=Standard_D2s_v4`, `version=<etiqueta>`; al
+4. `./deploy/metrics.sh start`; lanzar `carga` con `tamano_vm=Standard_B2als_v2`, `version=<etiqueta>`; al
    terminar, `./deploy/metrics.sh stop`.
-5. Descargar el artefacto y el CSV (`scp`), copiarlos a `specs/001-auth-roles-rbac/evidencias/` con
+5. En el PC: `./deploy/creditos-cpu.sh <desde-utc> <fin-utc> <inicio-rampa-utc>` (¿se agotaron los créditos y en qué minuto?). Descargar el artefacto y el CSV (`scp`), copiarlos a `specs/001-auth-roles-rbac/evidencias/` con
    fecha, y resumir umbrales y picos de CPU/memoria. Repetir hasta 3 veces.
-6. Seguir la lista de verificación de 14 pasos de [contracts/azure-portal.md §7](contracts/azure-portal.md);
+6. Seguir la lista de verificación de 16 pasos de [contracts/azure-portal.md §7](contracts/azure-portal.md);
    el último paso es volver a B2ats_v2 **el mismo día** y confirmarlo con `./deploy/metrics.sh cierre` (DC-011).
    La evidencia solo está completa si `cierre-carga.json` dice `evidencia_completa: true`.
 

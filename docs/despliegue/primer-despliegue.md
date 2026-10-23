@@ -25,7 +25,7 @@ publicadas (workflow `release`). `<fqdn>` es el nombre DNS de la IP pública.
 ## 2. Preparar el servidor (una sola vez)
 
 ```bash
-ssh -i ~/Descargas/sge-staging-key.pem azureuser@<fqdn>
+ssh azureuser@<fqdn>
 sudo apt-get update && sudo apt-get install -y git
 git clone https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar.git ~/sge-src
 sudo bash ~/sge-src/deploy/bootstrap-servidor.sh <fqdn> <tu-correo>
@@ -39,7 +39,7 @@ vencimiento del certificado).
 
 ## 3. Crear el `.env` del servidor (secretos)
 
-Desde ahora trabaja como `sge`: `ssh -i ~/Descargas/sge-staging-key.pem sge@<fqdn>`.
+Desde ahora trabaja como `sge`: `ssh sge@<fqdn>`.
 
 ```bash
 cd /opt/sge
@@ -54,7 +54,10 @@ nano .env    # reemplazar TODOS los marcadores <...>: APP_KEY, APP_URL, DB_*, SG
 ```
 
 `SGE_ADMIN_PASSWORD` debe ser fuerte (≥ 16 caracteres). El `.env` nunca se sube al repositorio y solo
-existe en el servidor (permisos 600). `deploy.sh` se niega a ejecutarse si quedan marcadores `<...>`.
+existe en el servidor (permisos 600). `deploy.sh` se niega a ejecutarse si quedan marcadores `<...>` fuera de los comentarios. Comprobación: `grep -v '^#' .env | grep -c '<[^>]*>'` debe dar 0.
+
+> Las etiquetas `v0.2.0` y `v0.2.1` llevan un `lib.sh` que también cuenta los comentarios de la plantilla (líneas 2 y 4):
+> al usarlas, borra del `.env` del servidor esas dos líneas (`sed -i '/^#.*<.*>/d' .env`).
 
 ## 4. Primer despliegue
 
@@ -73,3 +76,13 @@ curl -s https://<fqdn>/up              # {"status":"ok","version":"v0.2.0"}
 ```
 
 Abrir `https://<fqdn>` en un navegador: candado válido y `http://` redirige a `https://`.
+
+Probar la renovación del certificado con la pila ya en marcha (el desafío HTTP-01 lo atiende nginx por el
+webroot `/var/www/certbot`, sin detener nada; el gancho recarga nginx):
+
+```bash
+sudo certbot renew --dry-run     # como azureuser: sge no tiene sudo; debe terminar con "Congratulations, all simulated renewals succeeded"
+```
+
+Antes del primer despliegue esta prueba falla porque nada atiende el puerto 80 (el certificado inicial se
+emitió con `--standalone`; las renovaciones usan webroot).

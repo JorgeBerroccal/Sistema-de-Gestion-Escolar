@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-16
 
-**Status**: Draft
+**Status**: In progress
 
 **Módulo MVP**: Transversal — infraestructura que sirve a los seis módulos del MVP. Aprobada
 explícitamente por el desarrollador según el Principio IV de la constitución y requisito del curso.
@@ -136,7 +136,7 @@ versiones de la prueba serán las primeras publicadas por el nuevo proceso.)
 
 ### User Story 4 - Prueba de carga de 1000 usuarios con evidencia (Priority: P2)
 
-El desarrollador cambia temporalmente la máquina a un tamaño de CPU sostenida de 2 vCPU, lanza desde
+El desarrollador cambia temporalmente la máquina a un tamaño de 2 vCPU y 4 GB (B2als_v2, burstable; D-01c), lanza desde
 GitHub la prueba de carga (rampa 100 → 300 → 600 → 1000 usuarios virtuales) contra la URL del
 servidor, y obtiene guardados como evidencia el resumen de resultados, el tamaño de máquina usado y la
 CPU/memoria del servidor durante la prueba. Después devuelve la máquina al tamaño económico.
@@ -159,7 +159,7 @@ en el repositorio.
 3. **Given** un servidor con `APP_ENV` distinto de staging, **When** se intenta sembrar usuarios de
    carga o lanzar la prueba completa, **Then** la operación se rechaza.
 4. **Given** el tamaño económico de serie con CPU limitada, **When** se documenta el procedimiento,
-   **Then** indica cómo cambiar al tamaño de 2 vCPU sin CPU limitada, verificar el servicio, ejecutar
+   **Then** indica cómo cambiar al tamaño de 2 vCPU (B2als_v2), verificar el servicio, comprobar el mínimo de créditos de CPU, ejecutar
    la prueba y regresar al tamaño económico, con el costo estimado de cada paso.
 5. **Given** el resultado de la prueba, **When** los umbrales no se cumplen, **Then** la evidencia
    igualmente se guarda y queda registrado el incumplimiento (no se oculta).
@@ -277,7 +277,7 @@ sistema recupera el estado del respaldo.
 - **FR-003**: La documentación MUST especificar con precisión la configuración que el desarrollador
   aplica en el portal de Azure: suscripción y región (una permitida por Azure for Students y lo más
   cercana posible a Perú, con alternativa), imagen Ubuntu LTS x86, tamaño económico diario (serie B),
-  tamaño de carga (no burstable, 2 vCPU, memoria suficiente para la pila), tipo y tamaño de disco, IP
+  tamaño de carga (2 vCPU, memoria suficiente para la pila; se admite burstable si se exige un mínimo de créditos de CPU antes de la rampa y se registran durante toda la prueba), tipo y tamaño de disco, IP
   pública estática, etiqueta de nombre DNS, y reglas de red.
 - **FR-004**: Solo MUST estar abierto a internet: SSH (22) únicamente con clave pública, sin
   contraseña y con bloqueo automático de intentos fallidos (fail2ban); no se limita por IP de origen
@@ -351,7 +351,7 @@ sistema recupera el estado del respaldo.
 - **FR-020**: La siembra de usuarios de carga y la prueba completa MUST rechazarse cuando el entorno
   no sea staging (o local para la prueba de humo).
 - **FR-021**: La documentación MUST describir el procedimiento completo de la prueba: cambiar a
-  tamaño no burstable de 2 vCPU, esperar que el servicio vuelva, sembrar usuarios, lanzar la prueba,
+  tamaño de carga de 2 vCPU (B2als_v2), esperar que el servicio vuelva, comprobar que «CPU Credits Remaining» ≥ 200 antes de la rampa, sembrar usuarios, lanzar la prueba,
   recoger evidencia y regresar al tamaño económico. El generador de carga MUST ejecutarse fuera del
   servidor probado.
 - **FR-022a**: La evidencia de una sesión de prueba de carga SOLO se considera completa si el
@@ -429,17 +429,17 @@ sistema recupera el estado del respaldo.
 - **DC-003**: Una búsqueda en el repositorio no encuentra valores de `APP_KEY`, contraseñas de base de
   datos ni de `SGE_ADMIN_PASSWORD`; el 100 % de los secretos está solo en el servidor.
 - **DC-004**: Desplegar una versión etiquetada sobre un servidor ya preparado toma menos de 15 minutos
-  siguiendo solo la documentación, y volver a la versión anterior toma menos de 10 minutos.
+  siguiendo solo la documentación, y volver a la versión anterior toma menos de 10 minutos. Ambos tiempos se miden desde que se lanza `deploy.sh` hasta que informa éxito (incluye respaldo, descarga de imágenes, migraciones y comprobación de `/up`).
 - **DC-005**: En el 100 % de los push y pull requests se ejecutan la suite completa de pruebas y el
   estilo de código, y el resultado es visible en GitHub; una prueba o estilo roto deliberado se marca
   como fallido en el 100 % de los casos probados.
 - **DC-006 (cierra el SC-006 del Módulo 1)**: Una ejecución de la prueba de carga de 1000 usuarios
-  virtuales contra el servidor, con la máquina en tamaño de 2 vCPU no burstable, cumple: 95 % de los
+  virtuales contra el servidor, con la máquina en B2als_v2 (2 vCPU, burstable), con al menos 200 créditos de CPU al iniciar la rampa y «CPU Credits Remaining» registrado durante toda la prueba (D-01c), cumple: 95 % de los
   inicios de sesión en menos de 3,5 s, 95 % de las consultas autenticadas en menos de 1,5 s y menos
   del 1 % de solicitudes fallidas, y su evidencia (resultados, tamaño de máquina, CPU y memoria) queda
   archivada.
 - **DC-007**: El gasto acumulado proyectado al 31 de diciembre de 2026 no supera el 80 % del crédito
-  de 100 USD, y las tres alertas (50 %, 75 %, 90 %) existen y están verificadas.
+  de 100 USD, y las tres alertas (50 %, 75 %, 90 %) existen y están verificadas; además existe un presupuesto mensual de 25 USD con alertas al 80 % y 100 % como aviso temprano.
 - **DC-008 (verifica en servidor el SC-007 del Módulo 1)**: Los 11 pasos de la verificación manual del
   Módulo 1 se cumplen en el servidor, y el peor caso de 5 o más mediciones del SC-007 del Módulo 1
   (crear cuenta con rol) es inferior a 60 s.
@@ -463,11 +463,15 @@ sistema recupera el estado del respaldo.
 - La política de la suscripción de estudiante restringe regiones y tamaños; la región final y los
   tamaños concretos se confirman en el portal durante el plan, con la región permitida más cercana a
   Perú como criterio y una alternativa documentada.
-- Tamaños confirmados con datos del portal (región Chile Central): diario **B2ats_v2** (2 vCPU, 1 GB,
-  9,64 USD/mes) y carga **D2s_v4** (2 vCPU, 8 GB, no burstable, 97,92 USD/mes). D2s_v5 se descartó
-  porque la cuota de su familia en la suscripción de estudiante es 0 y el aumento fue rechazado; la
-  imagen Ubuntu Gen2 es compatible con ambos tamaños, de modo que el cambio no recrea la máquina.
-- El tamaño de carga (8 GB) supera el mínimo de 2 vCPU / 4 GB de la constitución; el tamaño diario
+- Tamaños (región Chile Central, datos del portal): diario **B2ats_v2** (2 vCPU, 1 GB, 9,64 USD/mes) y carga
+  **B2als_v2** (2 vCPU, 4 GB, burstable, 38,40 USD/mes; cuota BASv2 de 10 vCPU). Se descartaron D2s_v5 (cuota 0,
+  aumento rechazado), D2s_v4 (`NotAvailableForSubscription`) y DS2_v2 (196,37 USD/mes, retiro previsto, riesgo de
+  costo); ver `research.md` D-01c. La imagen Ubuntu Gen2 es compatible con ambos tamaños, de modo que el
+  cambio no recrea la máquina.
+- La CPU de B2als_v2 es *burstable* (base 30 %, créditos): la prueba de carga debe registrar «CPU Credits
+  Remaining» durante toda la prueba y empezar con créditos suficientes; la evidencia indica si llegaron a cero y
+  en qué minuto la CPU quedó limitada. Si se agotan, la prueba se registra igual.
+- El tamaño de carga (4 GB) cumple el mínimo de 2 vCPU / 4 GB de la constitución; el tamaño diario
   (1 GB) solo debe sostener demostraciones y la verificación manual, no la prueba de carga.
 - Los costos de cómputo se pagan solo por las horas en que la máquina está asignada; detenerla sin
   liberar el cómputo sigue facturando, por lo que el procedimiento exige liberar el cómputo.

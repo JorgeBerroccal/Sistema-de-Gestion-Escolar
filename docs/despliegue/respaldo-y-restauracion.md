@@ -34,7 +34,7 @@ Los respaldos están en el mismo disco que la base de datos: **no protegen** si 
 copiarlos al equipo:
 
 ```bash
-scp -i ~/Descargas/sge-staging-key.pem "sge@<fqdn>:/var/backups/sge/sge-*-diario.sql.gz" ~/respaldos-sge/
+scp "sge@<fqdn>:/var/backups/sge/sge-*-diario.sql.gz" ~/respaldos-sge/
 ```
 
 Para restaurar un archivo copiado, devolverlo al servidor con `scp` a `/var/backups/sge/` y usar

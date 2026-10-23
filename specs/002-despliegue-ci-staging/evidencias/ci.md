@@ -37,3 +37,9 @@ La rama se borró local y remotamente y el PR se cerró sin integrar.
 
 Activada por el desarrollador el 2026-10-16 (exige `ci / pruebas` y `ci / estilo`); el PR #2 se integró con un
 merge commit (`df80969`) y el `ci` de `main` salió verde (run 38974363166).
+
+## FR-017 — secretos y bifurcaciones
+
+`.github/workflows/ci.yml` solo declara `permissions: contents: read` y no referencia ningún `secrets.*` ni `vars.*`
+(comprobado con `grep -n 'secrets\.' .github/workflows/ci.yml`, sin resultados). Un pull request de una bifurcación
+no recibe secretos de todos modos, y el workflow no tiene acceso al servidor.

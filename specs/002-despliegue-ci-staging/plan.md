@@ -18,9 +18,9 @@ imágenes, migra y verifica; volver atrás es desplegar la etiqueta anterior. Ot
 Pest (MySQL + Redis reales) y Pint en cada push y pull request, y un tercero lanza bajo demanda la
 rampa de 1000 VUs de k6 contra la URL pública. El día a día corre en **B2ats_v2** (1 GB, 9,64
 USD/mes) con swap de 2 GB y servicios dimensionados por variables de entorno; para la prueba se
-cambia la VM a **D2s_v4** (2 vCPU, 8 GB, 97,92 USD/mes) solo por horas. Un script en el servidor
+cambia la VM a **B2als_v2** (2 vCPU, 4 GB, 38,40 USD/mes, CPU burstable con control de créditos) solo por horas. Un script en el servidor
 registra CPU/memoria/tamaño durante la prueba. Respaldo diario con retención de 7 días y restauración
-documentada. Costo estimado hasta el 31/12/2026: **≈45 USD (45 %)**, 54 USD con 20 % de holgura; por
+documentada. Costo estimado hasta el 31/12/2026: **≈45 USD (45,5 %)**, 55 USD con 20 % de holgura; por
 debajo del tope de 80 %.
 
 ## Technical Context
@@ -33,11 +33,11 @@ debajo del tope de 80 %.
 
 **Testing**: Pest 4 + Pint en CI; verificación del despliegue con la guía [quickstart.md](quickstart.md); prueba de carga k6 (`tests/Load/carga.js`, sin cambios de umbrales); nuevas pruebas Pest solo para el cambio de guarda del `LoadTestSeeder`
 
-**Target Platform**: VM Azure Chile Central, Ubuntu Server 24.04 LTS x64 Gen2; Standard SSD; IP pública estática Standard con nombre DNS; tamaños B2ats_v2 (diario) y D2s_v4 (carga)
+**Target Platform**: VM Azure Chile Central, Ubuntu Server 24.04 LTS x64 Gen2; Standard SSD; IP pública estática Standard con nombre DNS; tamaños B2ats_v2 (diario) y B2als_v2 (carga, burstable)
 
 **Project Type**: Infraestructura y automatización sobre una aplicación web monolítica existente
 
-**Performance Goals**: SC-006 del Módulo 1 (DC-006) en D2s_v4 (login p95 < 3,5 s, consultas p95 < 1,5 s, fallos < 1 %); desplegar < 15 min, volver atrás < 10 min, restaurar < 15 min
+**Performance Goals**: SC-006 del Módulo 1 (DC-006) en B2als_v2 con créditos de CPU registrados (login p95 < 3,5 s, consultas p95 < 1,5 s, fallos < 1 %); desplegar < 15 min, volver atrás < 10 min, restaurar < 15 min
 
 **Constraints**: B2ats_v2 con 1 GB de RAM → el servidor no construye ni ejecuta composer/npm; crédito de 100 USD (tope de proyección 80 %); IP del desarrollador dinámica → SSH sin filtro de origen; GitHub sin acceso al servidor; solo puertos 22/80/443; plazo del curso (diciembre de 2026)
 
@@ -66,27 +66,32 @@ debajo del tope de 80 %.
 
 Periodo: 16/10 a 31/12/2026 = **77 días = 1848 h** (730 h/mes). Los precios de cómputo son los
 consultados por el desarrollador en el portal; **disco e IP son estimaciones** (no provistas) que
-deben confirmarse en la calculadora de precios de Azure para Chile Central antes de crear los recursos.
+deben confirmarse en la calculadora de precios de Azure para Chile Central.
+
+Tamaño de carga **B2als_v2** (decisión del 2026-10-20, research D-01c): 38,40/730 = 0,0526 USD/h. Cada sesión
+incluye hasta **24 h de acumulación de créditos** con la VM encendida y sin carga (de ≈60 a 864 créditos a
+36/h) más 4 h de prueba; 2 sesiones (1 completa + 1 de repetición para comprobar que los resultados se reproducen) = **56 h**.
 
 | Concepto | Supuesto | USD |
 |---|---|--:|
-| B2ats_v2 continua | 9,64/730 = 0,01321 USD/h × (1848 − 16) h | 24,19 |
-| D2s_v4 en pruebas | 97,92/730 = 0,1341 USD/h × 16 h (3 pruebas de 4 h + 1 prueba extra de repetición) | 2,15 |
+| B2ats_v2 continua | 9,64/730 = 0,013205 USD/h × (1848 − 56) h | 23,66 |
+| B2als_v2 en sesiones | 0,052603 USD/h × 56 h (2 × (24 h de créditos + 4 h de prueba)) | 2,95 |
 | Disco Standard SSD 30 GiB (E4) | ≈ 3,00 USD/mes × 2,53 meses (se factura aunque la VM esté liberada) | 7,60 |
 | IP pública estática (Standard) | ≈ 0,005 USD/h × 1848 h (se factura aunque la VM esté liberada) | 9,24 |
 | Tráfico de salida | Dentro del cupo gratuito mensual; reserva | 2,00 |
-| **Total** | | **45,18 (45,2 %)** |
-| Con 20 % de holgura | | 54,21 (54,2 %) |
+| **Total** | | **45,45 (45,5 %)** |
+| Con 20 % de holgura | | 54,54 (54,5 %) |
 | **Tope DC-007 de la spec (80 %)** | | 80,00 |
 
-Lectura: el margen contra el tope es de ≈26 USD **incluso con holgura**. El mayor riesgo no es la
-estimación sino **olvidar D2s_v4 encendida**: una semana cuesta 22,54 USD; un mes, 97,92 USD (todo
-el crédito). Mitigaciones: alertas 50/75/90 % (50/75/90 USD), recordatorio al final del
-procedimiento de prueba y comprobación de tamaño en `deploy.sh` (advierte si detecta D2s_v4 fuera de
-una sesión de carga). Si se cambiara a un disco de 64 GiB o a IP/disco más caros, el margen sigue
-permitiendo hasta ≈+30 USD antes de tocar el 80 %. Las pruebas de 3–4 h de la petición (sesión
-completa: cambio de tamaño, siembra, rampa de ~15 min, recogida de evidencia) se contabilizan enteras
-a tarifa D2s_v4 aunque la rampa dure menos.
+Lectura: el margen contra el tope es de ≈25 USD **incluso con holgura**. Olvidar B2als_v2 encendida cuesta
+8,84 USD por semana (6,62 USD por encima del diario) y 38,40 USD por mes: ya no amenaza el crédito, a
+diferencia de los tamaños no burstable considerados antes (D2s_v4: 97,92 USD/mes; DS2_v2: 196,37). Mitigaciones:
+alertas 50/75/90 % (50/75/90 USD), recordatorio al final del procedimiento de prueba y comprobación de tamaño en
+`deploy.sh` (advierte si detecta B2als_v2 con el perfil `diario`). Si se cambiara a un disco de 64 GiB o a
+IP/disco más caros, el margen sigue permitiendo hasta ≈+30 USD antes de tocar el 80 %.
+
+Referencia histórica (descartados, research D-01c): D2s_v4 daba 45,18 USD con 16 h; DS2_v2 habría dado 47,33 USD
+con 16 h, pero con 45,19 USD por semana olvidada.
 
 ## Project Structure
 
@@ -103,7 +108,7 @@ specs/002-despliegue-ci-staging/
 │   ├── scripts-servidor.md         # CLI de deploy.sh, backup.sh, restore.sh, metrics.sh, bootstrap-servidor.sh
 │   ├── workflows-github.md         # ci.yml, release.yml, carga.yml: disparadores, entradas, salidas, permisos
 │   ├── salud.md                    # /up: JSON con la versión desplegada
-│   └── variables-entorno.md        # .env del servidor: variables, tamaños B2ats_v2 vs D2s_v4
+│   └── variables-entorno.md        # .env del servidor: variables, tamaños B2ats_v2 vs B2als_v2
 └── tasks.md                        # Lo genera /speckit-tasks
 ```
 

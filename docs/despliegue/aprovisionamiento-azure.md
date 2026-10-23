@@ -3,9 +3,9 @@
 Pasos exactos para crear el servidor de staging con **Azure for Students**. Los valores marcados con ⚠
 deben confirmarse en pantalla antes de crear el recurso. Región: **Chile Central** (la permitida más
 cercana a Perú). Tamaño diario **Standard_B2ats_v2** (9,64 USD/mes); tamaño de la prueba de carga
-**Standard_D2s_v4** (97,92 USD/mes, solo por horas; ver [costo-y-tamano.md](costo-y-tamano.md)).
-`D2s_v5` **no** se usa: la cuota de su familia (DSv5) en la suscripción de estudiante es 0 y el aumento
-fue rechazado.
+**Standard_B2als_v2** (2 vCPU, 4 GB, 38,40 USD/mes, solo por horas; ver [costo-y-tamano.md](costo-y-tamano.md)).
+No se usan D2s_v5 (cuota 0, aumento rechazado), D2s_v4 (`NotAvailableForSubscription`) ni DS2_v2 (descartado):
+ver `specs/002-despliegue-ci-staging/research.md` D-01c.
 
 Después de crear los recursos, sigue [primer-despliegue.md](primer-despliegue.md).
 
@@ -15,7 +15,7 @@ Después de crear los recursos, sigue [primer-despliegue.md](primer-despliegue.m
 2. **Regiones permitidas**: al crear el grupo de recursos, "Chile Central" debe aparecer; si no, usar la
    región permitida más cercana (alternativa: Brazil South) y repetir los precios.
 3. **Cuotas** (Suscripción → *Usage + quotas* → filtrar por Chile Central): "Total Regional vCPUs" ≥ 4;
-   "Standard BASv2 Family vCPUs" ≥ 2; "Standard DSv4 Family vCPUs" ≥ 2 (DSv5 tiene cuota 0 y su aumento fue rechazado: no usarla). Si alguna es 0 o insuficiente,
+   "Standard BASv2 Family vCPUs" ≥ 2 (la VM es una sola: el cambio B2ats_v2 ↔ B2als_v2 no suma vCPU) Si alguna es 0 o insuficiente,
    *Request increase* (puede tardar horas) **antes** del día de la prueba de carga.
 4. **Calculadora de precios** (Chile Central): anotar disco Standard SSD 30 GiB (E4) y IP pública
    Standard estática; ajustar la tabla de costo del plan si difieren mucho.
@@ -39,7 +39,7 @@ Resource groups → Create → Suscripción *Azure for Students*; nombre `rg-sge
 | Size | **Standard_B2ats_v2** (2 vCPU, 1 GiB) — 9,64 USD/mes |
 | Authentication type | SSH public key |
 | Username | `azureuser` (el script crea luego el usuario `sge`) |
-| SSH public key source | Generate new key pair (nombre `sge-staging-key`, **descargar el `.pem` y guardarlo fuera del repositorio**, `chmod 600`), o pegar tu clave pública existente (`~/.ssh/id_ed25519.pub`) |
+| SSH public key source | Use existing public key: pegar tu clave pública (`~/.ssh/id_ed25519.pub`; es la usada en este proyecto, no hay `.pem`) |
 | Public inbound ports | **None** (las reglas se definen en §4) |
 | OS disk type | **Standard SSD (locally-redundant storage)** — no Premium |
 | OS disk size | 30 GiB (default de la imagen) |
@@ -80,8 +80,7 @@ fail2ban (el script de arranque los configura).
 ## 5. Primer ingreso
 
 ```bash
-chmod 600 ~/Descargas/sge-staging-key.pem
-ssh -i ~/Descargas/sge-staging-key.pem azureuser@<fqdn>
+ssh azureuser@<fqdn>
 ```
 
 Luego sigue `docs/despliegue/primer-despliegue.md` (ejecuta `deploy/bootstrap-servidor.sh`: swap 2 GB,

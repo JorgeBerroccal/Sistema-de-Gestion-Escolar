@@ -30,7 +30,7 @@
 
 - **Disparador**: solo `workflow_dispatch`. Nunca con push/PR.
 - **Entradas**: `base_url` (por defecto `vars.STAGING_URL`), `tamano_vm` (texto, obligatorio; p. ej.
-  `Standard_D2s_v4`), `version` (etiqueta desplegada, obligatorio), `humo` (boolean, default false →
+  `Standard_B2als_v2`), `version` (etiqueta desplegada, obligatorio), `humo` (boolean, default false →
   rampa completa).
 - **Permisos**: `contents: read`. **Variables**: `vars.STAGING_URL`. **Secretos**: ninguno.
 - **Guardas**: falla pronto si `base_url` ≠ `vars.STAGING_URL`, si `STAGING_URL` no está definida, o
