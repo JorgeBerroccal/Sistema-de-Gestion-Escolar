@@ -18,6 +18,7 @@ description: "Task list for 002-despliegue-ci-staging (Despliegue en staging e i
 - **[P]**: Can run in parallel (different files, no dependencies)
 - **[Story]**: US1 HTTPS/acceso · US2 CI · US3 despliegue y vuelta atrás · US4 prueba de carga · US5 costo · US6 verificación manual y SC-007 del Módulo 1 · US7 respaldo
 - **(manual)**: lo ejecuta el desarrollador en el portal de Azure, en GitHub o por SSH; Claude Code no crea recursos en Azure
+- **[~]**: tarea trasladada a otra especificación (no se hace aquí; la tarea indica dónde)
 - Include exact file paths in descriptions
 
 ## Path Conventions
@@ -227,7 +228,7 @@ Monolito Laravel 13 existente. Archivos nuevos: `.github/workflows/`, `docker/*/
 - [ ] T083 (manual) Revisión de costo final: *Cost analysis* al 15/11 y 15/12 contra la estimación, y confirmar que el proyectado al 31/12 ≤ 80 % del crédito (DC-007); decidir si se detiene la VM (*Stop* deallocated) hasta la sustentación y documentarlo
 - [ ] T084 Actualizar `README.md` con la URL pública de staging, el estado de CI y enlaces a `docs/despliegue/` y a las evidencias; cerrar con una etiqueta final (p. ej. `v0.2.2`) si se cambió algo desplegable y dejar el servidor en la versión final con `deploy.sh`
 - [x] T085 Revisión final de seguridad: `git log -p` y búsqueda de secretos en el repositorio y en las imágenes (`docker history`, `docker run --rm <imagen> env`), SSH solo con clave, puertos y permisos de `.env`, y registro en `specs/002-despliegue-ci-staging/evidencias/https-y-red.md` (DC-003)
-- [ ] T086 Sincronizar roles y permisos en cada despliegue: en `deploy/deploy.sh`, justo después de `migrate --force` y antes de recrear `app` y `web`, ejecutar `dc run --rm --no-deps app php artisan db:seed --class=RolesYPermisosSeeder --force || fallo "La sincronización de permisos falló."` (por nombre, nunca `DatabaseSeeder`: repetiría `AdministradorInicialSeeder`). Con su prueba de idempotencia (el seeder dos veces no duplica ni revierte asignaciones del Administrador), actualizar `docs/despliegue/` y `contracts/scripts-servidor.md`, y documentar que **los permisos eliminados o renombrados se limpian a mano** (el seeder solo crea). Sin etiqueta propia: entra a `main` con el PR de cierre de esta especificación y lo estrena el primer despliegue del Módulo 2 (`v0.3.0`). Se implementa después de cerrar T079 para que la sesión 2 de carga corra sobre `v0.2.2` (DC-004)
+- [~] T086 **TRASLADADA al Módulo 2** (`specs/003-gestion-academica-base`, tareas T008 y T009): la sincronización de roles y permisos en cada despliegue se entrega allí con el comando idempotente `sge:sincronizar-base` (solo seeders base: permisos, roles y escalas; nunca `AdministradorInicialSeeder` ni `LoadTestSeeder`), porque el Módulo 2 añade varios datos base y ya no basta un solo seeder. Se conserva en esa tarea la nota de que los permisos eliminados o renombrados se limpian a mano. No se implementa en esta especificación. Texto original: Sincronizar roles y permisos en cada despliegue: en `deploy/deploy.sh`, justo después de `migrate --force` y antes de recrear `app` y `web`, ejecutar `dc run --rm --no-deps app php artisan db:seed --class=RolesYPermisosSeeder --force || fallo "La sincronización de permisos falló."` (por nombre, nunca `DatabaseSeeder`: repetiría `AdministradorInicialSeeder`). Con su prueba de idempotencia (el seeder dos veces no duplica ni revierte asignaciones del Administrador), actualizar `docs/despliegue/` y `contracts/scripts-servidor.md`, y documentar que **los permisos eliminados o renombrados se limpian a mano** (el seeder solo crea). Sin etiqueta propia: entra a `main` con el PR de cierre de esta especificación y lo estrena el primer despliegue del Módulo 2 (`v0.3.0`). Se implementa después de cerrar T079 para que la sesión 2 de carga corra sobre `v0.2.2` (DC-004)
 
 ---
 
@@ -284,7 +285,7 @@ Los criterios de éxito de este feature se identifican como **DC-xxx** para no c
 | FR-031 | T024, T049, T069 |
 | FR-032 | T014, T015, T059 |
 | DC-001–DC-003 | T015, T059, T085 |
-| DC-004 | T007, T058, T062, T063, T065, T086 |
+| DC-004 | T007, T058, T062, T063, T065, T086 (trasladada al Módulo 2) |
 | DC-005 | T019 |
 | DC-006 (cierra SC-006 del Módulo 1) | T075–T080 |
 | DC-007 | T052, T053, T083 |
