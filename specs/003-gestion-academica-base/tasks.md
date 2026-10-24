@@ -180,12 +180,13 @@ Monolito Laravel 13 existente (ver plan.md): servicios en `app/Academico/`, mode
 
 ## Phase 8: Polish y verificación transversal
 
-- [ ] T058 [P] `database/seeders/AcademicoDemoSeeder.php`: institución ficticia, niveles, grados, secciones, cursos, docentes y algunas asignaciones; **rechaza `APP_ENV=production`**; llamarlo desde `DatabaseSeeder` solo en `local`; prueba en `tests/Feature/Seeders/AcademicoDemoSeederTest.php` (carga y rechazo en producción)
-- [ ] T059 [P] `tests/Feature/Rendimiento/ListadosAcademicosTest.php` (SC-005): con 200 secciones y 2000 asignaciones, cada listado y «Mis asignaciones» responden con un número constante de consultas (sin N+1) y tiempos por debajo de 2 s y 1,5 s; confirmar con `EXPLAIN` que usan índices
-- [ ] T060 [P] `tests/Feature/Academico/GenericidadTest.php` (SC-007): cargar con fábricas otra institución (otros niveles, otra cantidad de grados y secciones) y operar sin cambiar código; más una prueba que busca en `app/`, `resources/views` y `config/` nombres de nivel, grado o curso de ejemplo y no encuentra ninguno
-- [ ] T061 Actualizar `README.md` (módulo, `sge:sincronizar-base`, seeders y demos) y `docs/despliegue/primer-despliegue.md` (paso de sincronización); añadir los ítems nuevos a `.env.example` solo si surge alguna variable (no se prevé)
+- [x] T058 [P] `database/seeders/AcademicoDemoSeeder.php`: institución ficticia, niveles, grados, secciones, cursos, docentes y algunas asignaciones; **rechaza `APP_ENV=production`**; llamarlo desde `DatabaseSeeder` solo en `local`; prueba en `tests/Feature/Seeders/AcademicoDemoSeederTest.php` (carga y rechazo en producción)
+- [x] T059[P] `tests/Feature/Rendimiento/ListadosAcademicosTest.php` (SC-005): con 200 secciones y 2000 asignaciones, cada listado y «Mis asignaciones» responden con un número constante de consultas (sin N+1) y tiempos por debajo de 2 s y 1,5 s; confirmar con `EXPLAIN` que usan índices
+- [x] T060[P] `tests/Feature/Academico/GenericidadTest.php` (SC-007): cargar con fábricas otra institución (otros niveles, otra cantidad de grados y secciones) y operar sin cambiar código; más una prueba que busca en `app/`, `resources/views` y `config/` nombres de nivel, grado o curso de ejemplo y no encuentra ninguno
+- [x] T061 Actualizar `README.md` (módulo, `sge:sincronizar-base`, seeders y demos) y `docs/despliegue/primer-despliegue.md` (paso de sincronización); añadir los ítems nuevos a `.env.example` solo si surge alguna variable (no se prevé)
 - [ ] T062 Recorrer `quickstart.md` §2 en local, **cronometrando** la configuración de una institución nueva (ficha, escala, año con periodos, grados, 3 secciones por grado, cursos y asignaciones de una sección; objetivo SC-001 < 30 min) y registrar tiempos y resultado en `specs/003-gestion-academica-base/evidencias/recorrido-local.md`
-- [ ] T063 Ejecutar la suite completa, `pint --test` y `/speckit-analyze` final; corregir hallazgos
+  - _Estado_: recorrido automatizado hecho y en verde (`RecorridoQuickstartTest`, evidencia en `evidencias/recorrido-local.md`); queda pendiente el cronometraje humano de SC-001.
+- [x] T063 Ejecutar la suite completa, `pint --test` y `/speckit-analyze` final; corregir hallazgos
 - [ ] T064 (manual) Etiquetar `v0.3.0`, desplegar con `deploy/deploy.sh` y ejecutar `quickstart.md` §3 con los usuarios de ejemplo de cada rol en staging; registrar en `evidencias/staging.md` (SC-006)
 
 ---

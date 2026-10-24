@@ -40,7 +40,19 @@ docker compose --profile dev run --rm node sh -c "npm install && npm run build"
 ```
 
 La aplicación queda en <http://localhost:8080/login>. Entra con el administrador definido en `.env`.
-En `APP_ENV=local` el seeder crea además usuarios de demostración.
+En `APP_ENV=local` el seeder crea además usuarios de demostración (uno por rol) y una institución de ejemplo
+con niveles, grados, secciones, cursos, tres docentes y algunas asignaciones (`AcademicoDemoSeeder`).
+
+### Datos base y de ejemplo
+
+| Qué | Cómo | Dónde corre |
+|---|---|---|
+| Roles, permisos y escalas de calificación (datos base, idempotentes) | `php artisan sge:sincronizar-base` | Cada despliegue (lo ejecuta `deploy/deploy.sh` tras `migrate`); nunca crea usuarios |
+| Administrador inicial | `DatabaseSeeder` (`AdministradorInicialSeeder`) | Primer despliegue |
+| Institución y datos académicos de ejemplo | `php artisan db:seed --class=AcademicoDemoSeeder` | `local` (automático), `staging` (a mano); **rechaza producción** |
+
+`sge:sincronizar-base` solo crea lo que falta y no revierte cambios del Administrador; los permisos que se
+eliminen o renombren en una versión futura hay que limpiarlos a mano.
 
 ## Pruebas
 

@@ -3,17 +3,6 @@
 use App\Models\AnioEscolar;
 use App\Models\AsignacionDocente;
 use App\Models\Curso;
-use App\Models\Rol;
-use App\Models\Usuario;
-use Database\Seeders\RolesYPermisosSeeder;
-
-/** Usuario activo con el rol y los permisos que deja el seeder base. */
-function usuarioConRolDeSeeder(string $nombreRol): Usuario
-{
-    test()->seed(RolesYPermisosSeeder::class);
-
-    return Usuario::factory()->create(['rol_id' => Rol::where('nombre', $nombreRol)->firstOrFail()->id, 'activo' => true]);
-}
 
 dataset('rolesPorDefecto', ['Administrador', 'Director', 'Docente', 'Padre de Familia', 'Alumno']);
 

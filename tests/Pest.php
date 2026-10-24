@@ -8,6 +8,7 @@ use App\Models\Rol;
 use App\Models\Seccion;
 use App\Models\Usuario;
 use Database\Factories\AsignacionDocenteFactory;
+use Database\Seeders\RolesYPermisosSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use Tests\TestCase;
@@ -96,4 +97,12 @@ function escenarioAsignacion(int $cursos = 3): array
         'cursos' => $listaCursos,
         'docente' => AsignacionDocenteFactory::docenteElegible(),
     ];
+}
+
+/** Usuario activo con el rol y los permisos que deja el seeder base. */
+function usuarioConRolDeSeeder(string $nombreRol): Usuario
+{
+    test()->seed(RolesYPermisosSeeder::class);
+
+    return Usuario::factory()->create(['rol_id' => Rol::where('nombre', $nombreRol)->firstOrFail()->id, 'activo' => true]);
 }
