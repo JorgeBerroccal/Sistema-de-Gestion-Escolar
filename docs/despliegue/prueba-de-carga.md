@@ -17,6 +17,10 @@ Prerrequisitos: variable de repositorio `STAGING_URL` en GitHub (Settings → Se
 Actions → Variables), servidor desplegado, cuota de la familia **BASv2** (≥ 2 vCPU libres; el cambio de
 tamaño no suma, porque la VM es una sola) y la CLI de Azure (`az login`) en tu PC para el paso 13.
 
+> **Inicio de sesión de `az`:** en la cuenta de Azure for Students, `az login --use-device-code` lo bloquea la
+> política de seguridad (error `AADSTS530035`). Usa el inicio con navegador indicando el tenant:
+> `az login --tenant <id-del-tenant>` (se obtiene en Portal → Microsoft Entra ID → Overview).
+
 ## Créditos de CPU: por qué importa en una máquina burstable
 
 B2als_v2 solo garantiza el **30 %** de su CPU (base); por encima de eso gasta *créditos* (1 crédito = 1 vCPU

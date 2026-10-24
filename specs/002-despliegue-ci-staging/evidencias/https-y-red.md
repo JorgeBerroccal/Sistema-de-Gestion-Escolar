@@ -51,3 +51,8 @@ y asignaciones `PASSWORD|SECRET|TOKEN|API_KEY=` con 16 o más caracteres.
 Lectura: la pila cabe en 1 GB con el perfil `diario`; en reposo usa ≈ 366 MB, deja 520 MB disponibles y ≈ 232 MB en swap
 (dato de referencia: parte del swap son páginas inactivas del sistema que `vm.swappiness=10` aún traslada). Los cuatro
 contenedores suman ≈ 100 MiB. No hace falta ajustar `PERFIL_TAMANO=diario`.
+
+### Revisión de las imágenes (22/10/2026)
+
+`sge-app:v0.2.0` y `sge-web:v0.2.0`: revisión de `docker history` y de `docker run --rm <imagen> env`. Resultado: **sin secretos**
+en las capas ni en las variables de entorno (DC-003, T085). Registro añadido el 23/10/2026 a partir de lo informado por el responsable.

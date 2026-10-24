@@ -65,6 +65,11 @@ El SGE se despliega en una máquina de Azure (staging, HTTPS con Let's Encrypt) 
 GitHub Actions; cada push y pull request ejecuta Pest y Pint. Guía completa en
 [`docs/despliegue/`](docs/despliegue/README.md).
 
+- **URL de staging:** <https://sge-peru.chilecentral.cloudapp.azure.com>
+- **Estado de CI:** [![ci](https://github.com/JorgeBerroccal/sge/actions/workflows/ci.yml/badge.svg)](https://github.com/JorgeBerroccal/sge/actions/workflows/ci.yml)
+- **Evidencias:** despliegue en [`specs/002-despliegue-ci-staging/evidencias/`](specs/002-despliegue-ci-staging/evidencias/)
+  y verificación del Módulo 1 en [`specs/001-auth-roles-rbac/evidencias/`](specs/001-auth-roles-rbac/evidencias/).
+
 ## Regla de autorización
 
 **Los permisos se verifican por identificador (p. ej. `usuarios.ver`), nunca por nombre de rol.**
