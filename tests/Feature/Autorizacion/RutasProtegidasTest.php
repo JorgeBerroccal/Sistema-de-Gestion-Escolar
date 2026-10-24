@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\AnioEscolar;
 use App\Models\Rol;
 use App\Models\Usuario;
 use Illuminate\Routing\Route as RutaLaravel;
@@ -26,7 +27,13 @@ function urlConParametros(string $uri): string
     $rol = Rol::factory()->create();
     $usuario = Usuario::factory()->create();
 
-    return '/'.ltrim(str_replace(['{usuario}', '{rol}'], [$usuario->id, $rol->id], $uri), '/');
+    $parametros = ['{usuario}' => $usuario->id, '{rol}' => $rol->id];
+
+    if (str_contains($uri, '{anio}')) {
+        $parametros['{anio}'] = AnioEscolar::factory()->create()->id;
+    }
+
+    return '/'.ltrim(strtr($uri, $parametros), '/');
 }
 
 it('hay rutas protegidas con can:*', function () {

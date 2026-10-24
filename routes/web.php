@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Livewire\Academico;
 use App\Livewire\Admin\Permisos;
 use App\Livewire\Admin\Roles;
 use App\Livewire\Admin\Usuarios;
@@ -23,4 +24,10 @@ Route::middleware(['auth', 'activo'])->group(function () {
     Route::livewire('/admin/permisos', Permisos\Index::class)->name('admin.permisos.index')->middleware('can:roles.ver');
     Route::livewire('/admin/roles', Roles\Index::class)->name('admin.roles.index')->middleware('can:roles.ver');
     Route::livewire('/admin/roles/{rol}/permisos', Roles\Permisos::class)->name('admin.roles.permisos')->middleware('can:roles.ver');
+
+    Route::livewire('/academico/institucion', Academico\Institucion\Edit::class)->name('academico.institucion')->middleware('can:academico.ver');
+    Route::livewire('/academico/niveles', Academico\Niveles\Index::class)->name('academico.niveles.index')->middleware('can:academico.ver');
+    Route::livewire('/academico/anios', Academico\AniosEscolares\Index::class)->name('academico.anios.index')->middleware('can:academico.ver');
+    Route::livewire('/academico/anios/crear', Academico\AniosEscolares\Form::class)->name('academico.anios.create')->middleware('can:academico.gestionar');
+    Route::livewire('/academico/anios/{anio}/editar', Academico\AniosEscolares\Form::class)->name('academico.anios.edit')->middleware('can:academico.gestionar');
 });
