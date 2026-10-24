@@ -163,16 +163,16 @@ Monolito Laravel 13 existente (ver plan.md): servicios en `app/Academico/`, mode
 
 ### Tests
 
-- [ ] T051 [P] [US5] `tests/Feature/Academico/Desactivacion/EliminarTest.php`: año, grado, sección, curso y nivel sin dependientes se eliminan; con dependientes (asignaciones, secciones, cursos, grados) se impiden y se ofrece desactivar; la base rechaza el borrado aunque el código no lo impidiera (`restrictOnDelete`) (SC-004)
-- [ ] T052 [P] [US5] `tests/Feature/Academico/Desactivacion/DesactivarTest.php`: desactivar y reactivar cada elemento; el año vigente no se desactiva ni elimina; nivel con grados activos no se desactiva; un elemento inactivo no se ofrece en selectores de asignación pero sus asignaciones siguen visibles y marcadas
-- [ ] T053 [P] [US5] `tests/Feature/Academico/Desactivacion/DocenteDesactivadoTest.php`: al desactivar a un docente (Módulo 1) o quitarle `docencia.dictar` a su rol, sus asignaciones se conservan, aparecen «pendientes de reasignar» y no se le pueden crear nuevas
-- [ ] T054 [P] [US5] `tests/Feature/Academico/Cursos/EditarCursoConAsignacionesTest.php` (research R-12): no se quita un grado con asignaciones de ese curso; no se cambia el nivel de un curso con grados o asignaciones
+- [x] T051 [P] [US5] `tests/Feature/Academico/Desactivacion/EliminarTest.php`: año, grado, sección, curso y nivel sin dependientes se eliminan; con dependientes (asignaciones, secciones, cursos, grados) se impiden y se ofrece desactivar; la base rechaza el borrado aunque el código no lo impidiera (`restrictOnDelete`) (SC-004)
+- [x] T052 [P] [US5] `tests/Feature/Academico/Desactivacion/DesactivarTest.php`: desactivar y reactivar cada elemento; el año vigente no se desactiva ni elimina; nivel con grados activos no se desactiva; un elemento inactivo no se ofrece en selectores de asignación pero sus asignaciones siguen visibles y marcadas
+- [x] T053 [P] [US5] `tests/Feature/Academico/Desactivacion/DocenteDesactivadoTest.php`: al desactivar a un docente (Módulo 1) o quitarle `docencia.dictar` a su rol, sus asignaciones se conservan, aparecen «pendientes de reasignar» y no se le pueden crear nuevas
+- [x] T054 [P] [US5] `tests/Feature/Academico/Cursos/EditarCursoConAsignacionesTest.php` (research R-12): no se quita un grado con asignaciones de ese curso; no se cambia el nivel de un curso con grados o asignaciones
 
 ### Implementation
 
-- [ ] T055 [US5] `tieneDependientes(): bool` en `Nivel`, `AnioEscolar`, `Grado`, `Seccion` y `Curso` según `data-model.md`, y acciones `desactivar`, `reactivar`, `eliminar` (con `academico.gestionar`) en los componentes `Index` de niveles, años, grados, secciones y cursos; la interfaz ofrece solo desactivar cuando hay dependientes
-- [ ] T056 [US5] Reglas de estado: año vigente intocable, nivel con grados activos, selectores que filtran `activo = true`, y en `AsignacionService` el rechazo de asignar a elementos inactivos; endurecer `Cursos\Form` según R-12
-- [ ] T057 [US5] Insignia «reasignar» y filtro «pendientes de reasignar» en `Asignaciones\Index`; `AsignacionService::quitar()` documenta con un comentario que los Módulos 4 y 5 deberán rechazar asignaciones con asistencia o notas; ejecutar T051–T054 hasta verde
+- [x] T055 [US5] `tieneDependientes(): bool` en `Nivel`, `AnioEscolar`, `Grado`, `Seccion` y `Curso` según `data-model.md`, y acciones `desactivar`, `reactivar`, `eliminar` (con `academico.gestionar`) en los componentes `Index` de niveles, años, grados, secciones y cursos; la interfaz ofrece solo desactivar cuando hay dependientes
+- [x] T056 [US5] Reglas de estado: año vigente intocable, nivel con grados activos, selectores que filtran `activo = true`, y en `AsignacionService` el rechazo de asignar a elementos inactivos; endurecer `Cursos\Form` según R-12
+- [x] T057 [US5] Insignia «reasignar» y filtro «pendientes de reasignar» en `Asignaciones\Index`; `AsignacionService::quitar()` documenta con un comentario que los Módulos 4 y 5 deberán rechazar asignaciones con asistencia o notas; ejecutar T051–T054 hasta verde
 
 **Checkpoint**: las cinco historias completas.
 

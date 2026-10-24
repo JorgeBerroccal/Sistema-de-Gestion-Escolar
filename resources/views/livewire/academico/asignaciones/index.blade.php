@@ -39,6 +39,9 @@
                 <label for="filtroDocente" class="mr-2 text-sm font-medium">Docente</label>
                 <input id="filtroDocente" type="search" wire:model.live.debounce.300ms="filtroDocente" placeholder="Nombre o apellido" class="rounded border border-gray-300 px-3 py-2">
             </div>
+            <label class="flex items-center gap-2 pt-6 text-sm">
+                <input type="checkbox" wire:model.live="soloPendientes"> Solo pendientes de reasignar
+            </label>
         @endif
     </div>
 

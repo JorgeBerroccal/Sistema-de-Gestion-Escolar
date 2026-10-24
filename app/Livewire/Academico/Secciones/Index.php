@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Academico\Secciones;
 
+use App\Livewire\Academico\Concerns\CambiaEstado;
 use App\Models\AnioEscolar;
 use App\Models\Grado;
 use App\Models\Nivel;
@@ -18,6 +19,7 @@ use Livewire\WithPagination;
 class Index extends Component
 {
     use AuthorizesRequests;
+    use CambiaEstado;
     use WithPagination;
 
     #[Url]
@@ -37,6 +39,11 @@ class Index extends Component
 
     /** Un identificador, o varios separados por comas (A, B, C) al crear. */
     public string $identificador = '';
+
+    protected function modelo(): string
+    {
+        return Seccion::class;
+    }
 
     public function mount(): void
     {
@@ -167,7 +174,7 @@ class Index extends Component
                 ->when($this->filtroNivel !== '', fn ($q) => $q->where('nivel_id', $this->filtroNivel))
                 ->orderBy('nivel_id')->orderBy('orden')->get(),
             'gradosActivos' => Grado::query()->with('nivel')->where('activo', true)->orderBy('nivel_id')->orderBy('orden')->get(),
-            'secciones' => Seccion::query()->with(['grado.nivel', 'anio'])
+            'secciones' => Seccion::query()->with(['grado.nivel', 'anio'])->withExists('asignaciones')
                 ->when($this->filtroAnio !== '', fn ($q) => $q->where('anio_escolar_id', $this->filtroAnio))
                 ->when($this->filtroGrado !== '', fn ($q) => $q->where('grado_id', $this->filtroGrado))
                 ->when($this->filtroNivel !== '', fn ($q) => $q->whereHas('grado', fn ($g) => $g->where('nivel_id', $this->filtroNivel)))

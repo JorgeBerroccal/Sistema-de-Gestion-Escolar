@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Academico\Cursos;
 
+use App\Models\AsignacionDocente;
 use App\Models\Curso;
 use App\Models\Grado;
 use App\Models\Nivel;
@@ -60,6 +61,10 @@ class Form extends Component
             'grados.*.exists' => 'Solo se pueden elegir grados del nivel del curso.',
         ]);
 
+        if ($this->curso && ! $this->validarEdicion(array_map('intval', $datos['grados']), (int) $datos['nivel_id'])) {
+            return;
+        }
+
         DB::transaction(function () use ($datos) {
             $curso = $this->curso ?? new Curso(['activo' => true]);
             $curso->fill(['nivel_id' => $datos['nivel_id'], 'nombre' => $datos['nombre']])->save();
@@ -67,6 +72,30 @@ class Form extends Component
         });
 
         return $this->redirectRoute('academico.cursos.index');
+    }
+
+    /** Research R-12: no dejar asignaciones apuntando a un grado o nivel que el curso ya no dicta. */
+    private function validarEdicion(array $gradosNuevos, int $nivelNuevo): bool
+    {
+        if ($nivelNuevo !== $this->curso->nivel_id) {
+            $this->addError('nivel_id', 'No se puede cambiar el nivel de un curso que ya tiene grados asociados.');
+
+            return false;
+        }
+
+        $quitados = $this->curso->grados()->whereNotIn('grados.id', $gradosNuevos)->get()
+            ->filter(fn (Grado $grado) => AsignacionDocente::query()
+                ->where('curso_id', $this->curso->id)
+                ->whereHas('seccion', fn ($s) => $s->where('grado_id', $grado->id))
+                ->exists());
+
+        if ($quitados->isNotEmpty()) {
+            $this->addError('grados', 'No se puede quitar un grado en que el curso ya tiene docentes asignados: '.$quitados->pluck('nombre')->join(', ').'.');
+
+            return false;
+        }
+
+        return true;
     }
 
     public function render(): View

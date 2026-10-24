@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Academico\Grados;
 
+use App\Livewire\Academico\Concerns\CambiaEstado;
 use App\Models\Grado;
 use App\Models\Nivel;
 use Illuminate\Contracts\View\View;
@@ -14,6 +15,7 @@ use Livewire\WithPagination;
 class Index extends Component
 {
     use AuthorizesRequests;
+    use CambiaEstado;
     use WithPagination;
 
     #[Url]
@@ -26,6 +28,11 @@ class Index extends Component
     public string $nombre = '';
 
     public string $orden = '';
+
+    protected function modelo(): string
+    {
+        return Grado::class;
+    }
 
     public function mount(): void
     {
@@ -79,7 +86,7 @@ class Index extends Component
     {
         return view('livewire.academico.grados.index', [
             'niveles' => Nivel::query()->orderBy('orden')->get(),
-            'grados' => Grado::query()->with('nivel')
+            'grados' => Grado::query()->with('nivel')->withExists(['secciones', 'cursos'])
                 ->when($this->filtroNivel !== '', fn ($q) => $q->where('nivel_id', $this->filtroNivel))
                 ->orderBy('nivel_id')->orderBy('orden')->paginate(15),
         ]);

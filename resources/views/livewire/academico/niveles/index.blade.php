@@ -36,9 +36,19 @@
                     <td class="p-2">{{ $nivel->orden }}</td>
                     <td class="p-2">{{ $nivel->nombre }}</td>
                     <td class="p-2">{{ $nivel->activo ? 'Activo' : 'Inactivo' }}</td>
-                    <td class="p-2">
+                    <td class="flex gap-3 p-2">
                         @can('academico.gestionar')
                             <button type="button" wire:click="editar({{ $nivel->id }})" class="underline">Editar</button>
+                        @endcan
+                        @can('academico.gestionar')
+                            @if ($nivel->activo)
+                                <button type="button" wire:click="desactivar({{ $nivel->id }})" class="underline">Desactivar</button>
+                            @else
+                                <button type="button" wire:click="reactivar({{ $nivel->id }})" class="underline">Reactivar</button>
+                            @endif
+                            @unless ($nivel->tieneDependientes())
+                                <button type="button" wire:click="eliminar({{ $nivel->id }})" wire:confirm="¿Eliminar definitivamente?" class="text-red-700 underline">Eliminar</button>
+                            @endunless
                         @endcan
                     </td>
                 </tr>

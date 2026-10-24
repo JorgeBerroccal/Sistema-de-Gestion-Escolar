@@ -34,6 +34,9 @@ class Index extends Component
     #[Url]
     public string $filtroDocente = '';
 
+    #[Url]
+    public bool $soloPendientes = false;
+
     public function mount(): void
     {
         $usuario = Auth::user();
@@ -55,6 +58,11 @@ class Index extends Component
     }
 
     public function updatingFiltroCurso(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSoloPendientes(): void
     {
         $this->resetPage();
     }
@@ -93,6 +101,9 @@ class Index extends Component
                 ->when($this->filtroAnio !== '', fn ($q) => $q->whereHas('seccion', fn ($s) => $s->where('anio_escolar_id', $this->filtroAnio)))
                 ->when($this->filtroSeccion !== '', fn ($q) => $q->where('seccion_id', $this->filtroSeccion))
                 ->when($this->filtroCurso !== '', fn ($q) => $q->where('curso_id', $this->filtroCurso))
+                ->when($veTodas && $this->soloPendientes, fn ($q) => $q->where(fn ($w) => $w
+                    ->whereHas('usuario', fn ($u) => $u->where('activo', false))
+                    ->orWhereDoesntHave('usuario.rol.permisos', fn ($p) => $p->where('identificador', AsignacionDocente::PERMISO_DOCENTE))))
                 ->when($prefijo !== '', function ($q) use ($prefijo) {
                     $patron = addcslashes($prefijo, '\\%_').'%';
                     $q->whereHas('usuario', fn ($d) => $d->where(fn ($w) => $w->where('nombres', 'like', $patron)->orWhere('apellidos', 'like', $patron)));

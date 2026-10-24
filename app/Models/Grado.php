@@ -41,4 +41,9 @@ class Grado extends Model
     {
         return $this->belongsToMany(Curso::class, 'curso_grado');
     }
+
+    public function tieneDependientes(): bool
+    {
+        return ($this->secciones_exists ?? $this->secciones()->exists()) || ($this->cursos_exists ?? $this->cursos()->exists());
+    }
 }

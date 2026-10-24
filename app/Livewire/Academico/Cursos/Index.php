@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Academico\Cursos;
 
+use App\Livewire\Academico\Concerns\CambiaEstado;
 use App\Models\Curso;
 use App\Models\Nivel;
 use Illuminate\Contracts\View\View;
@@ -13,10 +14,16 @@ use Livewire\WithPagination;
 class Index extends Component
 {
     use AuthorizesRequests;
+    use CambiaEstado;
     use WithPagination;
 
     #[Url]
     public string $filtroNivel = '';
+
+    protected function modelo(): string
+    {
+        return Curso::class;
+    }
 
     public function mount(): void
     {
@@ -32,7 +39,7 @@ class Index extends Component
     {
         return view('livewire.academico.cursos.index', [
             'niveles' => Nivel::query()->orderBy('orden')->get(),
-            'cursos' => Curso::query()->with(['nivel', 'grados' => fn ($q) => $q->orderBy('orden')])
+            'cursos' => Curso::query()->with(['nivel', 'grados' => fn ($q) => $q->orderBy('orden')])->withExists('asignaciones')
                 ->when($this->filtroNivel !== '', fn ($q) => $q->where('nivel_id', $this->filtroNivel))
                 ->orderBy('nivel_id')->orderBy('nombre')->paginate(15),
         ]);

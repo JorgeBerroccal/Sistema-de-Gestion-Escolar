@@ -39,6 +39,16 @@
                                 <button type="button" wire:click="marcarVigente({{ $anio->id }})"
                                         wire:confirm="¿Marcar este año como vigente? El año vigente actual dejará de serlo." class="text-green-700 underline">Marcar vigente</button>
                             @endunless
+                            @unless ($anio->esVigente())
+                                @if ($anio->activo)
+                                    <button type="button" wire:click="desactivar({{ $anio->id }})" class="underline">Desactivar</button>
+                                @else
+                                    <button type="button" wire:click="reactivar({{ $anio->id }})" class="underline">Reactivar</button>
+                                @endif
+                                @unless ($anio->tieneDependientes())
+                                    <button type="button" wire:click="eliminar({{ $anio->id }})" wire:confirm="¿Eliminar definitivamente?" class="text-red-700 underline">Eliminar</button>
+                                @endunless
+                            @endunless
                         @endcan
                     </td>
                 </tr>

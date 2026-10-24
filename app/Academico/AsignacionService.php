@@ -120,8 +120,8 @@ class AsignacionService
             throw new ReglaAcademicaIncumplida('Solo se pueden modificar asignaciones de secciones del año escolar vigente.');
         }
 
-        if (! $vigente->activo || ! $bloqueada->activo) {
-            throw new ReglaAcademicaIncumplida('La sección está desactivada.');
+        if (! $vigente->activo || ! $bloqueada->activo || ! $bloqueada->grado->activo) {
+            throw new ReglaAcademicaIncumplida('La sección está desactivada (o lo está su grado).');
         }
 
         return $bloqueada;

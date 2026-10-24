@@ -83,6 +83,7 @@ class Form extends Component
                 : null,
             'secciones' => $vigente === null ? collect() : Seccion::query()->with('grado.nivel')
                 ->where('anio_escolar_id', $vigente->id)->where('activo', true)
+                ->whereHas('grado', fn ($g) => $g->where('activo', true))
                 ->orderBy('grado_id')->orderBy('identificador')->get(),
             'cursosDisponibles' => $seccion === null ? collect() : $seccion->grado->cursos()->where('cursos.activo', true)
                 ->whereNotIn('cursos.id', AsignacionDocente::query()->where('seccion_id', $seccion->id)->select('curso_id'))

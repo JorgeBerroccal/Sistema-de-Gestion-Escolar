@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Curso extends Model
 {
@@ -34,5 +35,15 @@ class Curso extends Model
     public function grados(): BelongsToMany
     {
         return $this->belongsToMany(Grado::class, 'curso_grado');
+    }
+
+    public function asignaciones(): HasMany
+    {
+        return $this->hasMany(AsignacionDocente::class, 'curso_id');
+    }
+
+    public function tieneDependientes(): bool
+    {
+        return $this->asignaciones_exists ?? $this->asignaciones()->exists();
     }
 }

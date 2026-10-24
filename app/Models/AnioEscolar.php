@@ -41,4 +41,15 @@ class AnioEscolar extends Model
     {
         return $this->hasMany(PeriodoEvaluacion::class, 'anio_escolar_id')->orderBy('orden');
     }
+
+    public function secciones(): HasMany
+    {
+        return $this->hasMany(Seccion::class, 'anio_escolar_id');
+    }
+
+    /** Hoy solo las secciones; los Módulos 4 y 5 sumarán asistencia y notas de sus periodos. */
+    public function tieneDependientes(): bool
+    {
+        return $this->secciones_exists ?? $this->secciones()->exists();
+    }
 }

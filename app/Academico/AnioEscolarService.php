@@ -40,6 +40,38 @@ class AnioEscolarService
         $anio->refresh();
     }
 
+    /** Desactiva un año; el vigente no se desactiva. Bloquea la fila para no competir con marcarVigente(). */
+    public function desactivar(AnioEscolar $anio): void
+    {
+        DB::transaction(function () use ($anio) {
+            $fila = AnioEscolar::query()->whereKey($anio->id)->lockForUpdate()->firstOrFail();
+
+            if ($fila->esVigente()) {
+                throw new ReglaAcademicaIncumplida('No se puede desactivar el año escolar vigente; marca otro año como vigente antes.');
+            }
+
+            $fila->update(['activo' => false]);
+        }, 3);
+    }
+
+    /** Elimina un año solo si no es el vigente y no tiene secciones ni otros dependientes. */
+    public function eliminar(AnioEscolar $anio): void
+    {
+        DB::transaction(function () use ($anio) {
+            $fila = AnioEscolar::query()->whereKey($anio->id)->lockForUpdate()->firstOrFail();
+
+            if ($fila->esVigente()) {
+                throw new ReglaAcademicaIncumplida('No se puede eliminar el año escolar vigente.');
+            }
+
+            if ($fila->tieneDependientes()) {
+                throw new ReglaAcademicaIncumplida('No se puede eliminar un año que tiene secciones; desactívalo para conservar el historial.');
+            }
+
+            $fila->delete();
+        }, 3);
+    }
+
     /**
      * Crea o edita un año con sus periodos en una sola transacción.
      *

@@ -14,6 +14,10 @@
         </select>
     </div>
 
+    @error('general')
+        <p class="mb-4 rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+    @enderror
+
     <table class="w-full bg-white text-left shadow">
         <thead class="bg-gray-200 text-sm">
             <tr><th class="p-2">Nivel</th><th class="p-2">Curso</th><th class="p-2">Grados</th><th class="p-2">Estado</th><th class="p-2">Acciones</th></tr>
@@ -25,9 +29,19 @@
                     <td class="p-2">{{ $curso->nombre }}</td>
                     <td class="p-2">{{ $curso->grados->pluck('nombre')->join(', ') }}</td>
                     <td class="p-2">{{ $curso->activo ? 'Activo' : 'Inactivo' }}</td>
-                    <td class="p-2">
+                    <td class="flex gap-3 p-2">
                         @can('academico.gestionar')
                             <a href="{{ route('academico.cursos.edit', $curso) }}" class="underline">Editar</a>
+                        @endcan
+                        @can('academico.gestionar')
+                            @if ($curso->activo)
+                                <button type="button" wire:click="desactivar({{ $curso->id }})" class="underline">Desactivar</button>
+                            @else
+                                <button type="button" wire:click="reactivar({{ $curso->id }})" class="underline">Reactivar</button>
+                            @endif
+                            @unless ($curso->tieneDependientes())
+                                <button type="button" wire:click="eliminar({{ $curso->id }})" wire:confirm="¿Eliminar definitivamente?" class="text-red-700 underline">Eliminar</button>
+                            @endunless
                         @endcan
                     </td>
                 </tr>

@@ -8,7 +8,7 @@
 
         <div>
             <label for="nivel_id" class="block text-sm font-medium">Nivel</label>
-            <select id="nivel_id" wire:model.live="nivel_id" class="mt-1 w-full rounded border border-gray-300 px-3 py-2">
+            <select id="nivel_id" wire:model.live="nivel_id" @disabled($curso?->exists) class="mt-1 w-full rounded border border-gray-300 px-3 py-2">
                 <option value="">Elige un nivel</option>
                 @foreach ($niveles as $nivel) <option value="{{ $nivel->id }}">{{ $nivel->nombre }}</option> @endforeach
             </select>

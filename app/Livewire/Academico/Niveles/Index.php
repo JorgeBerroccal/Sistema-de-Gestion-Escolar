@@ -2,8 +2,10 @@
 
 namespace App\Livewire\Academico\Niveles;
 
+use App\Livewire\Academico\Concerns\CambiaEstado;
 use App\Models\Nivel;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
@@ -12,6 +14,7 @@ use Livewire\WithPagination;
 class Index extends Component
 {
     use AuthorizesRequests;
+    use CambiaEstado;
     use WithPagination;
 
     public ?int $editandoId = null;
@@ -19,6 +22,16 @@ class Index extends Component
     public string $nombre = '';
 
     public string $orden = '';
+
+    protected function modelo(): string
+    {
+        return Nivel::class;
+    }
+
+    protected function impedimentoParaDesactivar(Model $registro): ?string
+    {
+        return $registro->tieneGradosActivos() ? 'No se puede desactivar un nivel que tiene grados activos.' : null;
+    }
 
     public function mount(): void
     {
@@ -64,7 +77,7 @@ class Index extends Component
     public function render(): View
     {
         return view('livewire.academico.niveles.index', [
-            'niveles' => Nivel::query()->orderBy('orden')->orderBy('id')->paginate(15),
+            'niveles' => Nivel::query()->withExists(['grados', 'cursos', 'instituciones'])->orderBy('orden')->orderBy('id')->paginate(15),
         ]);
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Seccion extends Model
 {
@@ -33,5 +34,15 @@ class Seccion extends Model
     public function anio(): BelongsTo
     {
         return $this->belongsTo(AnioEscolar::class, 'anio_escolar_id');
+    }
+
+    public function asignaciones(): HasMany
+    {
+        return $this->hasMany(AsignacionDocente::class, 'seccion_id');
+    }
+
+    public function tieneDependientes(): bool
+    {
+        return $this->asignaciones_exists ?? $this->asignaciones()->exists();
     }
 }

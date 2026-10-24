@@ -61,6 +61,10 @@
         </div>
     </div>
 
+    @error('general')
+        <p class="mb-4 rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+    @enderror
+
     <table class="w-full bg-white text-left shadow">
         <thead class="bg-gray-200 text-sm">
             <tr><th class="p-2">Año</th><th class="p-2">Nivel</th><th class="p-2">Grado</th><th class="p-2">Sección</th><th class="p-2">Estado</th><th class="p-2">Acciones</th></tr>
@@ -73,9 +77,19 @@
                     <td class="p-2">{{ $seccion->grado->nombre }}</td>
                     <td class="p-2">{{ $seccion->identificador }}</td>
                     <td class="p-2">{{ $seccion->activo ? 'Activa' : 'Inactiva' }}</td>
-                    <td class="p-2">
+                    <td class="flex gap-3 p-2">
                         @can('academico.gestionar')
                             <button type="button" wire:click="editar({{ $seccion->id }})" class="underline">Editar</button>
+                        @endcan
+                        @can('academico.gestionar')
+                            @if ($seccion->activo)
+                                <button type="button" wire:click="desactivar({{ $seccion->id }})" class="underline">Desactivar</button>
+                            @else
+                                <button type="button" wire:click="reactivar({{ $seccion->id }})" class="underline">Reactivar</button>
+                            @endif
+                            @unless ($seccion->tieneDependientes())
+                                <button type="button" wire:click="eliminar({{ $seccion->id }})" wire:confirm="¿Eliminar definitivamente?" class="text-red-700 underline">Eliminar</button>
+                            @endunless
                         @endcan
                     </td>
                 </tr>
