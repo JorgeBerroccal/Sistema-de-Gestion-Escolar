@@ -67,7 +67,8 @@ cd /opt/sge
 docker compose -p sge -f docker-compose.prod.yml exec app php artisan db:seed --force
 ```
 
-`db:seed --force` ejecuta `DatabaseSeeder`: roles, permisos y el Administrador inicial (los usuarios de
+El despliegue ya sincroniza los permisos, roles y escalas base (`sge:sincronizar-base`);
+`db:seed --force` ejecuta `DatabaseSeeder`: roles, permisos, escalas y el Administrador inicial (los usuarios de
 demostración solo se crean en entorno `local`). Comprobar:
 
 ```bash

@@ -11,7 +11,7 @@ it('siembra roles, permisos y el administrador inicial sin usuarios demo en test
     $this->seed(DatabaseSeeder::class);
 
     expect(Rol::count())->toBe(5)
-        ->and(Permiso::count())->toBe(7)
+        ->and(Permiso::count())->toBe(13)
         ->and(Usuario::pluck('username')->all())->toBe(['admin']);
 });
 
