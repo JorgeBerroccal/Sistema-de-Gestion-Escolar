@@ -30,4 +30,9 @@ Route::middleware(['auth', 'activo'])->group(function () {
     Route::livewire('/academico/anios', Academico\AniosEscolares\Index::class)->name('academico.anios.index')->middleware('can:academico.ver');
     Route::livewire('/academico/anios/crear', Academico\AniosEscolares\Form::class)->name('academico.anios.create')->middleware('can:academico.gestionar');
     Route::livewire('/academico/anios/{anio}/editar', Academico\AniosEscolares\Form::class)->name('academico.anios.edit')->middleware('can:academico.gestionar');
+    Route::livewire('/academico/grados', Academico\Grados\Index::class)->name('academico.grados.index')->middleware('can:academico.ver');
+    Route::livewire('/academico/secciones', Academico\Secciones\Index::class)->name('academico.secciones.index')->middleware('can:academico.ver');
+    Route::livewire('/academico/cursos', Academico\Cursos\Index::class)->name('academico.cursos.index')->middleware('can:academico.ver');
+    Route::livewire('/academico/cursos/crear', Academico\Cursos\Form::class)->name('academico.cursos.create')->middleware('can:academico.gestionar');
+    Route::livewire('/academico/cursos/{curso}/editar', Academico\Cursos\Form::class)->name('academico.cursos.edit')->middleware('can:academico.gestionar');
 });

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\AnioEscolar;
+use App\Models\Curso;
 use App\Models\Rol;
 use App\Models\Usuario;
 use Illuminate\Routing\Route as RutaLaravel;
@@ -31,6 +32,10 @@ function urlConParametros(string $uri): string
 
     if (str_contains($uri, '{anio}')) {
         $parametros['{anio}'] = AnioEscolar::factory()->create()->id;
+    }
+
+    if (str_contains($uri, '{curso}')) {
+        $parametros['{curso}'] = Curso::factory()->create()->id;
     }
 
     return '/'.ltrim(strtr($uri, $parametros), '/');

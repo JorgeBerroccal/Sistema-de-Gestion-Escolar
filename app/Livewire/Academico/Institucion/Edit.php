@@ -55,6 +55,18 @@ class Edit extends Component
             'escala_calificacion_id' => 'nullable|exists:escalas_calificacion,id',
         ], ['niveles.required' => 'Marca al menos un nivel que atiende la institución.', 'niveles.min' => 'Marca al menos un nivel que atiende la institución.']);
 
+        $quitados = Nivel::query()
+            ->whereIn('id', Institucion::actual()->niveles()->pluck('niveles.id'))
+            ->whereNotIn('id', array_map('intval', $datos['niveles']))
+            ->get()
+            ->filter(fn (Nivel $nivel) => $nivel->tieneGradosActivos());
+
+        if ($quitados->isNotEmpty()) {
+            $this->addError('niveles', 'No se puede quitar un nivel que tiene grados activos: '.$quitados->pluck('nombre')->join(', ').'.');
+
+            return;
+        }
+
         DB::transaction(function () use ($datos) {
             $ficha = Institucion::actual();
             $ficha->fill(collect($datos)->only(['nombre', 'codigo_modular', 'ugel_dre', 'escala_calificacion_id'])->all())->save();

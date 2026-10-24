@@ -89,18 +89,18 @@ Monolito Laravel 13 existente (ver plan.md): servicios en `app/Academico/`, mode
 
 ### Tests
 
-- [ ] T025 [P] [US2] `tests/Feature/Academico/Grados/GradosTest.php`: crear con nombre y orden; rechazo de nombre u orden repetidos en el mismo nivel (también «1°» vs « 1° » y distinta capitalización); mismo nombre en otro nivel permitido; permitido/denegado por permiso
-- [ ] T026 [P] [US2] `tests/Feature/Academico/Secciones/SeccionesTest.php`: crear A, B y C de un grado y año; cantidad distinta en otro grado; duplicado «A»/«a» en mismo grado y año rechazado (misma letra en otro año o grado permitida); permitido/denegado
-- [ ] T027 [P] [US2] `tests/Feature/Academico/Cursos/CursosTest.php`: curso con nivel y varios grados del nivel; rechazo con grado de otro nivel; rechazo sin grados; nombre único por nivel; permitido/denegado
+- [x] T025 [P] [US2] `tests/Feature/Academico/Grados/GradosTest.php`: crear con nombre y orden; rechazo de nombre u orden repetidos en el mismo nivel (también «1°» vs « 1° » y distinta capitalización); mismo nombre en otro nivel permitido; permitido/denegado por permiso
+- [x] T026 [P] [US2] `tests/Feature/Academico/Secciones/SeccionesTest.php`: crear A, B y C de un grado y año; cantidad distinta en otro grado; duplicado «A»/«a» en mismo grado y año rechazado (misma letra en otro año o grado permitida); permitido/denegado
+- [x] T027 [P] [US2] `tests/Feature/Academico/Cursos/CursosTest.php`: curso con nivel y varios grados del nivel; rechazo con grado de otro nivel; rechazo sin grados; nombre único por nivel; permitido/denegado
 
 ### Implementation
 
-- [ ] T028 [US2] Migraciones: `2026_10_24_000006_create_grados_table.php` (`nivel_id` FK; `nombre` varchar(40); `orden` smallint unsigned; `activo` boolean con índice; únicos `(nivel_id, nombre)` y `(nivel_id, orden)`), `…000007_create_secciones_table.php` (`grado_id`, `anio_escolar_id` FK; `identificador` varchar(10); `activo`; único `(grado_id, anio_escolar_id, identificador)`; índice en `anio_escolar_id`), `…000008_create_cursos_tables.php` (`cursos`: `nivel_id` FK, `nombre` varchar(100), `activo`, único `(nivel_id, nombre)`; pivote `curso_grado` PK compuesta, `curso_id` `cascadeOnDelete`, `grado_id` `restrictOnDelete` con índice). Todas las FK con `restrictOnDelete` salvo lo indicado
-- [ ] T029 [P] [US2] Modelos `app/Models/Grado.php`, `Seccion.php` (`$table = 'secciones'`; identificador en mayúsculas), `Curso.php` con relaciones, mutadores de normalización y fábricas (`GradoFactory`, `SeccionFactory`, `CursoFactory`)
-- [ ] T030 [P] [US2] `app/Livewire/Academico/Grados/Index.php` + vista: listado paginado por nivel con alta y edición en línea (`academico.gestionar`); nivel activo requerido
-- [ ] T031 [P] [US2] `app/Livewire/Academico/Secciones/Index.php` + vista: listado paginado con filtros año/nivel/grado y `with(['grado.nivel','anio'])`; `crear` y `crearVarias` (A, B, C…) por grado y año activos
-- [ ] T032 [US2] `app/Livewire/Academico/Cursos/Index.php` y `Form.php` + vistas: selección de nivel y de grados **solo de ese nivel**, validación en servidor (no solo en la interfaz); la edición con asignaciones se endurece en T056
-- [ ] T033 [US2] Rutas (`grados`, `secciones`, `cursos`) con permisos y menú (Grados, Secciones, Cursos); ejecutar T025–T027 hasta verde y `pint`
+- [x] T028 [US2] Migraciones: `2026_10_24_000006_create_grados_table.php` (`nivel_id` FK; `nombre` varchar(40); `orden` smallint unsigned; `activo` boolean con índice; únicos `(nivel_id, nombre)` y `(nivel_id, orden)`), `…000007_create_secciones_table.php` (`grado_id`, `anio_escolar_id` FK; `identificador` varchar(10); `activo`; único `(grado_id, anio_escolar_id, identificador)`; índice en `anio_escolar_id`), `…000008_create_cursos_tables.php` (`cursos`: `nivel_id` FK, `nombre` varchar(100), `activo`, único `(nivel_id, nombre)`; pivote `curso_grado` PK compuesta, `curso_id` `cascadeOnDelete`, `grado_id` `restrictOnDelete` con índice). Todas las FK con `restrictOnDelete` salvo lo indicado
+- [x] T029 [P] [US2] Modelos `app/Models/Grado.php`, `Seccion.php` (`$table = 'secciones'`; identificador en mayúsculas), `Curso.php` con relaciones, mutadores de normalización y fábricas (`GradoFactory`, `SeccionFactory`, `CursoFactory`)
+- [x] T030 [P] [US2] `app/Livewire/Academico/Grados/Index.php` + vista: listado paginado por nivel con alta y edición en línea (`academico.gestionar`); nivel activo requerido
+- [x] T031 [P] [US2] `app/Livewire/Academico/Secciones/Index.php` + vista: listado paginado con filtros año/nivel/grado y `with(['grado.nivel','anio'])`; `crear` y `crearVarias` (A, B, C…) por grado y año activos
+- [x] T032 [US2] `app/Livewire/Academico/Cursos/Index.php` y `Form.php` + vistas: selección de nivel y de grados **solo de ese nivel**, validación en servidor (no solo en la interfaz); la edición con asignaciones se endurece en T056
+- [x] T033 [US2] Rutas (`grados`, `secciones`, `cursos`) con permisos y menú (Grados, Secciones, Cursos); ejecutar T025–T027 hasta verde y `pint`
 
 **Checkpoint**: US1 y US2 funcionan por separado.
 

@@ -10,4 +10,7 @@ return [
     ['etiqueta' => 'Institución', 'ruta' => 'academico.institucion', 'permiso' => 'academico.ver'],
     ['etiqueta' => 'Niveles', 'ruta' => 'academico.niveles.index', 'permiso' => 'academico.ver'],
     ['etiqueta' => 'Años escolares', 'ruta' => 'academico.anios.index', 'permiso' => 'academico.ver'],
+    ['etiqueta' => 'Grados', 'ruta' => 'academico.grados.index', 'permiso' => 'academico.ver'],
+    ['etiqueta' => 'Secciones', 'ruta' => 'academico.secciones.index', 'permiso' => 'academico.ver'],
+    ['etiqueta' => 'Cursos', 'ruta' => 'academico.cursos.index', 'permiso' => 'academico.ver'],
 ];

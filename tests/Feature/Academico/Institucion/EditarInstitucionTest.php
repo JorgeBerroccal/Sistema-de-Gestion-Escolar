@@ -2,6 +2,7 @@
 
 use App\Livewire\Academico\Institucion\Edit;
 use App\Models\EscalaCalificacion;
+use App\Models\Grado;
 use App\Models\Institucion;
 use App\Models\Nivel;
 use Database\Seeders\EscalasCalificacionSeeder;
@@ -96,4 +97,21 @@ it('la base impide una segunda ficha', function () {
 
     expect(fn () => DB::table('instituciones')->insert(['id' => 2, 'nombre' => 'X', 'codigo_modular' => '1', 'ugel_dre' => 'Y']))
         ->toThrow(QueryException::class);
+});
+
+it('no deja quitar un nivel atendido que tiene grados activos', function () {
+    $admin = usuarioConPermisos(['academico.ver', 'academico.gestionar']);
+    $conGrados = Nivel::factory()->create();
+    $libre = Nivel::factory()->create();
+    Grado::factory()->for($conGrados)->create();
+    $ficha = Institucion::factory()->create();
+    $ficha->niveles()->sync([$conGrados->id, $libre->id]);
+
+    $c = Livewire::actingAs($admin)->test(Edit::class)
+        ->set('niveles', [(string) $libre->id])->call('guardar')->assertHasErrors('niveles');
+
+    expect($ficha->niveles()->count())->toBe(2);
+
+    $c->set('niveles', [(string) $conGrados->id])->call('guardar')->assertHasNoErrors();
+    expect($ficha->niveles()->pluck('niveles.id')->all())->toBe([$conGrados->id]);
 });
