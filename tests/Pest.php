@@ -1,9 +1,15 @@
 <?php
 
+use App\Models\AnioEscolar;
+use App\Models\Curso;
+use App\Models\Grado;
 use App\Models\Permiso;
 use App\Models\Rol;
+use App\Models\Seccion;
 use App\Models\Usuario;
+use Database\Factories\AsignacionDocenteFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 /*
@@ -69,4 +75,25 @@ function usuarioConPermisos(array $identificadores = [], array $atributos = []):
     $rol->permisos()->sync($ids->all());
 
     return Usuario::factory()->create(array_merge(['rol_id' => $rol->id, 'activo' => true], $atributos));
+}
+
+/**
+ * Escenario de asignación: año vigente con una sección y cursos del grado, y un docente elegible.
+ *
+ * @return array{anio: AnioEscolar, seccion: Seccion, cursos: Collection, docente: Usuario}
+ */
+function escenarioAsignacion(int $cursos = 3): array
+{
+    $anio = AnioEscolar::factory()->vigente()->create();
+    $grado = Grado::factory()->create();
+    $seccion = Seccion::factory()->for($grado)->for($anio, 'anio')->create(['identificador' => 'A']);
+    $listaCursos = Curso::factory()->count($cursos)->create(['nivel_id' => $grado->nivel_id]);
+    $grado->cursos()->attach($listaCursos->pluck('id'));
+
+    return [
+        'anio' => $anio,
+        'seccion' => $seccion,
+        'cursos' => $listaCursos,
+        'docente' => AsignacionDocenteFactory::docenteElegible(),
+    ];
 }

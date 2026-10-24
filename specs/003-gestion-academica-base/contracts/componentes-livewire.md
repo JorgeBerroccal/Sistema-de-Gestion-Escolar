@@ -20,7 +20,7 @@ denegado (SC-003, FR-026).
 | `Secciones\Index` | `crear(grado, año, identificador)`, `crearVarias`, `editar`, `desactivar`, `reactivar`, `eliminar` | `academico.gestionar` | identificador único por grado y año; grado y año activos; elimina solo sin asignaciones. Filtros: año, nivel, grado. |
 | `Cursos\Index` | `desactivar`, `reactivar`, `eliminar` | `academico.gestionar` | elimina solo sin asignaciones. |
 | `Cursos\Form` | `guardar` | `academico.gestionar` | nivel + ≥ 1 grado del mismo nivel; nombre único por nivel; reglas R-12. |
-| `Asignaciones\Index` | (consulta) | `ver_todas` o `ver_propias` | `AsignacionDocente::visiblePara()` con `with(['docente','curso','seccion.grado.nivel','seccion.anio'])`; filtros año, sección, curso, docente (los de docente solo con `ver_todas`); insignia «reasignar» (R-06). |
+| `Asignaciones\Index` | (consulta) | `ver_todas` o `ver_propias` | `AsignacionDocente::visiblePara()` con `with(['usuario','curso','seccion.grado.nivel','seccion.anio'])`; filtros año, sección, curso, docente (los de docente solo con `ver_todas`); insignia «reasignar» (R-06). |
 | | `quitar(id)` | `asignaciones.gestionar` | solo año vigente. |
 | `Asignaciones\Form` | `guardar` | `asignaciones.gestionar` | sección (solo del año vigente), cursos (varios), docente elegible; todo o nada (R-08). `reasignar(id)` cambia el docente. |
 | `Asignaciones\Show` | (consulta) | `ver_todas` o `ver_propias` | `autorizarPertenencia()` antes de cargar datos. |

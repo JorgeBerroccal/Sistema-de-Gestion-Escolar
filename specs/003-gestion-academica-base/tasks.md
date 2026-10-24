@@ -114,19 +114,19 @@ Monolito Laravel 13 existente (ver plan.md): servicios en `app/Academico/`, mode
 
 ### Tests
 
-- [ ] T034 [P] [US3] `tests/Feature/Academico/Asignaciones/AsignarTest.php`: caso válido; rechazos: curso ya asignado en la sección, docente inactivo, usuario sin `docencia.dictar`, sección de año no vigente, sin año vigente, curso no asociado al grado, sección/curso inactivos; un docente con varias secciones permitido; reasignar cambia solo el docente; **`quitar`**: permitido con `asignaciones.gestionar` en el año vigente, rechazado en una sección de un año anterior (la asignación no cambia) y 403 sin el permiso
-- [ ] T035 [P] [US3] `tests/Feature/Academico/Asignaciones/AsignarVariosTest.php`: tres cursos en una operación; si uno es inválido no se crea ninguno y el error nombra el curso; **concurrencia, por separado**: (a) insertar la misma pareja `(seccion_id, curso_id)` lanza `QueryException` por el índice único y el servicio la traduce a mensaje de validación, no 500; (b) con `DB::listen` se verifica el `for update` sobre la sección y el año vigente
-- [ ] T036 [P] [US3] `tests/Feature/Academico/Asignaciones/DocentesElegiblesTest.php`: lista solo usuarios activos con `docencia.dictar`; un rol con ese permiso concedido por datos también aparece sin cambiar código
-- [ ] T037 [P] [US3] `tests/Feature/Academico/Asignaciones/BloqueoAnioVigenteTest.php`: con `DB::listen`, `asignar()` y `marcarVigente()` bloquean la misma fila del año vigente (`for update`); tras cambiar el año vigente, asignar en una sección del año anterior se rechaza
+- [x] T034 [P] [US3] `tests/Feature/Academico/Asignaciones/AsignarTest.php`: caso válido; rechazos: curso ya asignado en la sección, docente inactivo, usuario sin `docencia.dictar`, sección de año no vigente, sin año vigente, curso no asociado al grado, sección/curso inactivos; un docente con varias secciones permitido; reasignar cambia solo el docente; **`quitar`**: permitido con `asignaciones.gestionar` en el año vigente, rechazado en una sección de un año anterior (la asignación no cambia) y 403 sin el permiso
+- [x] T035 [P] [US3] `tests/Feature/Academico/Asignaciones/AsignarVariosTest.php`: tres cursos en una operación; si uno es inválido no se crea ninguno y el error nombra el curso; **concurrencia, por separado**: (a) insertar la misma pareja `(seccion_id, curso_id)` lanza `QueryException` por el índice único y el servicio la traduce a mensaje de validación, no 500; (b) con `DB::listen` se verifica el `for update` sobre la sección y el año vigente
+- [x] T036 [P] [US3] `tests/Feature/Academico/Asignaciones/DocentesElegiblesTest.php`: lista solo usuarios activos con `docencia.dictar`; un rol con ese permiso concedido por datos también aparece sin cambiar código
+- [x] T037 [P] [US3] `tests/Feature/Academico/Asignaciones/BloqueoAnioVigenteTest.php`: con `DB::listen`, `asignar()` y `marcarVigente()` bloquean la misma fila del año vigente (`for update`); tras cambiar el año vigente, asignar en una sección del año anterior se rechaza
 
 ### Implementation
 
-- [ ] T038 [US3] Migración `2026_10_24_000009_create_asignaciones_docentes_table.php`: `seccion_id`, `curso_id`, `usuario_id` FK `restrictOnDelete`; único `(seccion_id, curso_id)`; índices `(usuario_id, seccion_id)` y `curso_id`
-- [ ] T039 [US3] `app/Models/AsignacionDocente.php` (`$table = 'asignaciones_docentes'`, trait `RequierePertenencia`, relaciones `seccion`, `curso`, `docente` → `Usuario`, atributo `pendienteReasignar`) y `AsignacionDocenteFactory`
-- [ ] T040 [US3] `app/Academico/AsignacionService.php` según `contracts/componentes-livewire.md`: `docentesElegibles()` (activo + `whereHas('rol.permisos', identificador = 'docencia.dictar')`, filtrada por búsqueda por prefijo), `asignar`, `asignarVarios` (todo o nada), `reasignar`, `quitar` (solo año vigente); transacción que bloquea sección y año vigente (research R-08); la violación del índice único se traduce a `ReglaAcademicaIncumplida`
-- [ ] T041 [US3] `app/Autorizacion/Pertenencia/Reglas/AsignacionDocenteRegla.php` y registro en `config/pertenencia.php` según la tabla de `contracts/permisos-y-pertenencia.md` (por permisos, sin nombres de rol)
-- [ ] T042 [US3] `app/Livewire/Academico/Asignaciones/Index.php` + vista (consulta con `visiblePara($usuario)` y `with(['docente','curso','seccion.grado.nivel','seccion.anio'])`, paginado 15, filtros, insignia «reasignar») y `Form.php` + vista (sección del año vigente, selección múltiple de cursos del grado, buscador de docentes elegibles, `reasignar`, `quitar`)
-- [ ] T043 [US3] Rutas `asignaciones` (index, create) con `asignaciones.ver_todas` / `asignaciones.gestionar`; ítem de menú «Asignaciones»; ejecutar T034–T037 hasta verde y `pint`
+- [x] T038 [US3] Migración `2026_10_24_000009_create_asignaciones_docentes_table.php`: `seccion_id`, `curso_id`, `usuario_id` FK `restrictOnDelete`; único `(seccion_id, curso_id)`; índices `(usuario_id, seccion_id)` y `curso_id`
+- [x] T039 [US3] `app/Models/AsignacionDocente.php` (`$table = 'asignaciones_docentes'`, trait `RequierePertenencia`, relaciones `seccion`, `curso`, `usuario` (el docente) → `Usuario`, atributo `pendienteReasignar`) y `AsignacionDocenteFactory`
+- [x] T040 [US3] `app/Academico/AsignacionService.php` según `contracts/componentes-livewire.md`: `docentesElegibles()` (activo + `whereHas('rol.permisos', identificador = 'docencia.dictar')`, filtrada por búsqueda por prefijo), `asignar`, `asignarVarios` (todo o nada), `reasignar`, `quitar` (solo año vigente); transacción que bloquea sección y año vigente (research R-08); la violación del índice único se traduce a `ReglaAcademicaIncumplida`
+- [x] T041 [US3] `app/Autorizacion/Pertenencia/Reglas/AsignacionDocenteRegla.php` y registro en `config/pertenencia.php` según la tabla de `contracts/permisos-y-pertenencia.md` (por permisos, sin nombres de rol)
+- [x] T042 [US3] `app/Livewire/Academico/Asignaciones/Index.php` + vista (consulta con `visiblePara($usuario)` y `with(['usuario','curso','seccion.grado.nivel','seccion.anio'])`, paginado 15, filtros, insignia «reasignar») y `Form.php` + vista (sección del año vigente, selección múltiple de cursos del grado, buscador de docentes elegibles, `reasignar`, `quitar`)
+- [x] T043 [US3] Rutas `asignaciones` (index, create) con `asignaciones.ver_todas` / `asignaciones.gestionar`; ítem de menú «Asignaciones»; ejecutar T034–T037 hasta verde y `pint`
 
 **Checkpoint**: configuración completa utilizable por el Administrador.
 
@@ -140,16 +140,16 @@ Monolito Laravel 13 existente (ver plan.md): servicios en `app/Academico/`, mode
 
 ### Tests
 
-- [ ] T044 [P] [US4] `tests/Feature/Academico/Acceso/MatrizDeAccesoTest.php`: para cada ruta de `contracts/rutas-web.md` y cada rol por defecto (usuario por fábrica con el rol y permisos del seeder), respuesta esperada 200 o 403, y que la navegación solo ofrece lo permitido
-- [ ] T045 [P] [US4] `tests/Feature/Academico/Acceso/DirectorSoloConsultaTest.php`: el Director ve todo y cada acción de modificación (`Livewire::test(...)->call(...)`) responde 403 sin cambiar datos
-- [ ] T046 [P] [US4] `tests/Feature/Academico/Acceso/MisAsignacionesTest.php`: el Docente ve solo las suyas de **todos los años**; no ve las de otro docente; abrir `/academico/asignaciones/{id}` ajena → 403 sin datos; sin regla registrada en `config/pertenencia.php` → 403 (fail-closed); quitar el permiso `asignaciones.ver_propias` a su rol lo deja sin acceso sin tocar código
-- [ ] T047 [P] [US4] `tests/Feature/Academico/Acceso/PermisosPorDatosTest.php`: quitar `academico.ver` a un rol desde la gestión del Módulo 1 corta su acceso (historia 4, escenario 7); Padre de Familia y Alumno → 403 en todas las rutas
+- [x] T044 [P] [US4] `tests/Feature/Academico/Acceso/MatrizDeAccesoTest.php`: para cada ruta de `contracts/rutas-web.md` y cada rol por defecto (usuario por fábrica con el rol y permisos del seeder), respuesta esperada 200 o 403, y que la navegación solo ofrece lo permitido
+- [x] T045 [P] [US4] `tests/Feature/Academico/Acceso/DirectorSoloConsultaTest.php`: el Director ve todo y cada acción de modificación (`Livewire::test(...)->call(...)`) responde 403 sin cambiar datos
+- [x] T046 [P] [US4] `tests/Feature/Academico/Acceso/MisAsignacionesTest.php`: el Docente ve solo las suyas de **todos los años**; no ve las de otro docente; abrir `/academico/asignaciones/{id}` ajena → 403 sin datos; sin regla registrada en `config/pertenencia.php` → 403 (fail-closed); quitar el permiso `asignaciones.ver_propias` a su rol lo deja sin acceso sin tocar código
+- [x] T047 [P] [US4] `tests/Feature/Academico/Acceso/PermisosPorDatosTest.php`: quitar `academico.ver` a un rol desde la gestión del Módulo 1 corta su acceso (historia 4, escenario 7); Padre de Familia y Alumno → 403 en todas las rutas
 
 ### Implementation
 
-- [ ] T048 [US4] `app/Livewire/Academico/Asignaciones/Show.php` + vista: `mount` acepta `asignaciones.ver_todas` o `asignaciones.ver_propias` y llama a `autorizarPertenencia()` **antes** de cargar relaciones
-- [ ] T049 [US4] Ruta `academico.asignaciones.propias` («Mis asignaciones», `asignaciones.ver_propias`) y `academico.asignaciones.show`; ítem de menú «Mis asignaciones»; registrar `/academico/asignaciones/crear` **antes** de `/academico/asignaciones/{asignacion}` para que `crear` no se interprete como un id; en `Asignaciones\Index` comprobar en `mount` que el usuario tiene alguno de los dos permisos
-- [ ] T050 [US4] Revisar que ningún botón de modificación se muestre sin su permiso (`@can`) en todas las vistas del módulo y que `tests/Feature/Autorizacion/SinCondicionalesDeRolTest.php` sigue en verde; ejecutar T044–T047 hasta verde
+- [x] T048 [US4] `app/Livewire/Academico/Asignaciones/Show.php` + vista: `mount` acepta `asignaciones.ver_todas` o `asignaciones.ver_propias` y llama a `autorizarPertenencia()` **antes** de cargar relaciones
+- [x] T049 [US4] Ruta `academico.asignaciones.propias` («Mis asignaciones», `asignaciones.ver_propias`) y `academico.asignaciones.show`; ítem de menú «Mis asignaciones»; registrar `/academico/asignaciones/crear` **antes** de `/academico/asignaciones/{asignacion}` para que `crear` no se interprete como un id; en `Asignaciones\Index` comprobar en `mount` que el usuario tiene alguno de los dos permisos
+- [x] T050 [US4] Revisar que ningún botón de modificación se muestre sin su permiso (`@can`) en todas las vistas del módulo y que `tests/Feature/Autorizacion/SinCondicionalesDeRolTest.php` sigue en verde; ejecutar T044–T047 hasta verde
 
 **Checkpoint**: seguridad del módulo comprobada (SC-003).
 

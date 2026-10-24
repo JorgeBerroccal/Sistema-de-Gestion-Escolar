@@ -35,4 +35,9 @@ Route::middleware(['auth', 'activo'])->group(function () {
     Route::livewire('/academico/cursos', Academico\Cursos\Index::class)->name('academico.cursos.index')->middleware('can:academico.ver');
     Route::livewire('/academico/cursos/crear', Academico\Cursos\Form::class)->name('academico.cursos.create')->middleware('can:academico.gestionar');
     Route::livewire('/academico/cursos/{curso}/editar', Academico\Cursos\Form::class)->name('academico.cursos.edit')->middleware('can:academico.gestionar');
+    Route::livewire('/academico/asignaciones', Academico\Asignaciones\Index::class)->name('academico.asignaciones.index')->middleware('can:asignaciones.ver_todas');
+    Route::livewire('/academico/asignaciones/crear', Academico\Asignaciones\Form::class)->name('academico.asignaciones.create')->middleware('can:asignaciones.gestionar');
+    Route::livewire('/academico/mis-asignaciones', Academico\Asignaciones\Index::class)->name('academico.asignaciones.propias')->middleware('can:asignaciones.ver_propias');
+    // `crear` va antes que `{asignacion}` para que no se interprete como un id.
+    Route::livewire('/academico/asignaciones/{asignacion}', Academico\Asignaciones\Show::class)->name('academico.asignaciones.show');
 });

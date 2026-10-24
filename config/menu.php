@@ -13,4 +13,6 @@ return [
     ['etiqueta' => 'Grados', 'ruta' => 'academico.grados.index', 'permiso' => 'academico.ver'],
     ['etiqueta' => 'Secciones', 'ruta' => 'academico.secciones.index', 'permiso' => 'academico.ver'],
     ['etiqueta' => 'Cursos', 'ruta' => 'academico.cursos.index', 'permiso' => 'academico.ver'],
+    ['etiqueta' => 'Asignaciones', 'ruta' => 'academico.asignaciones.index', 'permiso' => 'asignaciones.ver_todas'],
+    ['etiqueta' => 'Mis asignaciones', 'ruta' => 'academico.asignaciones.propias', 'permiso' => 'asignaciones.ver_propias'],
 ];

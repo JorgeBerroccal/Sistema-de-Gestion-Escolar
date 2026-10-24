@@ -1,5 +1,8 @@
 <?php
 
+use App\Autorizacion\Pertenencia\Reglas\AsignacionDocenteRegla;
+use App\Models\AsignacionDocente;
+
 return [
 
     /*
@@ -13,6 +16,7 @@ return [
     */
 
     'reglas' => [
+        AsignacionDocente::class => AsignacionDocenteRegla::class,
         // App\Models\Alumno::class => App\Autorizacion\Pertenencia\Reglas\AlumnoRegla::class,
     ],
 
