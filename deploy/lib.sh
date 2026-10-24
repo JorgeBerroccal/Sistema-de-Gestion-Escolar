@@ -77,6 +77,14 @@ servicio_en_marcha() {
     dc ps --status running --services 2>/dev/null | grep -qx "$1"
 }
 
+# ¿El volcado comprimido contiene tablas? Cuenta en vez de usar `grep -q`: con `pipefail`, grep -q termina
+# en la primera coincidencia y zcat recibe SIGPIPE (141) en volcados grandes, dando un falso «sin tablas».
+respaldo_tiene_tablas() {
+    local tablas
+    tablas="$(zcat "$1" | grep -c 'CREATE TABLE' || true)"
+    [[ "${tablas:-0}" -gt 0 ]]
+}
+
 # Tamaño de la VM según el servicio de metadatos de Azure (vacío fuera de Azure).
 tamano_vm() {
     if [[ -n "${SGE_VMSIZE_FILE:-}" && -f "$SGE_VMSIZE_FILE" ]]; then

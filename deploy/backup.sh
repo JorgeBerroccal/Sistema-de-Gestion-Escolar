@@ -27,7 +27,7 @@ fi
 
 gzip -t "$archivo.parcial" || die "El respaldo está corrupto (gzip -t falló)."
 [[ -s "$archivo.parcial" ]] || die "El respaldo está vacío."
-zcat "$archivo.parcial" | grep -q 'CREATE TABLE' || die "El respaldo no contiene tablas."
+respaldo_tiene_tablas "$archivo.parcial" || die "El respaldo no contiene tablas."
 mv "$archivo.parcial" "$archivo"
 chmod 600 "$archivo"
 
