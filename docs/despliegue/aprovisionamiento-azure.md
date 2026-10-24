@@ -30,7 +30,7 @@ Resource groups → Create → Suscripción *Azure for Students*; nombre `rg-sge
 | Campo | Valor |
 |---|---|
 | Resource group | `rg-sge-staging` |
-| Virtual machine name | `vm-sge-staging` |
+| Virtual machine name | `sge-staging` |
 | Region | Chile Central |
 | Availability options | No infrastructure redundancy required |
 | Security type | Standard (sin Trusted Launch obligatorio; si se activa, debe aceptar Gen2) |

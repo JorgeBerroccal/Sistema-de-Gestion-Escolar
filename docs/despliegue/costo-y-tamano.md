@@ -100,10 +100,10 @@ Sirve para cambiar el tamaño desde tu PC, y sobre todo cuando el portal falla: 
 puede devolver un error genérico («Error: error») aunque no haya nada mal (ocurrió el 23/10/2026).
 Reintenta una vez; si vuelve a fallar, usa la CLI**, que muestra el error real. Requiere `az login --tenant
 <id-del-tenant>` (ver [prueba-de-carga.md](prueba-de-carga.md)). Los nombres son los de
-[aprovisionamiento-azure.md](aprovisionamiento-azure.md): grupo `rg-sge-staging`, VM `vm-sge-staging`.
+[aprovisionamiento-azure.md](aprovisionamiento-azure.md): grupo `rg-sge-staging`, VM `sge-staging`.
 
 ```bash
-RG=rg-sge-staging; VM=vm-sge-staging
+RG=rg-sge-staging; VM=sge-staging
 az vm deallocate -g $RG -n $VM                          # equivale a Stop (deallocated)
 az vm resize -g $RG -n $VM --size Standard_B2als_v2     # Standard_B2ats_v2 para volver
 az vm start -g $RG -n $VM
