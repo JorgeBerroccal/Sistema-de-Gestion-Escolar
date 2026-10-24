@@ -284,8 +284,9 @@ que ninguno se elimina y que desactivarlos funciona y mantiene visible la asigna
   duplicados, desactivación en lugar de eliminación, docente elegible) MUST tener pruebas de acceso
   permitido y denegado o de caso válido e inválido.
 - **FR-027**: Los permisos nuevos MUST llegar al servidor de staging en el despliegue mediante la
-  sincronización de roles y permisos del procedimiento de despliegue (tarea T086 de la especificación
-  002), sin pasos manuales.
+  sincronización de roles y permisos del procedimiento de despliegue, sin pasos manuales. La tarea T086 que
+  se citaba de la especificación 002 no existe (su lista termina en T085): esta sincronización se entrega
+  como tarea de esta funcionalidad.
 
 ### Key Entities
 
@@ -329,7 +330,7 @@ que ninguno se elimina y que desactivarlos funciona y mantiene visible la asigna
 
 - **Módulo y dependencias**: esta especificación pertenece al Módulo 2 del MVP. Depende del Módulo 1
   (usuarios, roles, permisos y filtros de pertenencia) y de la sincronización de permisos del despliegue
-  (tarea T086 de la especificación 002); su primer despliegue previsto es `v0.3.0`.
+  (que entrega esta misma funcionalidad, ver FR-027); su primer despliegue previsto es `v0.3.0`.
 - **Niveles como datos**: los niveles son registros de un catálogo (Constitución, Principio II); primaria y
   secundaria solo existen como datos de ejemplo. La institución elige cuáles atiende.
 - **Escala**: se ofrecen exactamente las dos escalas pedidas, con los valores propios de cada una (AD, A, B,
@@ -346,10 +347,9 @@ que ninguno se elimina y que desactivarlos funciona y mantiene visible la asigna
   secciones se crean para cada año escolar. No se incluye copiar la estructura del año anterior.
 - **Capacidad**: las secciones no tienen aforo en este módulo; el límite de alumnos, si se necesita, lo
   define el Módulo de Matrícula.
-- **Quién es docente**: el candidato a una asignación es un usuario activo cuyo rol es el rol Docente de
-  la tabla de roles. Esta comprobación de elegibilidad no es una validación de acceso; el plan debe
-  resolverla sin escribir el nombre del rol en el código de acceso (por ejemplo, con un marcador del
-  rol en datos).
+- **Quién es docente**: se define por permiso, igual que la cuenta administradora del Módulo 1: un docente es
+  un usuario activo cuyo rol tiene el permiso `docencia.dictar`. El código solo nombra el permiso, nunca el
+  rol; el seeder lo asigna por defecto al rol Docente y no se añade ninguna columna a la tabla de roles.
 - **Permisos base del módulo** (identificadores ilustrativos; el plan definirá los finales):
 
   | Permiso | Administrador | Director | Docente | Padre de Familia | Alumno |
@@ -359,12 +359,14 @@ que ninguno se elimina y que desactivarlos funciona y mantiene visible la asigna
   | Ver todas las asignaciones | ✔ | ✔ | | | |
   | Ver las asignaciones propias | | | ✔ | | |
   | Gestionar asignaciones | ✔ | | | | |
+  | Dictar clases (`docencia.dictar`, define quién puede recibir asignaciones) | | | ✔ | | |
 
 - **Historial del docente**: el Docente ve sus asignaciones de todos los años, no solo del vigente; no ve
   datos de otros docentes ni de la configuración.
 - **Quitar asignaciones**: el Administrador puede quitar asignaciones del año vigente porque aún no hay
   registros de asistencia ni de notas que dependan de ellas; cuando los módulos siguientes agreguen
-  dependientes, la regla de FR-012 las protegerá.
+  dependientes, la regla de FR-012 las protegerá. En particular, en los Módulos 4 (Asistencia) y 5
+  (Evaluación) no se podrá quitar una asignación que tenga asistencia o notas registradas.
 - **Alumnos y matrícula**: este módulo no maneja alumnos; la relación de estudiantes con secciones es del
   Módulo 3 (Matrícula).
 - **Datos de ejemplo**: se entrega una carga de ejemplo (institución ficticia, niveles, grados, secciones,
