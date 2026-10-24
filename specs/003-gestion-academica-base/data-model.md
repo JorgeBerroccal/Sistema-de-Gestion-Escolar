@@ -40,7 +40,7 @@ asignaciones_docentes >── secciones, cursos, usuarios (Módulo 1)
 
 | Campo | Tipo | Reglas |
 |---|---|---|
-| institucion_id | FK → instituciones | `ON DELETE CASCADE` |
+| institucion_id | tinyint unsigned, FK → instituciones | `ON DELETE CASCADE` (mismo tipo que `instituciones.id`) |
 | nivel_id | FK → niveles | `ON DELETE RESTRICT` |
 
 PK compuesta. Marca los niveles que atiende la institución (mínimo uno, FR-002). Quitar un nivel atendido

@@ -67,6 +67,9 @@ grado) y los cursos, cada uno asociado a un nivel y a uno o más grados de ese n
 **Why this priority**: Sin grados, secciones y cursos no hay nada a lo que asignar docentes ni sobre lo que
 matricular, tomar asistencia o evaluar.
 
+**Dependencia**: el escenario 6 (eliminar o desactivar) se completa con la historia 5 (fase 7 de las tareas);
+las demás escenas de esta historia se prueban de forma independiente.
+
 **Independent Test**: Crear los grados de primaria, dos secciones (A y B) del 1.° grado en el año vigente y
 un curso de Matemática asociado a los seis grados de primaria; comprobar que aparecen en sus listados.
 
@@ -202,6 +205,8 @@ que ninguno se elimina y que desactivarlos funciona y mantiene visible la asigna
   modifican.
 - Nombres de grados, secciones y cursos con espacios repetidos o distinta capitalización («a» y «A»): se
   normalizan y se tratan como el mismo valor al comprobar duplicados.
+- Quitar un grado de un curso, o cambiar el nivel de un curso, cuando ya tiene asignaciones en ese grado o
+  tiene grados asociados: se rechaza, para no dejar asignaciones de un curso que ya no se dicta en esa sección.
 - Búsqueda o filtro sin resultados: se muestra un mensaje de lista vacía, no un error.
 - Listados con muchos registros: siempre paginados.
 - Dos Administradores editan el mismo registro a la vez: gana la última guardada, sin dejar datos
@@ -216,7 +221,9 @@ que ninguno se elimina y que desactivarlos funciona y mantiene visible la asigna
 - **FR-001**: El sistema MUST mantener una única ficha de institución con nombre, código modular y UGEL o
   dirección regional, editable por el Administrador. No existe más de una ficha.
 - **FR-002**: El sistema MUST permitir marcar los niveles que atiende la institución (primaria,
-  secundaria o ambos) a partir de un catálogo de niveles guardado en tablas; MUST exigir al menos uno.
+  secundaria o ambos) a partir de un catálogo de niveles guardado en tablas; MUST exigir al menos uno. El Administrador MUST poder crear,
+  editar, desactivar y reactivar los niveles de ese catálogo (sin ellos una instalación nueva no podría
+  configurarse); un nivel con grados activos no se desactiva.
 - **FR-003**: El sistema MUST guardar la escala de calificación de la institución con dos opciones: literal
   (AD, A, B, C) o vigesimal (0 a 20). Solo se guarda la configuración; este módulo no califica.
 
@@ -274,7 +281,9 @@ que ninguno se elimina y que desactivarlos funciona y mantiene visible la asigna
 - **FR-023**: Quienes tienen permiso de consulta total (Administrador y Director) MUST ver todas las
   asignaciones; el Director MUST NOT ver ni poder ejecutar acciones de modificación.
 - **FR-024**: Los nombres de instituciones, niveles, grados, secciones, cursos y escalas MUST residir solo
-  en datos; los datos de ejemplo solo pueden existir en cargas iniciales de ejemplo, no en el código.
+  en datos; los datos de ejemplo solo pueden existir en cargas iniciales de ejemplo, no en el código. Las
+  dos escalas de calificación ofrecidas son datos base (no de ejemplo): se cargan en la carga inicial de
+  todo entorno, incluida producción.
 
 **Rendimiento y calidad**
 
@@ -284,9 +293,9 @@ que ninguno se elimina y que desactivarlos funciona y mantiene visible la asigna
   duplicados, desactivación en lugar de eliminación, docente elegible) MUST tener pruebas de acceso
   permitido y denegado o de caso válido e inválido.
 - **FR-027**: Los permisos nuevos MUST llegar al servidor de staging en el despliegue mediante la
-  sincronización de roles y permisos del procedimiento de despliegue, sin pasos manuales. La tarea T086 que
-  se citaba de la especificación 002 no existe (su lista termina en T085): esta sincronización se entrega
-  como tarea de esta funcionalidad.
+  sincronización de roles y permisos del procedimiento de despliegue, sin pasos manuales. La tarea T086 de la
+  especificación 002 (rama `002-parte-c`) quedó trasladada a esta funcionalidad: se entrega aquí con el
+  comando idempotente `sge:sincronizar-base`, que ejecuta solo cargas base (permisos, roles y escalas).
 
 ### Key Entities
 
@@ -330,7 +339,7 @@ que ninguno se elimina y que desactivarlos funciona y mantiene visible la asigna
 
 - **Módulo y dependencias**: esta especificación pertenece al Módulo 2 del MVP. Depende del Módulo 1
   (usuarios, roles, permisos y filtros de pertenencia) y de la sincronización de permisos del despliegue
-  (que entrega esta misma funcionalidad, ver FR-027); su primer despliegue previsto es `v0.3.0`.
+  (tarea T086 de la especificación 002, trasladada a esta funcionalidad; ver FR-027); su primer despliegue previsto es `v0.3.0`.
 - **Niveles como datos**: los niveles son registros de un catálogo (Constitución, Principio II); primaria y
   secundaria solo existen como datos de ejemplo. La institución elige cuáles atiende.
 - **Escala**: se ofrecen exactamente las dos escalas pedidas, con los valores propios de cada una (AD, A, B,

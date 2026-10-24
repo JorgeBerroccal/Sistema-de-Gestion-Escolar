@@ -37,12 +37,12 @@ Monolito Laravel 13 existente (ver plan.md): servicios en `app/Academico/`, mode
 
 **⚠️ Ninguna historia puede cerrarse sin esto: permisos, sincronización de despliegue y escalas.**
 
-- [ ] T004 Ampliar `RolesYPermisosSeeder::PERMISOS` en `database/seeders/RolesYPermisosSeeder.php` con los 7 permisos de `contracts/permisos-y-pertenencia.md` y sus roles por defecto: `academico.ver` (Administrador, Director), `academico.gestionar` (Administrador), `asignaciones.ver_todas` (Administrador, Director), `asignaciones.ver_propias` (Docente), `asignaciones.gestionar` (Administrador), `docencia.dictar` (Docente). Mantener la regla «asigna solo al crear el permiso»
+- [ ] T004 Ampliar `RolesYPermisosSeeder::PERMISOS` en `database/seeders/RolesYPermisosSeeder.php` con los 6 permisos de `contracts/permisos-y-pertenencia.md` y sus roles por defecto: `academico.ver` (Administrador, Director), `academico.gestionar` (Administrador), `asignaciones.ver_todas` (Administrador, Director), `asignaciones.ver_propias` (Docente), `asignaciones.gestionar` (Administrador), `docencia.dictar` (Docente). Mantener la regla «asigna solo al crear el permiso»
 - [ ] T005 Actualizar `tests/Unit/Seeders/RolesYPermisosDefinicionTest.php` y `tests/Feature/Seeders/RolesYPermisosSeederTest.php`: los permisos nuevos existen con el formato `Permiso::REGEX_IDENTIFICADOR`, Padre de Familia y Alumno no reciben ninguno, y volver a ejecutar el seeder no revierte un cambio hecho por el Administrador
 - [ ] T006 Crear migración `database/migrations/2026_10_24_000001_create_escalas_calificacion_table.php` (`id`; `codigo` varchar(20) único; `nombre` varchar(60) obligatorio; `valores` json obligatorio) y `app/Models/EscalaCalificacion.php` (`$table = 'escalas_calificacion'`, cast `valores` a array)
 - [ ] T007 Crear `database/seeders/EscalasCalificacionSeeder.php` (idempotente por `codigo`): `literal` con valores `AD, A, B, C` y `vigesimal` con `{minimo: 0, maximo: 20}`; agregarlo a `DatabaseSeeder` y probarlo en `tests/Feature/Seeders/EscalasCalificacionSeederTest.php` (dos filas; segunda ejecución no duplica)
-- [ ] T008 Crear `app/Console/Commands/SincronizarBase.php` (`sge:sincronizar-base`, idempotente): ejecuta `RolesYPermisosSeeder` y `EscalasCalificacionSeeder`; no crea el Administrador inicial ni usuarios de ejemplo. Prueba en `tests/Feature/Console/SincronizarBaseTest.php` (crea permisos y escalas; dos ejecuciones iguales; no crea usuarios)
-- [ ] T009 Modificar `deploy/deploy.sh` (paso 5, justo después de `migrate`): `dc run --rm --no-deps app php artisan sge:sincronizar-base --force || fallo "La sincronización de roles y permisos falló."`; documentarlo en `docs/despliegue/desplegar-y-volver-atras.md` y comprobar con un ensayo local (`SGE_SKIP_PULL=1`) que el paso corre y que repetirlo no cambia nada (FR-027, SC-006, research R-10)
+- [ ] T008 Crear `app/Console/Commands/SincronizarBase.php` (`sge:sincronizar-base {--force}`, usa `ConfirmableTrait` como `db:seed`): ejecuta una **lista fija de seeders base idempotentes** (`RolesYPermisosSeeder`, `EscalasCalificacionSeeder`), nunca `AdministradorInicialSeeder` ni `LoadTestSeeder`. Pruebas en `tests/Feature/Console/SincronizarBaseTest.php`: crea permisos y escalas; dos ejecuciones dan el mismo resultado y no revierten cambios del Administrador; **no crea ningún usuario** (ni el Administrador inicial ni los de carga) y la lista de seeders del comando no contiene esas dos clases; acepta `--force`; sin `--force` en producción pide confirmación
+- [ ] T009 Modificar `deploy/deploy.sh` (paso 5, justo después de `migrate`): `dc run --rm --no-deps app php artisan sge:sincronizar-base --force || fallo "La sincronización de roles y permisos falló."`; documentarlo en `docs/despliegue/desplegar-y-volver-atras.md` y comprobar con un ensayo local (`SGE_SKIP_PULL=1`) que el paso corre y que repetirlo no cambia nada y dejar escrito que los permisos eliminados o renombrados se limpian a mano (el comando solo crea; texto heredado de T086 de la especificación 002, trasladada aquí) (FR-027, SC-006, research R-10)
 
 **Checkpoint**: permisos, escalas y despliegue listos; las historias pueden empezar.
 
@@ -59,19 +59,19 @@ Monolito Laravel 13 existente (ver plan.md): servicios en `app/Academico/`, mode
 - [ ] T010 [P] [US1] `tests/Unit/Academico/TipoPeriodoTest.php`: 4 bimestres, 3 trimestres y nombres sugeridos
 - [ ] T011 [P] [US1] `tests/Feature/Academico/Institucion/EditarInstitucionTest.php`: guardar válido; rechazo sin nombre, sin código modular, sin UGEL/DRE, sin nivel atendido o con escala inexistente; con `academico.gestionar` permitido, con solo `academico.ver` guardar → 403, sin permiso la ruta → 403; no se puede crear una segunda ficha (`id` ≠ 1 rechazado por `CHECK`)
 - [ ] T012 [P] [US1] `tests/Feature/Academico/Niveles/NivelesTest.php`: crear/editar nivel con nombre y orden únicos; permitido/denegado por permiso
-- [ ] T013 [P] [US1] `tests/Feature/Academico/AniosEscolares/PeriodosTest.php`: válido (4 bimestres ordenados); inválidos: fuera del año (antes y después), inicio posterior al fin, superposición, **fin de uno = inicio del siguiente** (se rechaza), cantidad distinta de 4/3, cambiar fechas del año dejando un periodo fuera; días libres entre periodos permitidos
-- [ ] T014 [P] [US1] `tests/Feature/Academico/AniosEscolares/AnioVigenteTest.php`: marcar segundo año deja uno solo vigente; año inactivo no se marca; nombre duplicado rechazado; nombre normalizado; **concurrencia**: dos transacciones marcando años distintos terminan con exactamente un vigente y el índice único impide dos (SC-002)
+- [ ] T013 [P] [US1] `tests/Feature/Academico/AniosEscolares/PeriodosTest.php`: válido (4 bimestres ordenados); inválidos: fuera del año (antes y después), inicio posterior al fin, superposición, **fin de uno = inicio del siguiente** (se rechaza), cantidad distinta de 4/3, cambiar fechas del año dejando un periodo fuera; días libres entre periodos permitidos; **cambio de tipo** (bimestre ↔ trimestre) permitido mientras ningún otro registro dependa de los periodos y regenera los periodos vacíos
+- [ ] T014 [P] [US1] `tests/Feature/Academico/AniosEscolares/AnioVigenteTest.php`: marcar segundo año deja uno solo vigente; año inactivo no se marca; nombre duplicado rechazado; nombre normalizado; **concurrencia, por separado como en el Módulo 1** (`ProteccionAdministracionTest`): (a) insertar un segundo `vigente = 1` lanza `QueryException` por el índice único; (b) con `DB::listen` se verifica que `marcarVigente()` emite `for update` sobre `anios_escolares` dentro de su transacción; no se simulan transacciones concurrentes reales (SC-002)
 
 ### Implementation
 
-- [ ] T015 [US1] Migración `database/migrations/2026_10_24_000002_create_niveles_tables.php`: `niveles` (`nombre` varchar(60) obligatorio único; `orden` smallint unsigned obligatorio único; `activo` boolean por defecto true con índice) y pivote `institucion_nivel` (PK compuesta; `nivel_id` FK `restrictOnDelete`; `institucion_id` FK `cascadeOnDelete`, con índice en `nivel_id`)
-- [ ] T016 [US1] Migración `2026_10_24_000003_create_instituciones_table.php`: `id` tinyint unsigned PK con `CHECK (id = 1)`; `nombre` varchar(150) obligatorio; `codigo_modular` varchar(20) obligatorio; `ugel_dre` varchar(150) obligatorio; `escala_calificacion_id` FK nullable con índice
+- [ ] T015 [US1] Migración `database/migrations/2026_10_24_000002_create_instituciones_table.php`: `id` tinyint unsigned PK con `CHECK (id = 1)`; `nombre` varchar(150) obligatorio; `codigo_modular` varchar(20) obligatorio; `ugel_dre` varchar(150) obligatorio; `escala_calificacion_id` FK nullable con índice (la tabla de escalas ya existe por T006)
+- [ ] T016 [US1] Migración `2026_10_24_000003_create_niveles_tables.php` (**después** de instituciones): `niveles` (`nombre` varchar(60) obligatorio único; `orden` smallint unsigned obligatorio único; `activo` boolean por defecto true con índice) y pivote `institucion_nivel` (PK compuesta; `institucion_id` **tinyint unsigned**, del mismo tipo que `instituciones.id`, FK `cascadeOnDelete`; `nivel_id` FK `restrictOnDelete` con índice)
 - [ ] T017 [US1] Migración `2026_10_24_000004_create_anios_escolares_table.php`: `nombre` varchar(30) obligatorio único; `fecha_inicio`/`fecha_fin` date obligatorias; `tipo_periodo` varchar(15); `vigente` tinyint **nullable con índice único** (1 o NULL); `activo` boolean por defecto true con índice; índice en `fecha_inicio`. Migración `2026_10_24_000005_create_periodos_evaluacion_table.php`: `anio_escolar_id` FK `cascadeOnDelete`; `orden` tinyint unsigned; `nombre` varchar(40); `fecha_inicio`/`fecha_fin` date; único `(anio_escolar_id, orden)`
-- [ ] T018 [P] [US1] Modelos con relaciones, `$fillable`, casts y mutadores que recortan y colapsan espacios (`preg_replace('/\s+/u', ' ', trim())`): `app/Models/Nivel.php`, `Institucion.php` (con `actual()` = `firstOrNew(['id' => 1])`), `AnioEscolar.php` (cast `tipo_periodo` a `TipoPeriodo`, `activo` boolean, `esVigente()`), `PeriodoEvaluacion.php`; fábricas en `database/factories/` (`NivelFactory`, `AnioEscolarFactory`, `PeriodoEvaluacionFactory`, `InstitucionFactory`)
-- [ ] T019 [US1] `app/Academico/AnioEscolarService.php`: `marcarVigente()` (transacción, `lockForUpdate` de filas con `vigente = 1`, error `ReglaAcademicaIncumplida` si el año está inactivo) y `guardarPeriodos()` (valida el conjunto según research R-02, bloquea la fila del año, transaccional)
+- [ ] T018 [P] [US1] Modelos con relaciones, `$fillable`, casts y mutadores que recortan y colapsan espacios (`preg_replace('/\s+/u', ' ', trim())`): `app/Models/Nivel.php`, `Institucion.php` (con `actual()` = `firstOrNew(['id' => 1])`; su fábrica fija `id = 1`), `AnioEscolar.php` (cast `tipo_periodo` a `TipoPeriodo`, `activo` boolean, `esVigente()`), `PeriodoEvaluacion.php`; fábricas en `database/factories/` (`NivelFactory`, `AnioEscolarFactory`, `PeriodoEvaluacionFactory`, `InstitucionFactory`)
+- [ ] T019 [US1] `app/Academico/AnioEscolarService.php`: `marcarVigente()` (transacción, `lockForUpdate` de filas con `vigente = 1`, error `ReglaAcademicaIncumplida` si el año está inactivo) y `guardarPeriodos()` (valida el conjunto según research R-02, bloquea la fila del año, transaccional) y `cambiarTipoPeriodo()` (solo si ningún registro depende de los periodos; hoy ninguno)
 - [ ] T020 [P] [US1] `app/Livewire/Academico/Institucion/Edit.php` + vista `resources/views/livewire/academico/institucion/edit.blade.php`: `mount` exige `academico.ver`; `guardar` exige `academico.gestionar`; muestra la escala elegida (solo configuración) y los niveles atendidos (≥ 1)
 - [ ] T021 [P] [US1] `app/Livewire/Academico/Niveles/Index.php` + vista: listado paginado (15) con `crear`/`editar` (`academico.gestionar`); `desactivar`/`eliminar` se completan en US5
-- [ ] T022 [US1] `app/Livewire/Academico/AniosEscolares/Index.php` y `Form.php` + vistas: listado paginado con acción `marcarVigente`; formulario de año con tipo de periodo y sus periodos (nombres propuestos, fechas por el Administrador); errores de regla mostrados con `addError('general', …)`
+- [ ] T022 [US1] `app/Livewire/Academico/AniosEscolares/Index.php` y `Form.php` + vistas: listado paginado con acción `marcarVigente` y mensaje de lista vacía (no error) cuando no hay resultados; edición simultánea: gana la última guardada sin dejar dos años vigentes (probado en T014); formulario de año con tipo de periodo y sus periodos (nombres propuestos, fechas por el Administrador); errores de regla mostrados con `addError('general', …)`
 - [ ] T023 [US1] Rutas del grupo `/academico` en `routes/web.php` (institución, niveles, años: ver `contracts/rutas-web.md`) con `can:academico.ver` / `can:academico.gestionar`, e ítems en `config/menu.php` (Institución, Años escolares) con `academico.ver`
 - [ ] T024 [US1] Ejecutar las pruebas T010–T014 hasta verde y `./vendor/bin/pint`
 
@@ -84,6 +84,8 @@ Monolito Laravel 13 existente (ver plan.md): servicios en `app/Academico/`, mode
 **Goal**: grados por nivel, secciones por grado y año, cursos con grados del mismo nivel.
 
 **Independent Test**: crear grados de un nivel, secciones A y B de un grado en el año vigente y un curso asociado a todos los grados del nivel; verlos en sus listados.
+
+**Dependencia con la Fase 7**: el escenario 6 de la historia (eliminar sin dependientes; ofrecer solo desactivar si los hay) se implementa y prueba en US5 (T051–T055). El resto de la historia es verificable por sí solo.
 
 ### Tests
 
@@ -112,10 +114,10 @@ Monolito Laravel 13 existente (ver plan.md): servicios en `app/Academico/`, mode
 
 ### Tests
 
-- [ ] T034 [P] [US3] `tests/Feature/Academico/Asignaciones/AsignarTest.php`: caso válido; rechazos: curso ya asignado en la sección, docente inactivo, usuario sin `docencia.dictar`, sección de año no vigente, sin año vigente, curso no asociado al grado, sección/curso inactivos; un docente con varias secciones permitido; reasignar cambia solo el docente
-- [ ] T035 [P] [US3] `tests/Feature/Academico/Asignaciones/AsignarVariosTest.php`: tres cursos en una operación; si uno es inválido no se crea ninguno y el error nombra el curso; **concurrencia**: dos asignaciones del mismo curso y sección terminan con una sola (índice único) y mensaje de validación, no 500
+- [ ] T034 [P] [US3] `tests/Feature/Academico/Asignaciones/AsignarTest.php`: caso válido; rechazos: curso ya asignado en la sección, docente inactivo, usuario sin `docencia.dictar`, sección de año no vigente, sin año vigente, curso no asociado al grado, sección/curso inactivos; un docente con varias secciones permitido; reasignar cambia solo el docente; **`quitar`**: permitido con `asignaciones.gestionar` en el año vigente, rechazado en una sección de un año anterior (la asignación no cambia) y 403 sin el permiso
+- [ ] T035 [P] [US3] `tests/Feature/Academico/Asignaciones/AsignarVariosTest.php`: tres cursos en una operación; si uno es inválido no se crea ninguno y el error nombra el curso; **concurrencia, por separado**: (a) insertar la misma pareja `(seccion_id, curso_id)` lanza `QueryException` por el índice único y el servicio la traduce a mensaje de validación, no 500; (b) con `DB::listen` se verifica el `for update` sobre la sección y el año vigente
 - [ ] T036 [P] [US3] `tests/Feature/Academico/Asignaciones/DocentesElegiblesTest.php`: lista solo usuarios activos con `docencia.dictar`; un rol con ese permiso concedido por datos también aparece sin cambiar código
-- [ ] T037 [P] [US3] `tests/Feature/Academico/Asignaciones/CarreraAnioVigenteTest.php`: marcar otro año vigente y asignar en el año anterior a la vez no permite asignar fuera del vigente
+- [ ] T037 [P] [US3] `tests/Feature/Academico/Asignaciones/BloqueoAnioVigenteTest.php`: con `DB::listen`, `asignar()` y `marcarVigente()` bloquean la misma fila del año vigente (`for update`); tras cambiar el año vigente, asignar en una sección del año anterior se rechaza
 
 ### Implementation
 
@@ -182,7 +184,7 @@ Monolito Laravel 13 existente (ver plan.md): servicios en `app/Academico/`, mode
 - [ ] T059 [P] `tests/Feature/Rendimiento/ListadosAcademicosTest.php` (SC-005): con 200 secciones y 2000 asignaciones, cada listado y «Mis asignaciones» responden con un número constante de consultas (sin N+1) y tiempos por debajo de 2 s y 1,5 s; confirmar con `EXPLAIN` que usan índices
 - [ ] T060 [P] `tests/Feature/Academico/GenericidadTest.php` (SC-007): cargar con fábricas otra institución (otros niveles, otra cantidad de grados y secciones) y operar sin cambiar código; más una prueba que busca en `app/`, `resources/views` y `config/` nombres de nivel, grado o curso de ejemplo y no encuentra ninguno
 - [ ] T061 Actualizar `README.md` (módulo, `sge:sincronizar-base`, seeders y demos) y `docs/despliegue/primer-despliegue.md` (paso de sincronización); añadir los ítems nuevos a `.env.example` solo si surge alguna variable (no se prevé)
-- [ ] T062 Recorrer `quickstart.md` §2 en local y registrar el resultado en `specs/003-gestion-academica-base/evidencias/recorrido-local.md`
+- [ ] T062 Recorrer `quickstart.md` §2 en local, **cronometrando** la configuración de una institución nueva (ficha, escala, año con periodos, grados, 3 secciones por grado, cursos y asignaciones de una sección; objetivo SC-001 < 30 min) y registrar tiempos y resultado en `specs/003-gestion-academica-base/evidencias/recorrido-local.md`
 - [ ] T063 Ejecutar la suite completa, `pint --test` y `/speckit-analyze` final; corregir hallazgos
 - [ ] T064 (manual) Etiquetar `v0.3.0`, desplegar con `deploy/deploy.sh` y ejecutar `quickstart.md` §3 con los usuarios de ejemplo de cada rol en staging; registrar en `evidencias/staging.md` (SC-006)
 
@@ -192,7 +194,7 @@ Monolito Laravel 13 existente (ver plan.md): servicios en `app/Academico/`, mode
 
 - Fase 1 → Fase 2 (bloquea todo) → US1 y US2 (independientes, pueden ir en paralelo) → US3 (necesita años, secciones y cursos) → US4 y US5 (necesitan US3; entre sí son independientes) → Polish.
 - Dentro de cada historia: pruebas (deben fallar) → migraciones → modelos → servicios → componentes → rutas y menú → verde.
-- Las migraciones se ejecutan en orden numérico (`000001`…`000009`); T006 se crea antes que T016 por la FK de escala.
+- Las migraciones se ejecutan en orden numérico (`000001`…`000009`): escalas (T006) → instituciones (T015) → niveles y pivote (T016) → años (T017) → grados, secciones y cursos (T028) → asignaciones (T038). Verificar con `migrate:fresh` al terminar T016.
 
 ## Parallel Opportunities
 
@@ -212,7 +214,7 @@ Monolito Laravel 13 existente (ver plan.md): servicios en `app/Academico/`, mode
 
 | Requisito | Tareas |
 |---|---|
-| FR-001–FR-003 | T006, T007, T011, T012, T015, T016, T018, T020, T021 |
+| FR-001–FR-003 (incluye CRUD de niveles) | T006, T007, T011, T012, T015, T016, T018, T020, T021 |
 | FR-004–FR-008 | T013, T014, T017, T018, T019, T022, T052, T056 |
 | FR-009–FR-013 | T025–T033, T051, T052, T055, T056 |
 | FR-014–FR-019 | T034–T043, T053, T057 |

@@ -102,21 +102,24 @@ al plan y contrasta la spec con el código real del Módulo 1.
   con extender `tieneDependientes()` y sus FK. En los Módulos 4 y 5, `AsignacionService::quitar()` deberá rechazar
   asignaciones con asistencia o notas.
 
-## R-10 — Despliegue de permisos: la tarea T086 no existe (FR-027, SC-006)
+## R-10 — Despliegue de permisos: T086 trasladada a este módulo (FR-027, SC-006)
 
-- **Hallazgo**: la spec cita «T086 de la especificación 002», pero `specs/002-despliegue-ci-staging/tasks.md`
-  termina en T085 y `deploy/deploy.sh` solo ejecuta `php artisan migrate --force`. Hoy los permisos nuevos no
-  llegan solos a staging. Además, `RolesYPermisosSeeder` ya es seguro de repetir: asigna un permiso a sus roles
-  solo la primera vez que lo crea, por lo que no revierte cambios del Administrador.
-- **Decision**: crear el comando `sge:sincronizar-base` (idempotente) que ejecuta `RolesYPermisosSeeder` y
-  `EscalasCalificacionSeeder`, y llamarlo en `deploy/deploy.sh` justo después de `migrate` (paso 5, con
-  `dc run --rm --no-deps app …` y el mismo manejo de fallo). Esta tarea se incluirá en `tasks.md` de esta
-  feature; la referencia a «T086» en la spec debe leerse como esta tarea (se corrige el texto de la spec en
-  la tarea de cierre).
-- **Rationale**: cumple FR-027 sin pasos manuales y sin ejecutar `DatabaseSeeder` completo (que crearía el
-  Administrador inicial y usuarios de ejemplo).
-- **Alternatives**: `db:seed --class=RolesYPermisosSeeder --force` directo en `deploy.sh` (no incluye escalas y
-  esparce la lista de seeders en el script); paso manual (prohibido por FR-027).
+- **Hallazgo**: la especificación 002 registró T086 («sincronizar roles y permisos en cada despliegue») en la
+  rama `002-parte-c` (commit `c461b4b`, aún sin fusionar a `main`) con `db:seed --class=RolesYPermisosSeeder`.
+  En `main`, `deploy/deploy.sh` solo ejecuta `php artisan migrate --force`. `RolesYPermisosSeeder` ya es seguro
+  de repetir: asigna un permiso a sus roles solo la primera vez que lo crea, por lo que no revierte cambios del
+  Administrador.
+- **Decision** (aprobada): T086 queda **trasladada** a este módulo (se marcó `[~]` en la 002). Como el Módulo 2
+  trae varios datos base (permisos, roles y escalas), se crea el comando idempotente `sge:sincronizar-base`:
+  ejecuta una lista fija de seeders base idempotentes (`RolesYPermisosSeeder`, `EscalasCalificacionSeeder`),
+  **nunca** `AdministradorInicialSeeder` ni `LoadTestSeeder`, con una prueba que lo verifica. Acepta `--force`
+  (como `db:seed`) para producción. `deploy.sh` lo llama justo después de `migrate` y antes de recrear
+  `app`/`web`, con `dc run --rm --no-deps app …` y el mismo manejo de fallo.
+- **Se conserva de T086**: la prueba de idempotencia y la documentación en `docs/despliegue/`; y la nota de
+  que **los permisos eliminados o renombrados se limpian a mano** (el comando solo crea).
+- **Rationale**: cumple FR-027 sin pasos manuales ni ejecutar `DatabaseSeeder` completo.
+- **Alternatives**: `db:seed --class=RolesYPermisosSeeder` como en T086 (no cubre las escalas y esparce la
+  lista de seeders en el script); paso manual (prohibido por FR-027).
 
 ## R-11 — Normalización de nombres e identificadores (Edge cases)
 
@@ -140,3 +143,13 @@ al plan y contrasta la spec con el código real del Módulo 1.
   Elementos en el menú vía `config/menu.php` con su permiso. Pruebas Feature por rol con `Livewire::test`
   y peticiones HTTP; la prueba de volumen sigue el patrón de `ListadoUsuariosTest`.
 - **Rationale**: coherencia con el código existente y mínima curva de aprendizaje.
+
+## R-14 — Cómo se prueban las reglas de concurrencia
+
+- **Decision**: igual que el Módulo 1 (`ProteccionAdministracionTest`): no se simulan transacciones
+  concurrentes reales (las pruebas Feature corren dentro de una transacción de `RefreshDatabase`). Se comprueba
+  **por separado** (a) el índice único (insertar el duplicado lanza `QueryException`: dos años vigentes, dos
+  asignaciones del mismo curso y sección, dos periodos con el mismo orden) y (b) el bloqueo (con `DB::listen` se
+  verifica que el servicio emite `for update` dentro de su transacción y sobre qué tabla).
+- **Rationale**: es el enfoque ya aceptado en el proyecto; el índice garantiza el resultado y el bloqueo
+  serializa a los administradores.

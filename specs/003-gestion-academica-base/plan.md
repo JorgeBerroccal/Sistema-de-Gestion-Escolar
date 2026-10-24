@@ -16,8 +16,8 @@ en clase, autorización por permisos (`Gate::before` contra `rol_permiso`) y el 
 periodos sin superposición, un docente por curso y sección) se protegen con transacciones, `lockForUpdate` e
 índices únicos. La elegibilidad de docente se resuelve con un permiso marcador (`docencia.dictar`), sin
 nombres de rol en el código. Los permisos llegan a staging con un comando idempotente
-(`sge:sincronizar-base`) que `deploy.sh` ejecuta tras migrar (ver research R-10: la tarea T086 citada por la
-spec no existe todavía y este plan la crea).
+(`sge:sincronizar-base`) que `deploy.sh` ejecuta tras migrar (ver research R-10: sustituye a la tarea T086 de
+la especificación 002, trasladada a este módulo).
 
 ## Technical Context
 
@@ -88,8 +88,8 @@ app/
 │   ├── Institucion/Edit.php
 │   ├── Niveles/Index.php
 │   ├── AniosEscolares/{Index,Form}.php      # Form incluye periodos
-│   ├── Grados/{Index,Form}.php
-│   ├── Secciones/{Index,Form}.php
+│   ├── Grados/Index.php                      # alta y edición en línea
+│   ├── Secciones/Index.php                   # alta y edición en línea
 │   ├── Cursos/{Index,Form}.php
 │   └── Asignaciones/{Index,Form,Show}.php
 ├── Models/
