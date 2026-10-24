@@ -56,3 +56,16 @@ contenedores suman ≈ 100 MiB. No hace falta ajustar `PERFIL_TAMANO=diario`.
 
 `sge-app:v0.2.0` y `sge-web:v0.2.0`: revisión de `docker history` y de `docker run --rm <imagen> env`. Resultado: **sin secretos**
 en las capas ni en las variables de entorno (DC-003, T085). Registro añadido el 23/10/2026 a partir de lo informado por el responsable.
+
+## Revisión final de seguridad (T085, 23/10/2026)
+
+Repetición de la búsqueda de secretos con los mismos patrones sobre el estado final (86 *commits*, rama `002-parte-c`) y revisión de las imágenes `v0.2.0` de `sge-app` y `sge-web`.
+
+| Verificación | Resultado |
+|---|---|
+| Árbol rastreado (`git grep -IE`, sin *lockfiles*) | 1 coincidencia, **no es un secreto**: `SGE_ADMIN_PASSWORD=password-de-prueba` documentado en `specs/001-auth-roles-rbac/tasks.md` (T010, valor de pruebas) |
+| Historial completo (`git rev-list --all`) | Solo esa misma línea repetida en cada *commit*; sin otros hallazgos |
+| `.env`, `.pem`, `id_rsa`, `.key` añadidos alguna vez al repositorio (`git log --diff-filter=A`) | Ninguno |
+| `docker history --no-trunc` de `sge-app:v0.2.0` y `sge-web:v0.2.0` | Sin secretos; única coincidencia: `GPG_KEYS` de la imagen base de PHP (huellas públicas) |
+| `docker run --rm --entrypoint env` de ambas imágenes | Sin credenciales; solo `GPG_KEYS` (huellas públicas) |
+| SSH solo con clave, puertos 22/80/443 abiertos y 3306/6379 filtrados, `.env` `600 sge` | Verificados el 21/10/2026 (secciones anteriores); sin cambios de red desde entonces |
