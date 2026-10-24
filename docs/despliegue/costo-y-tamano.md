@@ -67,6 +67,10 @@ que no hay que recrear la máquina.
 
 ### Cambiar a B2als_v2 (antes de la prueba)
 
+> **Hazlo la noche anterior** (≥ 10 h antes de la rampa): el *Resize* reinicia los créditos de CPU a ≈ 60 y solo
+> se acumulan (36/h) con la VM encendida. Los pasos 3–5 pueden hacerse por el portal o por la CLI de Azure
+> (ver [«Alternativa con la CLI de Azure»](#alternativa-con-la-cli-de-azure) más abajo).
+
 1. **48 h antes**: confirmar cuota BASv2 ([aprovisionamiento-azure.md](aprovisionamiento-azure.md) §0.3) y que el gasto acumulado deja ≥ 5 USD de holgura.
 2. En tu PC: `ssh sge@<fqdn> 'cd /opt/sge && ./deploy/backup.sh manual'` (respaldo previo).
 3. Portal → VM → **Stop** (espera "Stopped (deallocated)"; *Stopped* sin "deallocated" **sigue
@@ -89,6 +93,29 @@ que no hay que recrear la máquina.
 5. Ejecutar `./deploy/metrics.sh cierre`: debe imprimir `evidencia_completa: true`. Si imprime
    `EVIDENCIA INCOMPLETA`, la VM no volvió al tamaño diario: repetir este procedimiento antes de cualquier otra cosa.
 6. Mirar *Cost analysis*: sin cargos nuevos de B2als_v2 desde el paso 2.
+
+### Alternativa con la CLI de Azure
+
+Sirve para cambiar el tamaño desde tu PC, y sobre todo cuando el portal falla: **el botón *Stop* del portal
+puede devolver un error genérico («Error: error») aunque no haya nada mal (ocurrió el 23/10/2026).
+Reintenta una vez; si vuelve a fallar, usa la CLI**, que muestra el error real. Requiere `az login --tenant
+<id-del-tenant>` (ver [prueba-de-carga.md](prueba-de-carga.md)). Los nombres son los de
+[aprovisionamiento-azure.md](aprovisionamiento-azure.md): grupo `rg-sge-staging`, VM `vm-sge-staging`.
+
+```bash
+RG=rg-sge-staging; VM=vm-sge-staging
+az vm deallocate -g $RG -n $VM                          # equivale a Stop (deallocated)
+az vm resize -g $RG -n $VM --size Standard_B2als_v2     # Standard_B2ats_v2 para volver
+az vm start -g $RG -n $VM
+az vm show -d -g $RG -n $VM --query "{tamano:hardwareProfile.vmSize, estado:powerState, ip:publicIps}" -o table
+```
+
+- Antes de cambiar: `az vm list-vm-resize-options -g $RG -n $VM -o table | grep -i B2` debe listar el tamaño destino.
+- Con la VM liberada, `az vm resize` solo cambia el tamaño; no la enciende (por eso el `start` aparte).
+- La comprobación final es la misma de siempre: `estado` = `VM running`, `tamano` esperado, `/up` = 200 y
+  `./deploy/metrics.sh tamano`.
+- Las horas del *Activity log* del portal salen en la zona horaria del navegador: para el registro de la sesión
+  conviértelas a UTC (Lima = UTC−5).
 
 ## Detener la VM cuando no se use
 

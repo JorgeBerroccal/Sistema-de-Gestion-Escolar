@@ -12,6 +12,11 @@ Los archivos están en `/var/backups/sge` (permisos 600), fuera del contenedor d
 eliminan los de **más de 7 días** en cada ejecución. El volcado usa `mysqldump --single-transaction`
 (consistente sin bloquear). Redis no se respalda: solo guarda sesiones y caché.
 
+> **`v0.2.0` y `v0.2.1` fallan con bases grandes:** `backup.sh` terminaba con «El respaldo no contiene tablas»
+> cuando el volcado descomprimido superaba el búfer de la tubería (~64 KB; apareció al sembrar 1000 usuarios). Se
+> corrigió en **`v0.2.2`**. Si ves ese mensaje, despliega `v0.2.2` o posterior
+> (detalle en `specs/002-despliegue-ci-staging/evidencias/incidente-backup-sigpipe.md`).
+
 ## Restaurar
 
 ```bash
