@@ -111,3 +111,20 @@ it('con solo academico.ver lista pero no crea ni edita (403)', function () {
 it('sin academico.ver responde 403', function () {
     $this->actingAs(usuarioConPermisos([]))->get('/academico/cursos')->assertForbidden();
 });
+
+it('el formulario no ofrece grados inactivos, salvo los que el curso ya tiene', function () {
+    $nivel = Nivel::factory()->create();
+    $activo = Grado::factory()->for($nivel)->create();
+    $inactivoLibre = Grado::factory()->inactivo()->for($nivel)->create();
+    $inactivoDelCurso = Grado::factory()->inactivo()->for($nivel)->create();
+    $curso = Curso::factory()->for($nivel)->create();
+    $curso->grados()->attach($inactivoDelCurso);
+
+    $nuevo = Livewire::actingAs(cursosAdmin())->test(Form::class)->set('nivel_id', (string) $nivel->id);
+    expect($nuevo->viewData('gradosDelNivel')->pluck('id')->all())->toBe([$activo->id]);
+
+    $edicion = Livewire::actingAs(cursosAdmin())->test(Form::class, ['curso' => $curso]);
+    expect($edicion->viewData('gradosDelNivel')->pluck('id')->sort()->values()->all())
+        ->toBe(collect([$activo->id, $inactivoDelCurso->id])->sort()->values()->all())
+        ->not->toContain($inactivoLibre->id);
+});

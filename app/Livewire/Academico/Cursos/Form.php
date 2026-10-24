@@ -104,7 +104,9 @@ class Form extends Component
             'niveles' => Nivel::query()->where('activo', true)->orderBy('orden')->get(),
             'gradosDelNivel' => $this->nivel_id === ''
                 ? collect()
-                : Grado::query()->where('nivel_id', $this->nivel_id)->orderBy('orden')->get(),
+                : Grado::query()->where('nivel_id', $this->nivel_id)
+                    ->where(fn ($q) => $q->where('activo', true)->orWhereIn('id', $this->curso?->grados()->select('grados.id') ?? []))
+                    ->orderBy('orden')->get(),
         ]);
     }
 }
