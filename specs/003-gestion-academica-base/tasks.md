@@ -148,7 +148,7 @@ Monolito Laravel 13 existente (ver plan.md): servicios en `app/Academico/`, mode
 ### Implementation
 
 - [ ] T048 [US4] `app/Livewire/Academico/Asignaciones/Show.php` + vista: `mount` acepta `asignaciones.ver_todas` o `asignaciones.ver_propias` y llama a `autorizarPertenencia()` **antes** de cargar relaciones
-- [ ] T049 [US4] Ruta `academico.asignaciones.propias` («Mis asignaciones», `asignaciones.ver_propias`) y `academico.asignaciones.show`; ítem de menú «Mis asignaciones»; en `Asignaciones\Index` comprobar en `mount` que el usuario tiene alguno de los dos permisos
+- [ ] T049 [US4] Ruta `academico.asignaciones.propias` («Mis asignaciones», `asignaciones.ver_propias`) y `academico.asignaciones.show`; ítem de menú «Mis asignaciones»; registrar `/academico/asignaciones/crear` **antes** de `/academico/asignaciones/{asignacion}` para que `crear` no se interprete como un id; en `Asignaciones\Index` comprobar en `mount` que el usuario tiene alguno de los dos permisos
 - [ ] T050 [US4] Revisar que ningún botón de modificación se muestre sin su permiso (`@can`) en todas las vistas del módulo y que `tests/Feature/Autorizacion/SinCondicionalesDeRolTest.php` sigue en verde; ejecutar T044–T047 hasta verde
 
 **Checkpoint**: seguridad del módulo comprobada (SC-003).
