@@ -223,7 +223,7 @@ Monolito Laravel 13 existente. Archivos nuevos: `.github/workflows/`, `docker/*/
 ## Phase 14: Polish & cross-cutting
 
 - [ ] T081 [P] Ejecutar `/speckit-analyze` sobre el feature ya implementado y resolver hallazgos; actualizar `research.md` con las desviaciones reales (valores finales del perfil `carga`, precios reales, tiempos medidos)
-- [ ] T082 [P] Revisar `docs/despliegue/` completo siguiendo solo la documentación desde cero (lectura crítica o con un tercero) y corregir lagunas (DC-010)
+- [x] T082 [P] Revisar `docs/despliegue/` completo siguiendo solo la documentación desde cero (lectura crítica o con un tercero) y corregir lagunas (DC-010)
 - [ ] T083 (manual) Revisión de costo final: *Cost analysis* al 15/11 y 15/12 contra la estimación, y confirmar que el proyectado al 31/12 ≤ 80 % del crédito (DC-007); decidir si se detiene la VM (*Stop* deallocated) hasta la sustentación y documentarlo
 - [ ] T084 Actualizar `README.md` con la URL pública de staging, el estado de CI y enlaces a `docs/despliegue/` y a las evidencias; cerrar con una etiqueta final (p. ej. `v0.2.2`) si se cambió algo desplegable y dejar el servidor en la versión final con `deploy.sh`
 - [x] T085 Revisión final de seguridad: `git log -p` y búsqueda de secretos en el repositorio y en las imágenes (`docker history`, `docker run --rm <imagen> env`), SSH solo con clave, puertos y permisos de `.env`, y registro en `specs/002-despliegue-ci-staging/evidencias/https-y-red.md` (DC-003)
