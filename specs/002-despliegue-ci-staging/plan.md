@@ -83,6 +83,9 @@ incluye hasta **24 h de acumulación de créditos** con la VM encendida y sin ca
 | Con 20 % de holgura | | 54,54 (54,5 %) |
 | **Tope DC-007 de la spec (80 %)** | | 80,00 |
 
+**Costo real de las sesiones de carga (2026-10-25):** 2 sesiones, ≈ 29,9 h en B2als_v2 y ≈ 1,57 USD frente a las 56 h y 2,95 USD
+estimadas arriba (`cierre-carga.json` de cada sesión); la proyección total al 31/12 sigue pendiente de T083.
+
 Lectura: el margen contra el tope es de ≈25 USD **incluso con holgura**. Olvidar B2als_v2 encendida cuesta
 8,84 USD por semana (6,62 USD por encima del diario) y 38,40 USD por mes: ya no amenaza el crédito, a
 diferencia de los tamaños no burstable considerados antes (D2s_v4: 97,92 USD/mes; DS2_v2: 196,37). Mitigaciones:
