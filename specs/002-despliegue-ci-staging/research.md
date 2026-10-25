@@ -87,7 +87,21 @@ conocimiento de la plataforma a **confirmar en el portal** (marcado ⚠).
   Remaining» aparezca en *Metrics* para este tamaño. El resultado se anota en `evidencias/vm-azure.md`.
 - **Alternativa si el cambio no funcionara**: *Snapshot* del disco → crear disco → VM nueva B2als_v2 con ese disco
   y la misma IP pública estática (y volver igual). No se espera necesitarla.
-- **Estado**: CERRADA. T071a verificó (a)–(d) en el paso D (`evidencias/vm-azure.md`); falta solo el regreso a B2ats_v2.
+- **Estado**: CERRADA. T071a verificó (a)–(d) en el paso D (`evidencias/vm-azure.md`) y el regreso a B2ats_v2 se
+  comprobó en ambas sesiones de carga.
+- **Valores finales (sesiones del 24/10 y 25/10/2026, v0.2.2)**:
+  - **Perfil `carga` sin cambios** respecto a lo decidido: `FPM_MAX_CHILDREN=20`, `MYSQL_BUFFER_POOL=1G`,
+    `MYSQL_MAX_CONNECTIONS=100`, `REDIS_MAXMEMORY=256mb`, `PHP_MEMORY_LIMIT=256M`. No hizo falta ajustarlo (T076 no aplicó).
+  - **Resultados** (rampa de 1000 VUs): login p95 1,88 s y 1,35 s, consultas p95 387 y 243 ms, 0 fallidas de 90 928
+    y de 91 100. Cuello de botella: CPU del servidor p95 98 % y 97 % (`app` ≈ 170–178 % de 200 %, bcrypt); `db` ≈ 7 %,
+    memoria ≈ 1 GB de 3,9 GB, sin swap. El margen de CPU es estrecho pero suficiente.
+  - **Créditos de CPU**: el consumo real de la rampa fue de ≈ 7 créditos (425,3 → 418,2 y 638,0 → 631,8), muy por debajo de
+    los ≈ 21 estimados (la CPU no estuvo al 100 % todo el tiempo). Las partidas fueron 425 y 638, nunca cerca de agotarse.
+    El *Resize* no conserva el saldo (arranca en ≈ 60) y la espera nocturna llegó a ≈ 400–630.
+  - **Tiempos y costo**: sesión 1 ≈ 12,00 h / 0,63 USD; sesión 2 ≈ 17,92 h / 0,94 USD; total ≈ 29,9 h / 1,57 USD frente a
+    las 56 h / 2,95 USD presupuestadas (precio 0,0526 USD/h).
+  - **Incidencias**: el Stop desde el portal falló una vez con «Error: error» y el reintento funcionó (sesión 1); la
+    sesión 2 se hizo por la tarde y no a las 08:30, con más créditos de partida.
 
 ## D-02 Memoria de 1 GB: swap y dimensionado por variables
 
