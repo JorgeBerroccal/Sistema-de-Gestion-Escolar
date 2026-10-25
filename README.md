@@ -79,6 +79,7 @@ GitHub Actions; cada push y pull request ejecuta Pest y Pint. Guía completa en
 
 - **URL de staging:** <https://sge-peru.chilecentral.cloudapp.azure.com>
 - **Estado de CI:** [![ci](https://github.com/JorgeBerroccal/sge/actions/workflows/ci.yml/badge.svg)](https://github.com/JorgeBerroccal/sge/actions/workflows/ci.yml)
+- **Prueba de carga (SC-006 del Módulo 1, cumplido el 25/10/2026):** 1000 usuarios virtuales en dos sesiones; login p95 1,88 s y 1,35 s, consultas p95 387 y 243 ms, 0 solicitudes fallidas ([`k6-sesion-2026-10-24.md`](specs/001-auth-roles-rbac/evidencias/k6-sesion-2026-10-24.md), [`k6-sesion-2026-10-25.md`](specs/001-auth-roles-rbac/evidencias/k6-sesion-2026-10-25.md)).
 - **Evidencias:** despliegue en [`specs/002-despliegue-ci-staging/evidencias/`](specs/002-despliegue-ci-staging/evidencias/)
   y verificación del Módulo 1 en [`specs/001-auth-roles-rbac/evidencias/`](specs/001-auth-roles-rbac/evidencias/).
 

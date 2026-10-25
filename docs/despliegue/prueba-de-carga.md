@@ -47,7 +47,7 @@ las casillas a medida que avanzas.
 
 - [ ] **1.** 48 h antes: cuota BASv2 confirmada y gasto acumulado con ≥ 5 USD de holgura.
 - [ ] **2.** Respaldo manual: `./deploy/backup.sh manual`.
-- [ ] **3.** *La noche anterior* (≥ 10 h antes de la rampa; el *Resize* reinicia los créditos a ≈ 60): Portal: **Stop** de la VM y esperar *Stopped (deallocated)* (solo «Stopped» sigue facturando).
+- [ ] **3.** *La noche anterior* (≥ 10 h antes de la rampa; el *Resize* reinicia los créditos a ≈ 60): Portal: **Stop** de la VM y esperar *Stopped (deallocated)* (solo «Stopped» sigue facturando). Si el portal da «Error: error», reintenta una vez o usa la CLI (`az vm deallocate`; pasos 3–5 y 16 en [costo-y-tamano.md](costo-y-tamano.md#alternativa-con-la-cli-de-azure)).
 - [ ] **4.** Portal → VM → *Size* → **B2als_v2** → *Resize*. Anotar la hora (UTC) de inicio de facturación.
 - [ ] **5.** Portal: **Start**. La IP y el nombre DNS no cambian; `ssh sge@<fqdn>`. Anotar la hora UTC del arranque (será `<desde-utc>` del paso 13).
 - [ ] **6.** `.env`: `PERFIL_TAMANO=carga` → `./deploy/deploy.sh --reconfigurar` → `curl https://<fqdn>/up` correcto.

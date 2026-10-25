@@ -25,8 +25,8 @@ SC-007 del Módulo 1 en el servidor, y respaldo de la base de datos con restaura
 - Este feature es **infraestructura transversal** que sirve a los seis módulos del MVP; el
   desarrollador la aprobó explícitamente según el Principio IV de la constitución y es además un
   requisito del curso. No introduce funcionalidad de negocio. Uno de sus objetivos es cerrar el
-  criterio **SC-006 del Módulo 1**, hoy pendiente porque solo se ejecutó la prueba de humo local;
-  eso no la clasifica como parte del Módulo 1.
+  criterio **SC-006 del Módulo 1**, que estaba pendiente porque solo se ejecutó la prueba de humo local
+  (cumplido el 2026-10-25 con la evidencia de DC-006); eso no la clasifica como parte del Módulo 1.
 - El servidor es un entorno **staging** (`APP_ENV=staging`): no contiene datos reales de ningún
   colegio y es el único lugar donde se permite la prueba de carga completa (nunca en producción).
 - **Fuera de alcance**: dominio propio pagado, alta disponibilidad, más de un servidor, monitoreo
