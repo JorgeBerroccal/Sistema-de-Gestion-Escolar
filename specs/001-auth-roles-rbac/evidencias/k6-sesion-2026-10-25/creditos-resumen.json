@@ -1,0 +1,19 @@
+{
+  "vm": "sge-staging",
+  "desde_utc": "2026-10-25T20:29:24Z",
+  "hasta_utc": "2026-10-25T21:05:16Z",
+  "inicio_rampa_utc": "2026-10-25T20:47:47Z",
+  "muestras_de_1_min": 36,
+  "creditos_al_inicio_de_la_observacion": 628.13,
+  "creditos_al_iniciar_la_rampa": 638.03,
+  "creditos_minimos_durante_la_prueba": 631.77,
+  "minimo_alcanzado_utc": "2026-10-25T21:03:00Z",
+  "creditos_al_final": 632.31,
+  "umbral_de_agotamiento": 0.5,
+  "creditos_agotados": false,
+  "primer_minuto_agotado_utc": null,
+  "minutos_desde_el_inicio_de_la_rampa": null,
+  "minutos_con_cpu_limitada": 0,
+  "duracion_de_la_prueba_min": 17,
+  "csv": "specs/001-auth-roles-rbac/evidencias/k6-sesion-2026-10-25/creditos-cpu-20261025-2115.csv"
+}

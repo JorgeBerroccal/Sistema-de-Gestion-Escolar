@@ -90,6 +90,10 @@ Esperado (rampa 100 → 300 → 600 → 1000 VUs): `p(95) < 3500 ms` en el login
 resumen de k6, el CSV de CPU/memoria y `cierre-carga.json`; solo vale si `evidencia_completa: true`). La prueba de
 humo local queda en `evidencias/k6-humo.txt`.
 
+**Resultado (SC-006 cumplido, 2026-10-25):** dos sesiones con rampa completa y `evidencia_completa: true` — login p95
+1,88 s y 1,35 s, consultas p95 387 y 243 ms, 0 fallidas — en `evidencias/k6-sesion-2026-10-24.md` y
+`evidencias/k6-sesion-2026-10-25.md`.
+
 ## 5. Reconstrucción desde cero (SC-008)
 
 ```bash

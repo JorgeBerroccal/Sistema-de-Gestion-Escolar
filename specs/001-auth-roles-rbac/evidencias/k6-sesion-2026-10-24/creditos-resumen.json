@@ -1,0 +1,19 @@
+{
+  "vm": "sge-staging",
+  "desde_utc": "2026-10-24T14:40:03Z",
+  "hasta_utc": "2026-10-24T15:59:52Z",
+  "inicio_rampa_utc": "2026-10-24T15:16:31Z",
+  "muestras_de_1_min": 78,
+  "creditos_al_inicio_de_la_observacion": 405.34,
+  "creditos_al_iniciar_la_rampa": 425.34,
+  "creditos_minimos_durante_la_prueba": 418.23,
+  "minimo_alcanzado_utc": "2026-10-24T15:30:00Z",
+  "creditos_al_final": 433.05,
+  "umbral_de_agotamiento": 0.5,
+  "creditos_agotados": false,
+  "primer_minuto_agotado_utc": null,
+  "minutos_desde_el_inicio_de_la_rampa": null,
+  "minutos_con_cpu_limitada": 0,
+  "duracion_de_la_prueba_min": 43,
+  "csv": "./creditos-cpu-20261024-1612.csv"
+}

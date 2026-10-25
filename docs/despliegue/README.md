@@ -7,7 +7,7 @@ producción de la constitución (OPcache sin validar marcas de tiempo y `php art
 arranque), imágenes construidas por GitHub Actions y publicadas en GHCR. No hay datos reales de ningún
 colegio. La prueba de carga completa solo se ejecuta aquí, nunca en producción.
 
-Última revisión de la documentación: 16/10/2026 (versiones publicadas `v0.2.0` y `v0.2.1`).
+Última revisión de la documentación: 23/10/2026 (versiones publicadas `v0.2.0`, `v0.2.1` y `v0.2.2`; la vigente en staging es `v0.2.2`).
 
 | Quiero… | Documento |
 |---|---|
