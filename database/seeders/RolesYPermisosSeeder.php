@@ -29,6 +29,12 @@ class RolesYPermisosSeeder extends Seeder
         'roles.ver' => ['Ver roles y permisos', ['Administrador', 'Director']],
         'permisos.gestionar' => ['Crear y editar permisos', ['Administrador']],
         'roles.asignar_permisos' => ['Asignar permisos a roles', ['Administrador']],
+        'academico.ver' => ['Ver institución, niveles, años, periodos, grados, secciones y cursos', ['Administrador', 'Director']],
+        'academico.gestionar' => ['Gestionar institución, niveles, años, periodos, grados, secciones y cursos', ['Administrador']],
+        'asignaciones.ver_todas' => ['Ver todas las asignaciones docentes', ['Administrador', 'Director']],
+        'asignaciones.ver_propias' => ['Ver las asignaciones propias', ['Docente']],
+        'asignaciones.gestionar' => ['Crear, reasignar y quitar asignaciones docentes', ['Administrador']],
+        'docencia.dictar' => ['Dictar clases: puede recibir asignaciones como docente', ['Docente']],
     ];
 
     public function run(): void

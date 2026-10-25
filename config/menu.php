@@ -7,4 +7,12 @@ return [
     ['etiqueta' => 'Usuarios', 'ruta' => 'admin.usuarios.index', 'permiso' => 'usuarios.ver'],
     ['etiqueta' => 'Roles', 'ruta' => 'admin.roles.index', 'permiso' => 'roles.ver'],
     ['etiqueta' => 'Permisos', 'ruta' => 'admin.permisos.index', 'permiso' => 'roles.ver'],
+    ['etiqueta' => 'Institución', 'ruta' => 'academico.institucion', 'permiso' => 'academico.ver'],
+    ['etiqueta' => 'Niveles', 'ruta' => 'academico.niveles.index', 'permiso' => 'academico.ver'],
+    ['etiqueta' => 'Años escolares', 'ruta' => 'academico.anios.index', 'permiso' => 'academico.ver'],
+    ['etiqueta' => 'Grados', 'ruta' => 'academico.grados.index', 'permiso' => 'academico.ver'],
+    ['etiqueta' => 'Secciones', 'ruta' => 'academico.secciones.index', 'permiso' => 'academico.ver'],
+    ['etiqueta' => 'Cursos', 'ruta' => 'academico.cursos.index', 'permiso' => 'academico.ver'],
+    ['etiqueta' => 'Asignaciones', 'ruta' => 'academico.asignaciones.index', 'permiso' => 'asignaciones.ver_todas'],
+    ['etiqueta' => 'Mis asignaciones', 'ruta' => 'academico.asignaciones.propias', 'permiso' => 'asignaciones.ver_propias'],
 ];

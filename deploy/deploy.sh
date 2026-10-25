@@ -152,6 +152,11 @@ dc up -d --wait db redis
 log "Aplicando migraciones..."
 dc run --rm --no-deps app php artisan migrate --force || fallo "La migración falló (la base puede haber quedado parcialmente modificada)."
 
+# 5b) Sincronizar los datos base (permisos, roles y escalas) con la imagen nueva. Es idempotente y solo
+#     crea lo que falta; nunca ejecuta el Administrador inicial ni los seeders de carga o de ejemplo.
+log "Sincronizando roles y permisos base..."
+dc run --rm --no-deps app php artisan sge:sincronizar-base --force || fallo "La sincronización de roles y permisos falló."
+
 # 6) Recrear app/web (el entrypoint ejecuta php artisan optimize) y verificar la versión servida
 log "Recreando app y web..."
 dc up -d app web || fallo "No se pudieron levantar app y web."
