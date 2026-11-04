@@ -15,8 +15,24 @@ cronometrados, una sola sesión de carga k6 en el Módulo 5).
 
 ## Tareas externas
 
-- **Esta semana**: conseguir la clave de la API de Anthropic (requiere comprar créditos con tarjeta); la
-  gestiona la persona responsable. Riesgo externo del Módulo 6; debe estar en `.env` antes del 19/11.
+- **Antes del 19/11**: conseguir la clave de Google AI Studio (plan gratuito, sin tarjeta) para el adaptador de
+  Gemini; va en `.env`. La clave de Anthropic queda diferida (ver «Riesgo externo resuelto»).
+
+## Riesgo externo resuelto: créditos de la API de Anthropic (Módulo 6)
+
+No es posible comprar créditos de la API de Anthropic por ahora. Plan, que se formalizará en la spec del
+Módulo 6:
+
+- El chatbot se diseña con una **interfaz de proveedor (puerto) y adaptadores intercambiables**, elegidos por
+  variable de entorno: uno **falso** para pruebas y desarrollo, uno de **Gemini** (plan gratuito de Google AI
+  Studio, sin tarjeta) para staging y la demo, y uno de **Claude Haiku** para cuando haya presupuesto.
+- Habrá que **enmendar el Principio VI de la constitución** (hoy fija «la API de Claude con un modelo de la
+  familia Haiku, por costo»), con esta justificación de costo: sin presupuesto para créditos, el proveedor por
+  defecto pasa a ser un plan gratuito, manteniendo Claude Haiku como adaptador disponible.
+- **Regla de privacidad**: con un proveedor de plan gratuito, nunca se envían datos reales de alumnos al
+  modelo; staging solo tiene datos ficticios (ver README, «en staging solo datos ficticios»).
+- La clave de la API de Anthropic deja de ser tarea urgente de esta semana; la clave de Google AI Studio sí
+  se necesita antes del 19/11.
 
 ## Orden de recorte si hay retraso
 

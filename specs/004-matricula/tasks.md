@@ -11,7 +11,7 @@ description: "Task list for 004-matricula (Módulo 3, Matrícula)"
 
 **Tests**: Obligatorios (Constitución, Principio V): cada tarea de código lleva su prueba Pest; cada regla de autorización tiene prueba de acceso permitido y denegado, y cada regla de validación una de caso válido e inválido (FR-029). Sin k6 (Constitución 2.2.0).
 
-**Organization**: por historia de usuario (US1–US4 de spec.md). US1 es el MVP; US2 y US3 se apoyan en US1; US4 en US1 y US3.
+**Organization**: por historia de usuario (US1–US4 de spec.md). US1 es el MVP; US2 y US3 se apoyan en US1 (la pantalla de US3 en la de US2); US4 en US1 y US3.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -37,13 +37,13 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Matricula/`, modelos en `ap
 - [ ] T003 Migración `database/migrations/2026_11_05_000001_create_tipos_documento_table.php`: `codigo` string(10) único, `nombre` string(60), `longitud_min`/`longitud_max` tinyint unsigned, `solo_digitos` boolean, `activo` boolean por defecto sí (data-model.md)
 - [ ] T004 Migración `2026_11_05_000002_create_alumnos_table.php`: `nombres`/`apellidos` string(100) con índice `(apellidos, nombres)`; `tipo_documento_id` FK restrict; `numero_documento` string(20) con índice; **único `(tipo_documento_id, numero_documento)`**; `fecha_nacimiento` date; `sexo` string(1); `usuario_id` FK nullable → usuarios, **único**, restrict; `activo` boolean por defecto sí
 - [ ] T005 Migración `2026_11_05_000003_create_alumno_apoderado_table.php`: `alumno_id` FK cascade, `usuario_id` FK restrict con índice, `parentesco` string(20), **único `(alumno_id, usuario_id)`**
-- [ ] T006 Migración `2026_11_05_000004_create_matriculas_table.php`: `alumno_id` FK restrict, `seccion_id` FK restrict, `anio_id` FK → anios_escolares, `fecha_matricula` date, `estado` string(12), `fecha_estado` date nullable, `motivo` string(255) nullable, **columna generada almacenada `anio_activa_id` = `IF(estado = 'matriculado', anio_id, NULL)`**, único `(alumno_id, anio_activa_id)`, índices `(seccion_id, estado)` y `(alumno_id, anio_id)`; verificar con `migrate:fresh` (R-01, R-02)
+- [ ] T006 Migración `2026_11_05_000004_create_matriculas_table.php`: `alumno_id` FK restrict, `seccion_id` FK restrict, `anio_id` FK → anios_escolares, `fecha_matricula` date, `estado` string(12), `fecha_estado` date nullable, `motivo` string(255) nullable, **columna generada almacenada `anio_activa_id` = `IF(estado = 'matriculado', anio_id, NULL)`**, único `(alumno_id, anio_activa_id)`, índices `(seccion_id, estado)` y `(alumno_id, anio_id)`; la FK de `anio_id` es **`restrict`** (MySQL no admite `CASCADE`/`SET NULL` sobre la columna base de una columna generada almacenada); verificar con `migrate:fresh` (R-01, R-02)
 - [ ] T007 [P] Modelos `app/Models/TipoDocumento.php` y `app/Models/Alumno.php` (relaciones `tipoDocumento`, `usuario`, `apoderados` con parentesco en el pivote, `matriculas`; `numero_documento` normalizado con `trim` y mayúsculas; accesor `nombreCompleto`) y fábricas `database/factories/{TipoDocumentoFactory,AlumnoFactory}.php` **con datos ficticios** (nombres inventados, DNI del rango `9000xxxx`)
 - [ ] T008 [P] Modelo `app/Models/Matricula.php` (tabla `matriculas`; relaciones `alumno`, `seccion`, `anio`; cast de `estado` a `EstadoMatricula`; scope `activas`) y fábrica `database/factories/MatriculaFactory.php`
 - [ ] T009 `database/seeders/TiposDocumentoSeeder.php` idempotente (`updateOrCreate` por código): DNI 8–8 solo dígitos; CE 9–12 alfanumérico; OTRO 4–20 alfanumérico (R-03); añadirlo a `SincronizarBase::SEEDERS` en `app/Console/Commands/SincronizarBase.php`; ampliar `tests/Feature/Console/` con la prueba de que corre y no duplica
 - [ ] T010 Ampliar `RolesYPermisosSeeder::PERMISOS` con los 6 permisos de `contracts/permisos-y-pertenencia.md` y sus roles por defecto (`matricula.ver_todas`, `matricula.gestionar`, `matricula.ver_nomina_propia`, `matricula.ver_propia`, `matricula.ser_alumno`, `matricula.ser_apoderado`), manteniendo la regla «asigna solo al crear el permiso»; prueba `tests/Feature/Matricula/PermisosMatriculaSeederTest.php` (asignaciones por defecto, idempotencia, no pisa cambios del Administrador)
 - [ ] T011 [P] `app/Autorizacion/Pertenencia/Reglas/AlumnoRegla.php` y `MatriculaRegla.php` según la tabla del contrato (unión de condiciones, fail-closed, solo por permisos); usar `RequierePertenencia` en `Alumno` y `Matricula`; registrarlas en `config/pertenencia.php`; pruebas `tests/Feature/Matricula/Pertenencia/{AlumnoReglaTest,MatriculaReglaTest}.php` (cada combinación de permisos, usuario sin vínculos → vacío, regla no registrada → 403)
-- [ ] T012 Rutas del grupo `/matricula` en `routes/web.php` y menú en `config/menu.php` (Alumnos y Nóminas con `matricula.ver_todas`; Mis secciones con `matricula.ver_nomina_propia`; Mis alumnos con `matricula.ver_propia`) según `contracts/rutas-web.md`; los componentes se crean en cada historia (las rutas sin componente se añaden con su historia)
+- [ ] T012 Grupo de rutas `/matricula` (middleware `auth` + `activo`, prefijo y nombres) en `routes/web.php` **sin rutas hijas** y los ítems de menú en `config/menu.php` (Alumnos y Nóminas con `matricula.ver_todas`; Mis secciones con `matricula.ver_nomina_propia`; Mis alumnos con `matricula.ver_propia`) según `contracts/rutas-web.md`; los ítems cuya ruta no existe se omiten (`Route::has`). **Cada historia registra sus propias rutas** junto a su componente (T021, T025, T032)
 - [ ] T013 [P] Ampliar la regla de eliminación de secciones del Módulo 2 en `app/Livewire/Academico/Secciones/Index.php`: una sección con matrículas solo se desactiva (FR-017); prueba `tests/Feature/Matricula/SeccionConMatriculasTest.php`
 
 **Checkpoint**: `migrate:fresh --seed` y la suite del Módulo 1–2 siguen en verde.
@@ -57,11 +57,11 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Matricula/`, modelos en `ap
 **Independent Test**: registrar tres alumnos, matricular uno y dos en forma masiva; ver las nóminas.
 
 - [ ] T014 [P] [US1] `tests/Feature/Matricula/Alumnos/AlumnoServiceTest.php`: alta válida; rechazo por DNI ≠ 8 dígitos, por documento repetido (mismo tipo y número) y aceptación del mismo número con otro tipo; fecha futura; nombres vacíos; espacios normalizados; violación del único por concurrencia traducida a mensaje; eliminar sin matrículas, desactivar con matrículas
-- [ ] T015 [P] [US1] `tests/Feature/Matricula/Matriculas/MatricularTest.php` (escenarios 5–8 de la historia): matrícula válida; alumno con activa en el año → rechazo; alumno o sección desactivados, sección de año no vigente, sin año vigente → rechazo; **concurrencia** de dos matrículas del mismo alumno y año → una sola; masiva todo o nada con un inelegible
+- [ ] T015 [P] [US1] `tests/Feature/Matricula/Matriculas/MatricularTest.php` (escenarios 5–8 de la historia): matrícula válida; alumno con activa en el año → rechazo; alumno o sección desactivados, sección de año no vigente, sin año vigente → rechazo; **concurrencia** de dos matrículas del mismo alumno y año → una sola; masiva todo o nada con un inelegible; `anio_id` de la matrícula igual al de su sección (D1); una sección desactivada conserva sus matrículas visibles y no se ofrece para matrículas nuevas
 - [ ] T016 [US1] `app/Matricula/AlumnoService.php`: `crear`, `actualizar`, `desactivar`, `reactivar`, `eliminar` con las reglas de FR-001–FR-006 (formato del documento leído de `tipos_documento`; transacción; mensajes sin datos personales, R-11)
 - [ ] T017 [US1] `app/Matricula/MatriculaService.php`: `matricular` (bloquea al alumno con `lockForUpdate`, valida activo/sección activa/año vigente/sin activa, fija `anio_id`, fecha y estado) y `matricularVarios` (todo o nada, identifica el motivo por posición, R-08, R-11)
 - [ ] T018 [P] [US1] `tests/Feature/Matricula/Acceso/GestionAlumnosTest.php`: con `matricula.gestionar` crear/editar/desactivar permitido; con solo `matricula.ver_todas` → 403; rol sin permiso → 403 (rutas y acciones Livewire)
-- [ ] T019 [US1] `app/Livewire/Matricula/Alumnos/Index.php` + vista: listado paginado (15) con búsqueda por nombre, apellido o documento y filtro de activos; `mount` exige `matricula.ver_todas`; acciones exigen `matricula.gestionar`; `with()` de tipo de documento (R-12)
+- [ ] T019 [US1] `app/Livewire/Matricula/Alumnos/Index.php` + vista: listado paginado (15) con búsqueda por nombre, apellido o documento y filtros de activo/desactivado y de estado de su matrícula en el año vigente (FR-018); `mount` exige `matricula.ver_todas`; acciones exigen `matricula.gestionar`; `with()` de tipo de documento (R-12)
 - [ ] T020 [US1] `app/Livewire/Matricula/Alumnos/Form.php` + vista (crear/editar) con `matricula.gestionar`, tipo de documento desde `tipos_documento` activos y errores de validación en español
 - [ ] T021 [US1] `app/Livewire/Matricula/Nominas/Index.php` + vista (secciones del año vigente con filtro de año y conteo de matriculados) y `Nominas/Show.php` + vista (nómina paginada con búsqueda y filtro de estado; con `matricula.gestionar`, matrícula individual y masiva eligiendo alumnos elegibles y mostrando el rechazo todo o nada); registrar las rutas de nóminas y alumnos
 - [ ] T022 [P] [US1] `tests/Feature/Matricula/Nominas/NominaTest.php`: nómina por sección y año con paginación, búsqueda sin tildes ni mayúsculas, filtro de estado, lista vacía sin coincidencias y mensaje de «sin año vigente»
@@ -112,28 +112,29 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Matricula/`, modelos en `ap
 
 ## Phase 7: Polish y verificación transversal
 
-- [ ] T036 [P] `database/seeders/MatriculaDemoSeeder.php`: alumnos y apoderados **ficticios** (nombres inventados, DNI del rango `9000xxxx`, correos `@example.test`), vínculos y matrículas sobre las secciones de `AcademicoDemoSeeder`; **rechaza `APP_ENV=production`**; llamarlo desde `DatabaseSeeder` solo en `local`; prueba `tests/Feature/Seeders/MatriculaDemoSeederTest.php` (carga, vínculos con los usuarios demo y rechazo en producción) (FR-025, R-10)
+- [ ] T036 [P] `database/seeders/MatriculaDemoSeeder.php`: fichas de alumnos y matrículas **ficticias** (nombres inventados, DNI del rango `9000xxxx`) sobre las secciones de `AcademicoDemoSeeder`; **nunca crea cuentas de usuario** (staging es público: cuentas con contraseñas conocidas serían un riesgo). Solo si ya existen los usuarios de `UsuariosDemoSeeder` (que corre únicamente en `local`) vincula al alumno y al apoderado demo; en staging no hay vínculos de usuario, y las cuentas de Padre o Alumno para la prueba de humo las crea el responsable desde el panel. **Rechaza `APP_ENV=production`**; se llama desde `DatabaseSeeder` solo en `local`; prueba `tests/Feature/Seeders/MatriculaDemoSeederTest.php` (carga, no crea usuarios, vínculos solo con usuarios demo existentes, rechazo en producción) (FR-025, R-10)
 - [ ] T037 [P] `tests/Feature/Rendimiento/ListadosMatriculaTest.php` (SC-005): con 2000 alumnos y 200 secciones, listado, nómina y búsqueda con número de consultas constante (sin N+1) y por debajo de 2 s; confirmar con `EXPLAIN` que usan índices
 - [ ] T038 [P] `tests/Feature/Matricula/GenericidadTest.php` (SC-007): buscar en `app/`, `resources/views` y `config/` nombres de nivel, grado, sección o institución de ejemplo y no encontrar ninguno; operar con una institución distinta sin cambiar código
 - [ ] T039 [P] `tests/Feature/Matricula/RecorridoQuickstartTest.php`: recorrido automatizado del quickstart §2 con los componentes reales (alta, rechazos de DNI y repetido, matrícula individual y masiva, retiro, vínculo, 403 de rol limitado)
-- [ ] T040 Actualizar `README.md` (módulo 3, seeder de ejemplo ficticio, regla Ley 29733) y `docs/despliegue/primer-despliegue.md` / `desplegar-y-volver-atras.md` (tipos de documento en la sincronización de datos base y carga de alumnos ficticios en staging)
+- [ ] T040 Actualizar `README.md` (módulo 3, seeder de ejemplo ficticio, regla Ley 29733 y la regla operativa **«en staging solo datos ficticios»**) y `docs/despliegue/primer-despliegue.md` / `desplegar-y-volver-atras.md` (tipos de documento en la sincronización de datos base y carga de alumnos ficticios en staging)
 - [ ] T041 Ejecutar la suite completa, `pint --test` y `/speckit-analyze` final; corregir hallazgos
-- [ ] T042 (manual) Etiquetar `v0.4.0`, desplegar con `deploy/deploy.sh`, cargar `MatriculaDemoSeeder` (ficticio) y ejecutar la **prueba de humo de ~10 min** de `quickstart.md` §2–§3 con el Administrador y un rol limitado; repetir el despliegue y comprobar que no duplica permisos ni tipos; registrar en `evidencias/staging.md` (SC-006)
+- [ ] T042 (manual) Etiquetar `v0.4.0`, desplegar con `deploy/deploy.sh`, cargar `MatriculaDemoSeeder` (solo fichas y matrículas ficticias, sin cuentas), crear desde el panel las cuentas de Padre o Alumno de la prueba y vincularlas a fichas ficticias, y ejecutar la **prueba de humo de ~10 min** de `quickstart.md` §2–§3 con el Administrador y un rol limitado; **regla operativa: en staging solo datos ficticios** (nunca nombres, documentos ni correos reales); repetir el despliegue y comprobar que no duplica permisos ni tipos; registrar en `evidencias/staging.md` (SC-006)
 
 ---
 
 ## Dependencies & Execution Order
 
-- Fase 1 → Fase 2 (bloquea todo) → US1 → US2 y US3 (independientes entre sí, ambas necesitan US1 y `Alumnos/Show` de T025 para T029) → US4 (necesita US1 y US3) → Polish.
+- Fase 1 → Fase 2 (bloquea todo) → US1 → US2 → US3 (T029 amplía el componente `Alumnos/Show` creado en T025, de US2; el resto de US3 solo necesita US1) → US4 (necesita US1 y US3) → Polish.
 - Dentro de cada historia: pruebas (deben fallar) → servicios → componentes → rutas → verde.
 - Migraciones en orden `000001`…`000004` (tipos → alumnos → vínculos → matrículas); verificar con `migrate:fresh` al terminar T006.
 - T029 depende de T025 (mismo componente `Show`).
+- **Independencia de US3**: sus servicios y pruebas (T027, T028, T030) no dependen de US2; solo su pantalla (T029).
 
 ## Parallel Opportunities
 
 - Fase 2: T007, T008, T011 y T013 en paralelo tras las migraciones.
 - US1: T014, T015 y T018 (pruebas) en paralelo; T019 y T020 en paralelo tras T016.
-- US2/US3 en paralelo entre sí (salvo T029 tras T025).
+- US2 y US3 pueden avanzar en paralelo salvo T029, que va tras T025.
 - Polish: T036–T039 en paralelo.
 
 ## Implementation Strategy

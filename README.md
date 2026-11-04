@@ -50,6 +50,11 @@ con niveles, grados, secciones, cursos, tres docentes y algunas asignaciones (`A
 | Roles, permisos y escalas de calificación (datos base, idempotentes) | `php artisan sge:sincronizar-base` | Cada despliegue (lo ejecuta `deploy/deploy.sh` tras `migrate`); nunca crea usuarios |
 | Administrador inicial | `DatabaseSeeder` (`AdministradorInicialSeeder`) | Primer despliegue |
 | Institución y datos académicos de ejemplo | `php artisan db:seed --class=AcademicoDemoSeeder` | `local` (automático), `staging` (a mano); **rechaza producción** |
+| Alumnos y matrículas de ejemplo (Módulo 3, **ficticios**, sin cuentas de usuario) | `php artisan db:seed --class=MatriculaDemoSeeder` | `local` (automático), `staging` (a mano); **rechaza producción** |
+
+**Regla operativa: en staging solo datos ficticios.** Los alumnos, apoderados y matrículas incluyen datos personales
+de menores (Ley 29733): ni en staging ni en la demo se cargan nombres, documentos o correos reales, y los
+seeders de ejemplo no crean cuentas de usuario fuera de `local` (staging es público).
 
 `sge:sincronizar-base` solo crea lo que falta y no revierte cambios del Administrador; los permisos que se
 eliminen o renombren en una versión futura hay que limpiarlos a mano.

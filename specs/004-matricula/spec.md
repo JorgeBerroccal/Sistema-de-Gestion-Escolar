@@ -319,8 +319,11 @@ ajenas y propias; comprobar que solo se ve lo permitido y que las modificaciones
 
 - **Datos que ve el Docente**: nombres, apellidos y documento de los alumnos de sus secciones; no ve fecha de
   nacimiento, apoderados ni datos de contacto.
-- **Datos de ejemplo**: se entrega una carga de ejemplo con alumnos y apoderados ficticios para desarrollo y
-  staging; no se carga en producción. Nada de lo cargado en staging proviene de personas reales.
+- **Datos de ejemplo**: se entrega una carga de ejemplo con alumnos y matrículas ficticios para desarrollo y
+  staging; no se carga en producción. La carga **no crea cuentas de usuario**: staging es público y unas cuentas
+  con contraseñas conocidas serían un riesgo. Los vínculos con alumno o apoderado de los usuarios demo solo
+  existen en `local`; en staging las cuentas de prueba las crea el responsable desde el panel. Regla
+  operativa: en staging solo datos ficticios (Ley 29733).
 - **Sin importación ni exportación**: no se importan alumnos desde Excel ni se exporta la nómina.
 - **Verificación**: la prueba manual en staging es una prueba de humo de unos 10 minutos (flujo principal con
   el Administrador y un rol limitado); el resto queda cubierto por pruebas automáticas (Constitución 2.2.0).
