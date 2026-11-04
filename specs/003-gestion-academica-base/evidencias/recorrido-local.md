@@ -14,24 +14,9 @@ bloqueo de eliminar un curso con asignaciones.
 - Tiempo de máquina de todo el recorrido: **2,66 s**. Mide solo el costo del sistema; no sustituye el
   cronometraje de una persona.
 
-## 2. Recorrido humano cronometrado (pendiente de la persona usuaria)
+## 2. Recorrido humano cronometrado (descartado)
 
-SC-001 exige configurar una institución nueva (ficha, escala, año con periodos, grados, 3 secciones por grado,
-cursos y asignaciones de una sección) en **menos de 30 minutos**. Ese tiempo depende de quien teclea y no puede
-medirlo el asistente.
-
-Para registrarlo: ejecutar `docker compose exec app php artisan migrate:fresh --seed` (sin
-`AcademicoDemoSeeder`, o vaciando antes los datos de ejemplo), seguir [`quickstart.md`](../quickstart.md) §2 con
-un cronómetro y anotar aquí:
-
-| Paso | Minutos |
-|---|---|
-| Niveles y ficha de la institución | |
-| Año escolar con periodos y marcar vigente | |
-| Grados | |
-| Secciones (3 por grado) | |
-| Cursos | |
-| Asignaciones de una sección | |
-| **Total** | |
-
-Observaciones de usabilidad: _(completar)_
+**Decisión del responsable del proyecto (2026-11-04)**: no se realiza el cronometraje de SC-001 por falta de
+tiempo. La evidencia que lo sustituye es el recorrido automatizado (§1, en verde) y el recorrido manual
+del quickstart en staging, que cubrió el flujo completo sin cronómetro
+([`staging.md`](staging.md)). SC-001 queda sin medición de tiempo humano.
