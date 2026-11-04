@@ -319,6 +319,9 @@ que ninguno se elimina y que desactivarlos funciona y mantiene visible la asigna
 - **SC-001**: Un Administrador puede dejar configurada una institución nueva (ficha, escala, año con sus
   periodos, grados, 3 secciones por grado, cursos y asignaciones de una sección) en menos de 30 minutos
   siguiendo solo la interfaz.
+  - **Decisión (2026-11-04)**: el cronometraje humano de SC-001 no se realizará por falta de tiempo. Queda
+    como evidencia el recorrido automatizado del quickstart (en verde) y el recorrido manual en staging del
+    flujo completo, sin cronómetro. Ver `evidencias/recorrido-local.md` y `evidencias/staging.md`.
 - **SC-002**: Ninguna combinación de operaciones deja a la instalación con más de un año vigente, periodos
   superpuestos o fuera del año, o asignaciones de un curso a dos docentes en la misma sección; lo verifican
   pruebas automáticas incluida la operación simultánea.

@@ -76,6 +76,8 @@ contra el retraso.
   acceso denegado.
 - Los endpoints críticos — login, registro de notas y consulta de boletas — MUST además contar con
   pruebas de carga con k6 ejecutadas y documentadas antes de considerarse listos para despliegue.
+  Esas pruebas se ejecutan **en una sola sesión de carga, durante el Módulo 5**, y cubren todos los
+  endpoints críticos existentes en ese momento; no se repiten por módulo.
 
 **Rationale**: Las pruebas son la evidencia verificable de calidad en un proyecto académico y
 previenen regresiones en un calendario sin margen para corregirlas tarde.
@@ -128,6 +130,17 @@ existe.
 **Rationale**: El sistema debe sostener 1000 usuarios virtuales en un VPS de 2 vCPU / 4 GB; estas
 reglas son baratas de aplicar desde el inicio y costosas de corregir después.
 
+## Verificación Manual (Módulos 3 a 6)
+
+- Las especificaciones de los Módulos 3 a 6 MUST NOT incluir criterios de éxito cronometrados por una
+  persona, salvo que sean esenciales para la funcionalidad y la spec lo justifique.
+- La verificación manual en staging de cada módulo es una **prueba de humo de unos 10 minutos**: el
+  flujo principal recorrido con el Administrador y un rol de acceso limitado. Lo demás (casos
+  inválidos, concurrencia, reglas de datos) queda cubierto por pruebas automáticas.
+
+**Rationale**: El tiempo de la persona responsable es el recurso escaso; la evidencia automatizada y una
+prueba de humo breve dan confianza suficiente sin cronometrajes ni sesiones repetidas.
+
 ## Flujo de Desarrollo y Criterios de Terminado
 
 - Cada funcionalidad sigue el flujo Spec Kit: especificación → plan → tareas → implementación.
@@ -137,7 +150,7 @@ reglas son baratas de aplicar desde el inicio y costosas de corregir después.
   1. Pertenece a uno de los 6 módulos del MVP.
   2. No contiene validaciones de acceso por nombre de rol ni valores de institución fijos en código.
   3. Tiene pruebas unitarias y Feature tests en verde.
-  4. Si toca un endpoint crítico, tiene su prueba de carga k6 ejecutada.
+  4. Si toca un endpoint crítico, queda incluido en la sesión única de carga k6 del Módulo 5.
 - Las revisiones de código MUST rechazar cambios que violen cualquier principio.
 
 ## Governance
@@ -165,4 +178,11 @@ reglas son baratas de aplicar desde el inicio y costosas de corregir después.
     Justificación: la prueba de carga debe llegar a 1000 usuarios virtuales en un VPS de 2 vCPU /
     4 GB. Es MINOR porque amplía materialmente guías sin invalidar código conforme a 2.0.0.
 
-**Version**: 2.1.0 | **Ratified**: 2026-09-27 | **Last Amended**: 2026-10-12
+  - 2.2.0 (2026-11-04): nueva sección "Verificación Manual (Módulos 3 a 6)" (sin criterios
+    cronometrados por una persona salvo que sean esenciales; prueba de humo de ~10 minutos en
+    staging); Principio de pruebas y Definition of Done — la prueba de carga k6 se ejecuta en una sola
+    sesión, en el Módulo 5. Justificación: decisión del responsable del proyecto por limitación de
+    tiempo, manteniendo la evidencia automatizada. Es MINOR porque amplía y precisa guías sin
+    invalidar código conforme a 2.1.0.
+
+**Version**: 2.2.0 | **Ratified**: 2026-09-27 | **Last Amended**: 2026-11-04
