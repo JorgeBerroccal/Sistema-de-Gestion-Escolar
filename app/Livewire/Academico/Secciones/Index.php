@@ -174,7 +174,7 @@ class Index extends Component
                 ->when($this->filtroNivel !== '', fn ($q) => $q->where('nivel_id', $this->filtroNivel))
                 ->orderBy('nivel_id')->orderBy('orden')->get(),
             'gradosActivos' => Grado::query()->with('nivel')->where('activo', true)->orderBy('nivel_id')->orderBy('orden')->get(),
-            'secciones' => Seccion::query()->with(['grado.nivel', 'anio'])->withExists('asignaciones')
+            'secciones' => Seccion::query()->with(['grado.nivel', 'anio'])->withExists(['asignaciones', 'matriculas'])
                 ->when($this->filtroAnio !== '', fn ($q) => $q->where('anio_escolar_id', $this->filtroAnio))
                 ->when($this->filtroGrado !== '', fn ($q) => $q->where('grado_id', $this->filtroGrado))
                 ->when($this->filtroNivel !== '', fn ($q) => $q->whereHas('grado', fn ($g) => $g->where('nivel_id', $this->filtroNivel)))

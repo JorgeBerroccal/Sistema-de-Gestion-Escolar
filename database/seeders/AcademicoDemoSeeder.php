@@ -24,6 +24,10 @@ use RuntimeException;
  * y algunas asignaciones. Idempotente y sin pisar lo que ya exista. Solo en local, staging y testing: en
  * producción lo rechaza. `DatabaseSeeder` lo llama solo en local; en staging se ejecuta a mano con
  * `db:seed --class=AcademicoDemoSeeder`.
+ *
+ * Seguridad: ningún seeder crea usuarios con contraseñas conocidas fuera de `local`. Las cuentas
+ * `docente.demo*` y sus asignaciones solo existen en local; en staging se cargan únicamente los datos
+ * académicos, sin cuentas ni asignaciones (las cuentas de prueba las crea el responsable desde el panel).
  */
 class AcademicoDemoSeeder extends Seeder
 {
@@ -162,6 +166,10 @@ class AcademicoDemoSeeder extends Seeder
     /** @param  array<int, Seccion>  $secciones */
     private function asignaciones(array $secciones): void
     {
+        if (! app()->environment('local')) {
+            return;
+        }
+
         $rolDocente = Rol::where('nombre', 'Docente')->firstOrFail();
         $docentes = [];
 

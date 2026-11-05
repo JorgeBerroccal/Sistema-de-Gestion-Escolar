@@ -9,7 +9,12 @@ de acceso, y —en los módulos siguientes— los datos académicos que dependen
 
 Este repositorio contiene el **Módulo 1: Autenticación y Roles (RBAC)** — inicio de sesión con
 correo o usuario, gestión de usuarios, roles y permisos configurables desde la interfaz, menú por
-permisos y un mecanismo de filtros de pertenencia (*fail-closed*) para los módulos 2–6.
+permisos y un mecanismo de filtros de pertenencia (*fail-closed*) para los módulos 2–6—, el
+**Módulo 2: Gestión Académica Base** (institución, años y periodos, grados, secciones, cursos y asignación
+docente) y el **Módulo 3: Matrícula**: alumnos (documento único por tipo y número, DNI de 8 dígitos),
+matrícula individual y masiva en secciones del año vigente con estados (matriculado, retirado, trasladado) e
+historial, vínculos con el usuario del alumno y con sus apoderados, y nóminas paginadas con búsqueda. Cada rol ve
+solo lo suyo: el Docente la nómina de sus secciones, el Padre de Familia a sus hijos y el Alumno su ficha.
 
 ## Stack
 
@@ -47,9 +52,15 @@ con niveles, grados, secciones, cursos, tres docentes y algunas asignaciones (`A
 
 | Qué | Cómo | Dónde corre |
 |---|---|---|
-| Roles, permisos y escalas de calificación (datos base, idempotentes) | `php artisan sge:sincronizar-base` | Cada despliegue (lo ejecuta `deploy/deploy.sh` tras `migrate`); nunca crea usuarios |
+| Roles, permisos, escalas de calificación y tipos de documento (datos base, idempotentes) | `php artisan sge:sincronizar-base` | Cada despliegue (lo ejecuta `deploy/deploy.sh` tras `migrate`); nunca crea usuarios |
 | Administrador inicial | `DatabaseSeeder` (`AdministradorInicialSeeder`) | Primer despliegue |
-| Institución y datos académicos de ejemplo | `php artisan db:seed --class=AcademicoDemoSeeder` | `local` (automático), `staging` (a mano); **rechaza producción** |
+| Institución y datos académicos de ejemplo | `php artisan db:seed --class=AcademicoDemoSeeder` | `local` (automático; incluye cuentas `docente.demo*` y asignaciones), `staging` (a mano; **solo datos académicos, sin cuentas**); **rechaza producción** |
+| Alumnos y matrículas de ejemplo (Módulo 3, **ficticios**, sin cuentas de usuario) | `php artisan db:seed --class=MatriculaDemoSeeder` | `local` (automático), `staging` (a mano); **rechaza producción** |
+
+**Regla operativa: en staging solo datos ficticios** (Ley 29733, Protección de Datos Personales). Los alumnos, apoderados y matrículas incluyen datos personales
+de menores (Ley 29733): ni en staging ni en la demo se cargan nombres, documentos o correos reales, y ningún
+seeder crea usuarios con contraseña conocida fuera de `local` (staging es público); `UsuariosDemoSeeder` y las cuentas
+`docente.demo*` solo existen en `local`.
 
 `sge:sincronizar-base` solo crea lo que falta y no revierte cambios del Administrador; los permisos que se
 eliminen o renombren en una versión futura hay que limpiarlos a mano.

@@ -23,9 +23,9 @@ Hecho el 2026-11-04 con `./deploy/deploy.sh v0.3.0` sobre la misma versión.
 - `sge:sincronizar-base` corrió sin errores («Datos base sincronizados»); `RolesYPermisosSeeder` y
   `EscalasCalificacionSeeder` en verde. Despliegue en 21 s.
 - `/up` informa `version=v0.3.0`; `despliegues.log` registra dos entradas OK de `v0.3.0` (43 s y 21 s).
-- Permisos en base tras el segundo despliegue: **14**; el seeder define 13, así que hay 1 más. Pendiente
-  confirmar que es un permiso creado a mano durante las pruebas y no un duplicado (el seeder usa
-  `firstOrCreate` por identificador, que además es único).
+- Permisos en base tras el segundo despliegue: **14** = 13 del seeder + `reportes.ver`, creado a mano en la
+  verificación del Módulo 1 (T070, paso 10; los permisos no se pueden eliminar) y ya registrado antes del primer
+  despliegue de `v0.3.0`. Sin duplicados.
 - El Director **siguió sin** `academico.ver` (no se revirtió el cambio del Administrador); el año 2026 sigue
   vigente y las asignaciones se conservan. Después de comprobarlo se devolvió `academico.ver` al Director.
 
