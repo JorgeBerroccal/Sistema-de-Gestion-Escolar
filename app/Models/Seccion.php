@@ -41,8 +41,15 @@ class Seccion extends Model
         return $this->hasMany(AsignacionDocente::class, 'seccion_id');
     }
 
+    public function matriculas(): HasMany
+    {
+        return $this->hasMany(Matricula::class, 'seccion_id');
+    }
+
+    /** Asignaciones o matrículas: una sección con cualquiera de las dos solo se desactiva (FR-017 del Módulo 3). */
     public function tieneDependientes(): bool
     {
-        return $this->asignaciones_exists ?? $this->asignaciones()->exists();
+        return ($this->asignaciones_exists ?? $this->asignaciones()->exists())
+            || ($this->matriculas_exists ?? $this->matriculas()->exists());
     }
 }

@@ -1,7 +1,11 @@
 <?php
 
+use App\Autorizacion\Pertenencia\Reglas\AlumnoRegla;
 use App\Autorizacion\Pertenencia\Reglas\AsignacionDocenteRegla;
+use App\Autorizacion\Pertenencia\Reglas\MatriculaRegla;
+use App\Models\Alumno;
 use App\Models\AsignacionDocente;
+use App\Models\Matricula;
 
 return [
 
@@ -17,7 +21,8 @@ return [
 
     'reglas' => [
         AsignacionDocente::class => AsignacionDocenteRegla::class,
-        // App\Models\Alumno::class => App\Autorizacion\Pertenencia\Reglas\AlumnoRegla::class,
+        Alumno::class => AlumnoRegla::class,
+        Matricula::class => MatriculaRegla::class,
     ],
 
 ];

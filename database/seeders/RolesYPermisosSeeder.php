@@ -35,6 +35,12 @@ class RolesYPermisosSeeder extends Seeder
         'asignaciones.ver_propias' => ['Ver las asignaciones propias', ['Docente']],
         'asignaciones.gestionar' => ['Crear, reasignar y quitar asignaciones docentes', ['Administrador']],
         'docencia.dictar' => ['Dictar clases: puede recibir asignaciones como docente', ['Docente']],
+        'matricula.ver_todas' => ['Ver todos los alumnos, nóminas y matrículas', ['Administrador', 'Director']],
+        'matricula.gestionar' => ['Gestionar alumnos, vínculos y matrículas', ['Administrador']],
+        'matricula.ver_nomina_propia' => ['Ver las nóminas de las secciones propias', ['Docente']],
+        'matricula.ver_propia' => ['Ver los alumnos y matrículas propios o de los hijos', ['Padre de Familia', 'Alumno']],
+        'matricula.ser_alumno' => ['Puede vincularse a una ficha de alumno', ['Alumno']],
+        'matricula.ser_apoderado' => ['Puede vincularse como apoderado de alumnos', ['Padre de Familia']],
     ];
 
     public function run(): void

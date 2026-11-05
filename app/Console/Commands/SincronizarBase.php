@@ -4,11 +4,12 @@ namespace App\Console\Commands;
 
 use Database\Seeders\EscalasCalificacionSeeder;
 use Database\Seeders\RolesYPermisosSeeder;
+use Database\Seeders\TiposDocumentoSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 
 /**
- * Sincroniza los datos base que el sistema necesita en todo entorno (permisos, roles y escalas).
+ * Sincroniza los datos base que el sistema necesita en todo entorno (permisos, roles, escalas y tipos de documento).
  * Lo ejecuta deploy.sh tras migrar. Solo crea lo que falta: los permisos eliminados o renombrados
  * se limpian a mano.
  */
@@ -25,6 +26,7 @@ class SincronizarBase extends Command
     public const SEEDERS = [
         RolesYPermisosSeeder::class,
         EscalasCalificacionSeeder::class,
+        TiposDocumentoSeeder::class,
     ];
 
     protected $signature = 'sge:sincronizar-base {--force : Ejecutar sin confirmar en producción}';
