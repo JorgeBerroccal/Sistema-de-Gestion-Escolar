@@ -55,4 +55,5 @@ Route::middleware(['auth', 'activo'])->group(function () {
     // Módulo 4 — Asistencia. El permiso (doble) y la pertenencia se comprueban en `mount()`.
     Route::livewire('/asistencia/tomar', Asistencia\Tomar\Index::class)->name('asistencia.tomar.index');
     Route::livewire('/asistencia/tomar/{seccion}', Asistencia\Tomar\Show::class)->name('asistencia.tomar.show');
+    Route::livewire('/asistencia/mia', Asistencia\Propia\Index::class)->name('asistencia.propia.index');
 });

@@ -67,11 +67,11 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Asistencia/`, modelos en `a
 
 **Independent Test**: Padre con dos hijos y asistencia registrada ve ambos con resumen y a nadie más; el Alumno solo la suya.
 
-- [ ] T014 [P] [US2] `tests/Feature/Asistencia/ResumenAsistenciaTest.php`: conteos por estado y porcentaje = `cuenta_asistencia`/(`cuenta_asistencia`+`cuenta_falta`); las faltas justificadas y los días sin registro no entran en el denominador; denominador 0 → «sin datos» (no 0 %); detalle por mes
-- [ ] T015 [P] [US2] `tests/Feature/Asistencia/Acceso/PropiaAccesoTest.php`: Padre ve a sus hijos y no a ajenos (URL directa → 403); Alumno ve solo la suya; usuario sin vínculos → lista vacía; ningún control de edición para ellos; Director y Docente → 403 en esta pantalla
-- [ ] T016 [US2] `app/Asistencia/ResumenAsistencia.php`: `delAlumno(Alumno, desde, hasta)` y `porMes(Alumno, año, mes)` con agregados SQL (`SUM(CASE …)` / `GROUP BY` con join a `estados_asistencia`, sin cargar colecciones) (R-08)
-- [ ] T017 [US2] `app/Livewire/Asistencia/Propia/Index.php` y vista: selector de hijo (o el propio alumno), mes y resumen del año, filtrando con `Asistencia::visiblePara()`; ruta `asistencia.propia.index` con `can:asistencia.ver_propia`
-- [ ] T018 [US2] Hacer pasar T014–T015
+- [x] T0- [ ] T014 [P] [US2] `tests/Feature/Asistencia/ResumenAsistenciaTest.php`: conteos por estado y porcentaje = `cuenta_asistencia`/(`cuenta_asistencia`+`cuenta_falta`); las faltas justificadas y los días sin registro no entran en el denominador; denominador 0 → «sin datos» (no 0 %); detalle por mes
+- [x] T0- [ ] T015 [P] [US2] `tests/Feature/Asistencia/Acceso/PropiaAccesoTest.php`: Padre ve a sus hijos y no a ajenos (URL directa → 403); Alumno ve solo la suya; usuario sin vínculos → lista vacía; ningún control de edición para ellos; Director y Docente → 403 en esta pantalla
+- [x] T0- [ ] T016 [US2] `app/Asistencia/ResumenAsistencia.php`: `delAlumno(Alumno, desde, hasta)` y `porMes(Alumno, año, mes)` con agregados SQL (`SUM(CASE …)` / `GROUP BY` con join a `estados_asistencia`, sin cargar colecciones) (R-08)
+- [x] T0- [ ] T017 [US2] `app/Livewire/Asistencia/Propia/Index.php` y vista: selector de hijo (o el propio alumno), mes y resumen del año, filtrando con `Asistencia::visiblePara()`; ruta `asistencia.propia.index` con `can:asistencia.ver_propia`
+- [x] T0- [ ] T018 [US2] Hacer pasar T014–T015
 
 ---
 
