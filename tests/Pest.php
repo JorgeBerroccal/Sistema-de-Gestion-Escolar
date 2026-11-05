@@ -106,3 +106,16 @@ function usuarioConRolDeSeeder(string $nombreRol): Usuario
 
     return Usuario::factory()->create(['rol_id' => Rol::where('nombre', $nombreRol)->firstOrFail()->id, 'activo' => true]);
 }
+
+/**
+ * Escenario de matrícula: año vigente con una sección activa. Alumnos siempre ficticios (Ley 29733).
+ *
+ * @return array{anio: AnioEscolar, seccion: Seccion}
+ */
+function escenarioMatricula(): array
+{
+    $anio = AnioEscolar::factory()->vigente()->create();
+    $seccion = Seccion::factory()->for(Grado::factory()->create())->for($anio, 'anio')->create(['identificador' => 'A']);
+
+    return ['anio' => $anio, 'seccion' => $seccion];
+}

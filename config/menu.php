@@ -15,4 +15,8 @@ return [
     ['etiqueta' => 'Cursos', 'ruta' => 'academico.cursos.index', 'permiso' => 'academico.ver'],
     ['etiqueta' => 'Asignaciones', 'ruta' => 'academico.asignaciones.index', 'permiso' => 'asignaciones.ver_todas'],
     ['etiqueta' => 'Mis asignaciones', 'ruta' => 'academico.asignaciones.propias', 'permiso' => 'asignaciones.ver_propias'],
+    ['etiqueta' => 'Alumnos', 'ruta' => 'matricula.alumnos.index', 'permiso' => 'matricula.ver_todas'],
+    ['etiqueta' => 'Nóminas', 'ruta' => 'matricula.nominas.index', 'permiso' => 'matricula.ver_todas'],
+    ['etiqueta' => 'Mis secciones', 'ruta' => 'matricula.nominas.index', 'permiso' => 'matricula.ver_nomina_propia'],
+    ['etiqueta' => 'Mis alumnos', 'ruta' => 'matricula.propios.index', 'permiso' => 'matricula.ver_propia'],
 ];

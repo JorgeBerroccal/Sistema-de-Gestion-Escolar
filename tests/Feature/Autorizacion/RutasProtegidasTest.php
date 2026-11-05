@@ -1,8 +1,10 @@
 <?php
 
+use App\Models\Alumno;
 use App\Models\AnioEscolar;
 use App\Models\Curso;
 use App\Models\Rol;
+use App\Models\Seccion;
 use App\Models\Usuario;
 use Illuminate\Routing\Route as RutaLaravel;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +38,14 @@ function urlConParametros(string $uri): string
 
     if (str_contains($uri, '{curso}')) {
         $parametros['{curso}'] = Curso::factory()->create()->id;
+    }
+
+    if (str_contains($uri, '{alumno}')) {
+        $parametros['{alumno}'] = Alumno::factory()->create()->id;
+    }
+
+    if (str_contains($uri, '{seccion}')) {
+        $parametros['{seccion}'] = Seccion::factory()->create()->id;
     }
 
     return '/'.ltrim(strtr($uri, $parametros), '/');
