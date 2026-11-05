@@ -102,11 +102,11 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Asistencia/`, modelos en `a
 
 ## Phase 7: Polish y verificación transversal
 
-- [ ] T026 [P] `database/seeders/AsistenciaDemoSeeder.php`: asistencia **ficticia** para las matrículas de `MatriculaDemoSeeder` en días hábiles pasados del año vigente; no crea cuentas; **rechaza `APP_ENV=production`**; se llama desde `DatabaseSeeder` solo en `local`; prueba `tests/Feature/Seeders/AsistenciaDemoSeederTest.php` (carga, idempotente, sin usuarios nuevos, rechazo en producción) (FR-015, R-11)
-- [ ] T027 [P] `tests/Feature/Rendimiento/ReportesAsistenciaTest.php` (SC-005): sección de 30 alumnos con ~200 días de registros; reporte y detalle por debajo de 3 s, número de consultas constante; confirmar con `EXPLAIN` el uso de índices
-- [ ] T028 [P] `tests/Feature/Asistencia/GenericidadTest.php`: ningún nombre de nivel, grado, sección o institución de ejemplo en `app/`, `resources/views` y `config/`; los estados salen de la tabla; confirmar que `SinCondicionalesDeRolTest` sigue en verde
-- [ ] T029 [P] `tests/Feature/Asistencia/RecorridoQuickstartTest.php`: recorrido automatizado del quickstart §2 con los componentes reales (toma, sábado rechazado, justificación, reporte, 403 de Padre)
-- [ ] T030 Actualizar `README.md` (módulo 4, seeder ficticio, regla sábado/domingo y exclusión de feriados) y `docs/despliegue/` (estados de asistencia en la sincronización base y carga de asistencia ficticia en staging)
+- [x] T026 [P] `database/seeders/AsistenciaDemoSeeder.php`: asistencia **ficticia** para las matrículas de `MatriculaDemoSeeder` en días hábiles pasados del año vigente; no crea cuentas; **rechaza `APP_ENV=production`**; se llama desde `DatabaseSeeder` solo en `local`; prueba `tests/Feature/Seeders/AsistenciaDemoSeederTest.php` (carga, idempotente, sin usuarios nuevos, rechazo en producción) (FR-015, R-11)
+- [x] T027 [P] `tests/Feature/Rendimiento/ReportesAsistenciaTest.php` (SC-005): sección de 30 alumnos con ~200 días de registros; reporte y detalle por debajo de 3 s, número de consultas constante; confirmar con `EXPLAIN` el uso de índices
+- [x] T028 [P] `tests/Feature/Asistencia/GenericidadTest.php`: ningún nombre de nivel, grado, sección o institución de ejemplo en `app/`, `resources/views` y `config/`; los estados salen de la tabla; confirmar que `SinCondicionalesDeRolTest` sigue en verde
+- [x] T029 [P] `tests/Feature/Asistencia/RecorridoQuickstartTest.php`: recorrido automatizado del quickstart §2 con los componentes reales (toma, sábado rechazado, justificación, reporte, 403 de Padre)
+- [x] T030 Actualizar `README.md` (módulo 4, seeder ficticio, regla sábado/domingo y exclusión de feriados) y `docs/despliegue/` (estados de asistencia en la sincronización base y carga de asistencia ficticia en staging)
 - [ ] T031 Ejecutar la suite completa, `pint --test` y `/speckit-analyze` final; corregir hallazgos
 - [ ] T032 (manual) Etiquetar `v0.5.0` sobre `main` tras integrar la rama, esperar a `release` y desplegar con `deploy/deploy.sh`; comprobar que los permisos suman 24; cargar `AsistenciaDemoSeeder`; ejecutar la **prueba de humo de ~10 min** de `quickstart.md` §2 con el Administrador y un Padre ficticio. **En staging solo datos ficticios.** Registrar en `specs/005-asistencia/evidencias/staging.md` dentro del primer commit de la rama del Módulo 5 (SC-002, SC-003)
 

@@ -15,6 +15,13 @@ docente) y el **Módulo 3: Matrícula**: alumnos (documento único por tipo y n�
 matrícula individual y masiva en secciones del año vigente con estados (matriculado, retirado, trasladado) e
 historial, vínculos con el usuario del alumno y con sus apoderados, y nóminas paginadas con búsqueda. Cada rol ve
 solo lo suyo: el Docente la nómina de sus secciones, el Padre de Familia a sus hijos y el Alumno su ficha.
+El **Módulo 4: Asistencia** registra la asistencia diaria por sección (presente, tarde, falta y falta justificada,
+un catálogo en tabla): el Docente asignado (o el Administrador) toma la lista de una fecha y justifica faltas; el
+Alumno y el Padre de Familia consultan lo propio por mes con su resumen; y Administrador, Director y Docente
+obtienen reportes por sección y rango o periodo. Se rechazan los **sábados y domingos** (regla fija, sin
+calendario); los **feriados y días no lectivos no se modelan**: ese día simplemente no se registra y no cuenta.
+"Hoy" se calcula en la zona horaria de la institución (`ASISTENCIA_ZONA_HORARIA`, por defecto `America/Lima`);
+la zona global de la aplicación sigue en UTC.
 
 ## Stack
 
@@ -52,10 +59,11 @@ con niveles, grados, secciones, cursos, tres docentes y algunas asignaciones (`A
 
 | Qué | Cómo | Dónde corre |
 |---|---|---|
-| Roles, permisos, escalas de calificación y tipos de documento (datos base, idempotentes) | `php artisan sge:sincronizar-base` | Cada despliegue (lo ejecuta `deploy/deploy.sh` tras `migrate`); nunca crea usuarios |
+| Roles, permisos, escalas de calificación, tipos de documento y estados de asistencia (datos base, idempotentes) | `php artisan sge:sincronizar-base` | Cada despliegue (lo ejecuta `deploy/deploy.sh` tras `migrate`); nunca crea usuarios |
 | Administrador inicial | `DatabaseSeeder` (`AdministradorInicialSeeder`) | Primer despliegue |
 | Institución y datos académicos de ejemplo | `php artisan db:seed --class=AcademicoDemoSeeder` | `local` (automático; incluye cuentas `docente.demo*` y asignaciones), `staging` (a mano; **solo datos académicos, sin cuentas**); **rechaza producción** |
 | Alumnos y matrículas de ejemplo (Módulo 3, **ficticios**, sin cuentas de usuario) | `php artisan db:seed --class=MatriculaDemoSeeder` | `local` (automático), `staging` (a mano); **rechaza producción** |
+| Asistencia de ejemplo (Módulo 4, **ficticia**, sin cuentas de usuario; solo alumnos del rango `9000xxxx`) | `php artisan db:seed --class=AsistenciaDemoSeeder` | `local` (automático), `staging` (a mano, tras `MatriculaDemoSeeder`); **rechaza producción** |
 
 **Regla operativa: en staging solo datos ficticios** (Ley 29733, Protección de Datos Personales). Los alumnos, apoderados y matrículas incluyen datos personales
 de menores (Ley 29733): ni en staging ni en la demo se cargan nombres, documentos o correos reales, y ningún

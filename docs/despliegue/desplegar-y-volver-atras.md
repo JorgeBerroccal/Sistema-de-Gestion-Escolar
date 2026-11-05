@@ -55,10 +55,10 @@ Ver [respaldo-y-restauracion.md](respaldo-y-restauracion.md).
 Cada intento queda en `/var/log/sge/despliegues.log` (fecha, etiqueta, commit, tamaño de VM, perfil,
 resultado y duración).
 
-## Datos base: permisos, roles, escalas y tipos de documento
+## Datos base: permisos, roles, escalas, tipos de documento y estados de asistencia
 
-Cada despliegue ejecuta `sge:sincronizar-base`, que crea los permisos, roles, escalas de calificación y tipos de
-documento (DNI, CE, otro) que falten (lista fija de seeders base idempotentes; nunca el Administrador inicial, los usuarios de ejemplo ni
+Cada despliegue ejecuta `sge:sincronizar-base`, que crea los permisos, roles, escalas de calificación, tipos de
+documento (DNI, CE, otro) y estados de asistencia (presente, tarde, falta, falta justificada) que falten (lista fija de seeders base idempotentes; nunca el Administrador inicial, los usuarios de ejemplo ni
 los de carga). Un permiso nuevo se asigna a sus roles por defecto solo la primera vez que se crea, así que no
 deshace los cambios que el Administrador haya hecho después.
 
@@ -70,6 +70,14 @@ carga alumnos y matrículas ficticios (documentos `9000xxxx`), **sin crear cuent
 de Familia o Alumno de las pruebas se crean desde el panel y se vinculan a fichas ficticias. El seeder rechaza
 producción. El comando **solo crea**: los permisos que se
 eliminen o renombren en una versión posterior se limpian a mano.
+
+### Asistencia de ejemplo en staging (Módulo 4)
+
+La asistencia de los alumnos también es dato personal de menores: **en staging solo datos ficticios**. Después de
+`MatriculaDemoSeeder`, `docker compose -p sge -f docker-compose.prod.yml exec app php artisan db:seed --class=AsistenciaDemoSeeder --force`
+registra los últimos 15 días hábiles de los alumnos ficticios (`9000xxxx`), a nombre de una cuenta existente con
+permiso `asistencia.gestionar` (el Administrador inicial); **no crea cuentas**. Rechaza producción. Tras desplegar
+`v0.5.0` los permisos suman 24 (23 del seeder más `reportes.ver`, creado a mano en el Módulo 1).
 
 ## Cambiar el perfil de tamaño sin cambiar de versión
 
