@@ -18,7 +18,7 @@ class AlumnoFactory extends Factory
     public function definition(): array
     {
         return [
-            'nombres' => fake()->randomElement(['Alumno', 'Alumna']).' '.fake()->unique()->lexify('Prueba????'),
+            'nombres' => 'Alumno '.fake()->unique()->lexify('Prueba????'),
             'apellidos' => fake()->lexify('Ficticio???').' '.fake()->lexify('Ejemplo???'),
             'tipo_documento_id' => fn () => TipoDocumentoFactory::dni()->id,
             'numero_documento' => (string) fake()->unique()->numberBetween(90000000, 99999999),
