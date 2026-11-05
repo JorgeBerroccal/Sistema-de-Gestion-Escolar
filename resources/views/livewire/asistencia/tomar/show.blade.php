@@ -23,7 +23,7 @@
     <form wire:submit="guardar">
         <table class="w-full bg-white text-left shadow">
             <thead class="bg-gray-200 text-sm">
-                <tr><th class="p-2">Apellidos y nombres</th><th class="p-2">Estado</th><th class="p-2">Observación</th></tr>
+                <tr><th class="p-2">Apellidos y nombres</th><th class="p-2">Estado</th><th class="p-2">Observación</th><th class="p-2">Justificación</th></tr>
             </thead>
             <tbody>
                 @forelse ($alumnos as $alumno)
@@ -37,9 +37,18 @@
                         <td class="p-2">
                             <input type="text" maxlength="255" aria-label="Observación de {{ $alumno->nombre_completo }}" wire:model="filas.{{ $alumno->id }}.observacion" @disabled($aviso) class="w-full rounded border border-gray-300 px-2 py-1">
                         </td>
+                        <td class="p-2">
+                            @php($registro = $registros->get($alumno->id))
+                            @if ($registro && in_array($registro->estado_id, $justificables, true))
+                                <button type="button" wire:click="iniciarJustificacion({{ $registro->id }})" class="underline">Justificar</button>
+                            @elseif ($registro && in_array($registro->estado_id, $justificados, true))
+                                <span class="mr-2 text-sm">{{ $registro->motivo_justificacion }}</span>
+                                <button type="button" wire:click="revertir({{ $registro->id }})" class="underline">Revertir</button>
+                            @endif
+                        </td>
                     </tr>
                 @empty
-                    <tr><td colspan="3" class="p-4 text-center text-gray-500">La sección no tiene alumnos matriculados en esa fecha.</td></tr>
+                    <tr><td colspan="4" class="p-4 text-center text-gray-500">La sección no tiene alumnos matriculados en esa fecha.</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -48,4 +57,13 @@
             <button type="submit" class="mt-4 rounded bg-blue-600 px-4 py-2 text-white">Guardar asistencia</button>
         @endif
     </form>
+
+    @if ($justificandoId)
+        <form wire:submit="justificar" class="mt-4 rounded bg-white p-4 shadow">
+            <label for="motivo" class="mr-2 text-sm font-medium">Motivo de la justificación</label>
+            <input id="motivo" type="text" maxlength="255" wire:model="motivo" class="w-96 rounded border border-gray-300 px-3 py-2">
+            <button type="submit" class="ml-2 rounded bg-blue-600 px-4 py-2 text-white">Justificar falta</button>
+            <button type="button" wire:click="cancelarJustificacion" class="ml-2 underline">Cancelar</button>
+        </form>
+    @endif
 </div>
