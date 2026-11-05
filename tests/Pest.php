@@ -1,13 +1,18 @@
 <?php
 
+use App\Models\Alumno;
 use App\Models\AnioEscolar;
+use App\Models\AsignacionDocente;
 use App\Models\Curso;
 use App\Models\Grado;
+use App\Models\Matricula;
 use App\Models\Permiso;
 use App\Models\Rol;
 use App\Models\Seccion;
 use App\Models\Usuario;
+use Carbon\CarbonImmutable;
 use Database\Factories\AsignacionDocenteFactory;
+use Database\Seeders\EstadosAsistenciaSeeder;
 use Database\Seeders\RolesYPermisosSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
@@ -118,4 +123,51 @@ function escenarioMatricula(): array
     $seccion = Seccion::factory()->for(Grado::factory()->create())->for($anio, 'anio')->create(['identificador' => 'A']);
 
     return ['anio' => $anio, 'seccion' => $seccion];
+}
+
+/**
+ * Escenario de asistencia: año vigente que cubre la fecha actual, sección, alumnos matriculados (ficticios),
+ * un Docente asignado con permiso y un Administrador. Asegura el catálogo de estados.
+ *
+ * @return array{anio: AnioEscolar, seccion: Seccion, alumnos: Collection, docente: Usuario, admin: Usuario}
+ */
+function escenarioAsistencia(int $alumnos = 3): array
+{
+    (new EstadosAsistenciaSeeder)->run();
+
+    $anio = AnioEscolar::factory()->vigente()->create([
+        'fecha_inicio' => now()->subYear()->toDateString(),
+        'fecha_fin' => now()->addYear()->toDateString(),
+    ]);
+    $seccion = Seccion::factory()->for(Grado::factory()->create())->for($anio, 'anio')->create(['identificador' => 'A']);
+    $lista = Alumno::factory()->count($alumnos)->create();
+    $lista->each(fn ($a) => Matricula::factory()->create([
+        'alumno_id' => $a->id, 'seccion_id' => $seccion->id, 'fecha_matricula' => now()->subYear()->toDateString(),
+    ]));
+    $docente = usuarioConPermisos(['asistencia.registrar_propia']);
+    AsignacionDocente::factory()->create(['seccion_id' => $seccion->id, 'usuario_id' => $docente->id]);
+
+    return [
+        'anio' => $anio, 'seccion' => $seccion, 'alumnos' => $lista, 'docente' => $docente,
+        'admin' => usuarioConPermisos(['asistencia.gestionar', 'asistencia.ver_todas']),
+    ];
+}
+
+/** Último día hábil (lunes a viernes) no posterior a hoy en la zona de la institución. */
+function diaHabilReciente(int $atras = 0): CarbonImmutable
+{
+    $dia = CarbonImmutable::parse(now(config('asistencia.zona_horaria'))->toDateString());
+
+    while ($dia->isWeekend()) {
+        $dia = $dia->subDay();
+    }
+
+    for ($i = 0; $i < $atras; $i++) {
+        $dia = $dia->subDay();
+        while ($dia->isWeekend()) {
+            $dia = $dia->subDay();
+        }
+    }
+
+    return $dia;
 }
