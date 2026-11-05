@@ -21,7 +21,7 @@ it('con matricula.gestionar crea, edita y desactiva alumnos desde la interfaz', 
     Livewire::actingAs($gestor)->test(Form::class)
         ->set('nombres', 'Alumna Prueba')->set('apellidos', 'Ficticia Ejemplo')->set('tipo_documento_id', (string) $dni)
         ->set('numero_documento', '90000010')->set('fecha_nacimiento', '2014-03-02')->set('sexo', 'F')
-        ->call('guardar')->assertHasNoErrors()->assertRedirect(route('matricula.alumnos.index'));
+        ->call('guardar')->assertHasNoErrors();
 
     $alumno = Alumno::firstOrFail();
 

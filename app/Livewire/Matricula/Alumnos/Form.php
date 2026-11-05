@@ -59,7 +59,7 @@ class Form extends Component
         ];
 
         try {
-            $this->alumno?->exists ? $servicio->actualizar($this->alumno, $datos) : $servicio->crear($datos);
+            $alumno = $this->alumno?->exists ? $servicio->actualizar($this->alumno, $datos) : $servicio->crear($datos);
         } catch (MatriculaIncumplida $e) {
             $this->addError('general', $e->getMessage());
 
@@ -68,7 +68,7 @@ class Form extends Component
 
         session()->flash('estado', 'Ficha del alumno guardada.');
 
-        return $this->redirectRoute('matricula.alumnos.index', navigate: true);
+        return $this->redirectRoute('matricula.alumnos.show', $alumno, navigate: true);
     }
 
     public function render(): View

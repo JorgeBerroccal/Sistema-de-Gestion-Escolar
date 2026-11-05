@@ -45,9 +45,7 @@
                     <td class="p-2">{{ $alumno->fecha_nacimiento->format('d/m/Y') }}</td>
                     <td class="p-2">{{ $alumno->activo ? 'Activo' : 'Desactivado' }}</td>
                     <td class="flex gap-3 p-2">
-                        @if (Route::has('matricula.alumnos.show'))
-                            <a href="{{ route('matricula.alumnos.show', $alumno) }}" class="underline">Ver ficha</a>
-                        @endif
+                        <a href="{{ route('matricula.alumnos.show', $alumno) }}" class="underline">Ver ficha</a>
                         @can('matricula.gestionar')
                             <a href="{{ route('matricula.alumnos.edit', $alumno) }}" class="underline">Editar</a>
                             @if ($alumno->activo)

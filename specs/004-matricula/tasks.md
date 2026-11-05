@@ -76,10 +76,10 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Matricula/`, modelos en `ap
 
 **Independent Test**: matricular, retirar con motivo, ver el historial y matricular de nuevo.
 
-- [ ] T023 [P] [US2] `tests/Feature/Matricula/Matriculas/CambiarEstadoTest.php`: retirar/trasladar con fecha y motivo; fecha anterior a la matrícula → rechazo; corregir a «matriculado» solo sin otra activa en el año; rematricular tras retiro (queda el historial); una matrícula nunca se elimina; desactivar alumno con activa → rechazo; eliminar alumno con matrículas → rechazo (SC-004)
-- [ ] T024 [US2] Ampliar `app/Matricula/MatriculaService.php` con `retirar`, `trasladar` y `corregir` (bloqueo del alumno, validación de fechas y de la activa del año) y bloquear en `AlumnoService::desactivar` al alumno con matrícula activa (FR-014, FR-015, FR-005)
-- [ ] T025 [US2] `app/Livewire/Matricula/Alumnos/Show.php` + vista: datos del alumno, historial de matrículas (año, grado, sección, estado, fechas, motivo) y, con `matricula.gestionar`, acciones matricular, retirar, trasladar, corregir, desactivar/reactivar y eliminar; `mount` exige `ver_todas` o `ver_propia` y llama a `autorizarPertenencia()` antes de cargar relaciones (FR-019)
-- [ ] T026 [P] [US2] `tests/Feature/Matricula/Alumnos/FichaAlumnoTest.php`: historial completo de varios años; acciones visibles solo con `matricula.gestionar`
+- [x] T023 [P] [US2] `tests/Feature/Matricula/Matriculas/CambiarEstadoTest.php`: retirar/trasladar con fecha y motivo; fecha anterior a la matrícula → rechazo; corregir a «matriculado» solo sin otra activa en el año; rematricular tras retiro (queda el historial); una matrícula nunca se elimina; desactivar alumno con activa → rechazo; eliminar alumno con matrículas → rechazo (SC-004)
+- [x] T024 [US2] Ampliar `app/Matricula/MatriculaService.php` con `retirar`, `trasladar` y `corregir` (bloqueo del alumno, validación de fechas y de la activa del año) y bloquear en `AlumnoService::desactivar` al alumno con matrícula activa (FR-014, FR-015, FR-005)
+- [x] T025 [US2] `app/Livewire/Matricula/Alumnos/Show.php` + vista: datos del alumno, historial de matrículas (año, grado, sección, estado, fechas, motivo) y, con `matricula.gestionar`, acciones matricular, retirar, trasladar, corregir, desactivar/reactivar y eliminar; `mount` exige `ver_todas` o `ver_propia` y llama a `autorizarPertenencia()` antes de cargar relaciones (FR-019)
+- [x] T026 [P] [US2] `tests/Feature/Matricula/Alumnos/FichaAlumnoTest.php`: historial completo de varios años; acciones visibles solo con `matricula.gestionar`
 
 ---
 

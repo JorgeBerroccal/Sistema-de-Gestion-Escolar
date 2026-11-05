@@ -37,7 +37,7 @@
                     <td class="p-2">{{ $matricula->estado->etiqueta() }}</td>
                     <td class="p-2">{{ $matricula->fecha_matricula->format('d/m/Y') }}</td>
                     @if ($puedeVerFicha)
-                        <td class="p-2">@if (Route::has('matricula.alumnos.show'))<a href="{{ route('matricula.alumnos.show', $matricula->alumno) }}" class="underline">Ver ficha</a>@endif</td>
+                        <td class="p-2"><a href="{{ route('matricula.alumnos.show', $matricula->alumno) }}" class="underline">Ver ficha</a></td>
                     @endif
                 </tr>
             @empty
