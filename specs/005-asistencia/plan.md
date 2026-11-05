@@ -104,4 +104,10 @@ tests/{Feature/Asistencia/**, Unit/Asistencia/**}
 
 ## Complexity Tracking
 
-Sin violaciones de la Constitución; no se requiere justificación.
+Sin violaciones de la Constitución. Una excepción acotada a la regla «todo listado paginado», justificada aquí:
+
+| Elemento | Por qué no se pagina | Cota |
+|---|---|---|
+| Lista de la fecha en `Tomar\Show` | FR-006: la lista de una sección se guarda en una sola operación (todo o nada) y el Docente necesita ver a todos los alumnos a la vez. | Una sola sección (decenas de alumnos), nunca la institución. |
+| Selector de secciones de `Reportes\Index` | Es un `<select>`, no un listado; el ranking y el detalle sí se paginan. | `limit(200)`. |
+| Detalle mensual de `Propia\Index` | Un mes calendario. | A lo más 31 filas por alumno; hijos `limit(50)`. |
