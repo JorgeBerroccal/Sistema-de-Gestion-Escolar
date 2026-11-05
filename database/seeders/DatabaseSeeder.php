@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
         $this->call([RolesYPermisosSeeder::class, EscalasCalificacionSeeder::class, TiposDocumentoSeeder::class, AdministradorInicialSeeder::class]);
 
         if (app()->environment('local')) {
-            $this->call([UsuariosDemoSeeder::class, AcademicoDemoSeeder::class]);
+            $this->call([UsuariosDemoSeeder::class, AcademicoDemoSeeder::class, MatriculaDemoSeeder::class]);
         }
     }
 }

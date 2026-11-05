@@ -18,8 +18,8 @@ El servidor **nunca construye imágenes**: GitHub Actions las construye (workflo
 El script: sincroniza `/opt/sge` con la etiqueta (compose, nginx y scripts coinciden con la versión) →
 comprueba que existen las imágenes → hace un **respaldo `pre-<etiqueta>`** → descarga las imágenes →
 levanta `db` y `redis` → **aplica las migraciones con la imagen nueva antes de tocar `app`/`web`** →
-**sincroniza los datos base con `php artisan sge:sincronizar-base --force`** (permisos, roles y escalas;
-idempotente) → recrea `app` y `web` (el arranque ejecuta `php artisan optimize`) → comprueba que `https://<fqdn>/up`
+**sincroniza los datos base con `php artisan sge:sincronizar-base --force`** (permisos, roles, escalas y tipos de
+documento; idempotente) → recrea `app` y `web` (el arranque ejecuta `php artisan optimize`) → comprueba que `https://<fqdn>/up`
 informa la versión pedida → solo entonces registra la versión como activa (`/opt/sge/VERSION`,
 `SGE_VERSION` del `.env` y `/var/log/sge/despliegues.log`). Tarda menos de 15 minutos.
 
@@ -55,12 +55,20 @@ Ver [respaldo-y-restauracion.md](respaldo-y-restauracion.md).
 Cada intento queda en `/var/log/sge/despliegues.log` (fecha, etiqueta, commit, tamaño de VM, perfil,
 resultado y duración).
 
-## Datos base: permisos, roles y escalas
+## Datos base: permisos, roles, escalas y tipos de documento
 
-Cada despliegue ejecuta `sge:sincronizar-base`, que crea los permisos, roles y escalas de calificación que
-falten (lista fija de seeders base idempotentes; nunca el Administrador inicial, los usuarios de ejemplo ni
+Cada despliegue ejecuta `sge:sincronizar-base`, que crea los permisos, roles, escalas de calificación y tipos de
+documento (DNI, CE, otro) que falten (lista fija de seeders base idempotentes; nunca el Administrador inicial, los usuarios de ejemplo ni
 los de carga). Un permiso nuevo se asigna a sus roles por defecto solo la primera vez que se crea, así que no
-deshace los cambios que el Administrador haya hecho después. El comando **solo crea**: los permisos que se
+deshace los cambios que el Administrador haya hecho después.
+
+### Alumnos de ejemplo en staging (Módulo 3)
+
+Los alumnos son datos personales de menores (Ley 29733): **en staging solo datos ficticios**. Después de
+`AcademicoDemoSeeder`, `docker compose -p sge -f docker-compose.prod.yml exec app php artisan db:seed --class=MatriculaDemoSeeder --force`
+carga alumnos y matrículas ficticios (documentos `9000xxxx`), **sin crear cuentas de usuario**; las cuentas de Padre
+de Familia o Alumno de las pruebas se crean desde el panel y se vinculan a fichas ficticias. El seeder rechaza
+producción. El comando **solo crea**: los permisos que se
 eliminen o renombren en una versión posterior se limpian a mano.
 
 ## Cambiar el perfil de tamaño sin cambiar de versión
