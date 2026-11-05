@@ -117,7 +117,8 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Matricula/`, modelos en `ap
 - [x] T038 [P] `tests/Feature/Matricula/GenericidadTest.php` (SC-007): buscar en `app/`, `resources/views` y `config/` nombres de nivel, grado, sección o institución de ejemplo y no encontrar ninguno; operar con una institución distinta sin cambiar código
 - [x] T039 [P] `tests/Feature/Matricula/RecorridoQuickstartTest.php`: recorrido automatizado del quickstart §2 con los componentes reales (alta, rechazos de DNI y repetido, matrícula individual y masiva, retiro, vínculo, 403 de rol limitado)
 - [x] T040 Actualizar `README.md` (módulo 3, seeder de ejemplo ficticio, regla Ley 29733 y la regla operativa **«en staging solo datos ficticios»**) y `docs/despliegue/primer-despliegue.md` / `desplegar-y-volver-atras.md` (tipos de documento en la sincronización de datos base y carga de alumnos ficticios en staging)
-- [ ] T041 Ejecutar la suite completa, `pint --test` y `/speckit-analyze` final; corregir hallazgos
+- [x] T041 Ejecutar la suite completa, `pint --test` y `/speckit-analyze` final; corregir hallazgos
+  - _Estado_ (2026-11-05): suite completa en verde (526 pruebas), `pint --test` limpio y análisis final sin hallazgos críticos ni altos; un hallazgo medio corregido (quickstart) y una observación sobre el Módulo 2 (cuentas demo de `AcademicoDemoSeeder` en staging) elevada al responsable.
 - [ ] T042 (manual) Etiquetar `v0.4.0`, desplegar con `deploy/deploy.sh`, cargar `MatriculaDemoSeeder` (solo fichas y matrículas ficticias, sin cuentas), crear desde el panel las cuentas de Padre o Alumno de la prueba y vincularlas a fichas ficticias, y ejecutar la **prueba de humo de ~10 min** de `quickstart.md` §2–§3 con el Administrador y un rol limitado; **regla operativa: en staging solo datos ficticios** (nunca nombres, documentos ni correos reales); repetir el despliegue y comprobar que no duplica permisos ni tipos; registrar en `evidencias/staging.md` (SC-006)
 
 ---

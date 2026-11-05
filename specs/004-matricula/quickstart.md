@@ -9,8 +9,10 @@ Guía de validación; reglas en [data-model.md](data-model.md) y contratos en [c
 ```bash
 docker compose up -d
 docker compose exec app php artisan migrate:fresh --seed
+# En local, DatabaseSeeder ya carga AcademicoDemoSeeder y MatriculaDemoSeeder (alumnos y matrículas FICTICIOS;
+# vínculos solo con los usuarios demo de local). Para cargarlos a mano, por ejemplo en staging:
 docker compose exec app php artisan db:seed --class=AcademicoDemoSeeder
-docker compose exec app php artisan db:seed --class=MatriculaDemoSeeder   # alumnos y matrículas FICTICIOS (vínculos solo con los usuarios demo de local)
+docker compose exec app php artisan db:seed --class=MatriculaDemoSeeder
 ```
 
 ## 1. Pruebas automáticas
