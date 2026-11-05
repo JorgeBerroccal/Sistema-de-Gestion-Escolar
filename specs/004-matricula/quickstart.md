@@ -26,7 +26,7 @@ Esperado: todo en verde; incluye concurrencia (una matrícula activa; documento 
 
 ## 2. Prueba de humo manual en staging (~10 minutos, Constitución 2.2.0)
 
-Solo el flujo principal, con el Administrador y un rol limitado. Lo demás lo cubren las pruebas automáticas.
+Solo el flujo principal, con el Administrador y un rol limitado (el Padre de Familia del paso 6). Lo demás lo cubren las pruebas automáticas.
 
 | # | Como | Acción | Resultado esperado |
 |---|---|---|---|
@@ -36,11 +36,15 @@ Solo el flujo principal, con el Administrador y un rol limitado. Lo demás lo cu
 | 4 | Administrador | Matricular al alumno en una sección del año vigente; matricular 2 más en forma masiva | Nómina de la sección con los tres |
 | 5 | Administrador | Retirar uno con motivo | Sale de la nómina activa; sigue en su historial |
 | 6 | Administrador | Crear desde el panel una cuenta Padre de Familia (datos ficticios) y vincularla a un alumno | Vínculo visible en la ficha |
-| 7 | Docente o Padre (rol limitado) | Abrir su área (Mis secciones o Mis alumnos); intentar abrir un alumno o sección ajenos por URL | Ve solo lo suyo; lo ajeno da 403 |
+| 7 | Padre de Familia (la cuenta del paso 6) | Abrir *Mis alumnos*; intentar abrir un alumno ajeno y una nómina por URL | Ve solo a su hijo; lo ajeno da 403 |
 
 ## 3. Despliegue a staging (FR-030)
 
-1. Etiquetar `v0.4.0` y ejecutar `deploy.sh`: tras `migrate` corre `sge:sincronizar-base` (permisos nuevos y tipos de documento).
+1. Etiquetar `v0.4.0` sobre `main` (ya integrada la rama), esperar a que el workflow `release` publique las imágenes y
+   ejecutar `deploy.sh v0.4.0`: tras `migrate` corre `sge:sincronizar-base` (permisos nuevos y tipos de documento).
+   Comprobar que los permisos suman **20** (19 del seeder más `reportes.ver`, creado a mano en el Módulo 1).
 2. Cargar los alumnos y matrículas ficticios (sin cuentas de usuario): `docker compose … exec app php artisan db:seed --class=MatriculaDemoSeeder --force`. **En staging solo datos ficticios.**
-3. Ejecutar la prueba de humo del §2 y registrar el resultado en `evidencias/staging.md`.
-4. Repetir el despliegue: no duplica permisos ni tipos de documento ni revierte cambios del Administrador.
+3. Ejecutar la prueba de humo del §2. No se repite el despliegue ni se prueba con el Director: ya se demostraron en
+   el Módulo 2 y las cubren las pruebas automáticas (Constitución 2.2.0).
+4. Registrar el resultado en `specs/004-matricula/evidencias/staging.md`, dentro del **primer commit de la rama del
+   Módulo 4**, sin PR aparte.
