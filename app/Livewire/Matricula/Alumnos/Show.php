@@ -5,10 +5,12 @@ namespace App\Livewire\Matricula\Alumnos;
 use App\Matricula\AlumnoService;
 use App\Matricula\MatriculaIncumplida;
 use App\Matricula\MatriculaService;
+use App\Matricula\Parentesco;
 use App\Models\Alumno;
 use App\Models\AnioEscolar;
 use App\Models\Matricula;
 use App\Models\Seccion;
+use App\Models\Usuario;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -36,6 +38,12 @@ class Show extends Component
     public string $cambioMotivo = '';
 
     public string $mensaje = '';
+
+    public string $usuarioAlumnoId = '';
+
+    public string $apoderadoId = '';
+
+    public string $parentesco = '';
 
     public function mount(Alumno $alumno): void
     {
@@ -107,6 +115,45 @@ class Show extends Component
         });
     }
 
+    public function vincularUsuario(AlumnoService $servicio): void
+    {
+        $this->ejecutar(function () use ($servicio) {
+            $servicio->vincularUsuario($this->alumno, Usuario::find($this->usuarioAlumnoId) ?? throw new MatriculaIncumplida('Elige un usuario.'));
+            $this->usuarioAlumnoId = '';
+
+            return 'Usuario vinculado al alumno.';
+        });
+    }
+
+    public function quitarUsuario(AlumnoService $servicio): void
+    {
+        $this->ejecutar(function () use ($servicio) {
+            $servicio->quitarUsuario($this->alumno);
+
+            return 'Vínculo de usuario quitado.';
+        });
+    }
+
+    public function agregarApoderado(AlumnoService $servicio): void
+    {
+        $this->ejecutar(function () use ($servicio) {
+            $servicio->agregarApoderado($this->alumno, Usuario::find($this->apoderadoId) ?? throw new MatriculaIncumplida('Elige un apoderado.'), $this->parentesco);
+            $this->apoderadoId = '';
+            $this->parentesco = '';
+
+            return 'Apoderado vinculado.';
+        });
+    }
+
+    public function quitarApoderado(int $usuarioId, AlumnoService $servicio): void
+    {
+        $this->ejecutar(function () use ($usuarioId, $servicio) {
+            $servicio->quitarApoderado($this->alumno, Usuario::findOrFail($usuarioId));
+
+            return 'Apoderado quitado.';
+        });
+    }
+
     public function desactivar(AlumnoService $servicio): void
     {
         $this->ejecutar(function () use ($servicio) {
@@ -157,14 +204,21 @@ class Show extends Component
         $this->alumno->refresh();
     }
 
-    public function render(): View
+    public function render(AlumnoService $servicio): View
     {
         $usuario = Auth::user();
+        $veVinculos = $usuario->tienePermiso('matricula.ver_todas');
         $puedeGestionar = $usuario->tienePermiso('matricula.gestionar');
         $vigente = AnioEscolar::query()->where('vigente', 1)->first();
 
         return view('livewire.matricula.alumnos.show', [
             'puedeGestionar' => $puedeGestionar,
+            'veVinculos' => $veVinculos,
+            'parentescos' => Parentesco::cases(),
+            'apoderados' => $veVinculos ? $this->alumno->apoderados()->orderBy('apellidos')->orderBy('nombres')->get() : collect(),
+            'usuarioAlumno' => $veVinculos ? $this->alumno->usuario : null,
+            'usuariosAlumno' => $puedeGestionar ? $servicio->usuariosAlumnoElegibles()->limit(50)->get() : collect(),
+            'apoderadosElegibles' => $puedeGestionar ? $servicio->apoderadosElegibles($this->alumno)->limit(50)->get() : collect(),
             'vigente' => $vigente,
             'ficha' => $this->alumno->load('tipoDocumento'),
             'historial' => Matricula::query()->where('alumno_id', $this->alumno->id)

@@ -38,6 +38,64 @@
         @endif
     </section>
 
+    @if ($veVinculos)
+        <section class="mb-6 rounded bg-white p-6 shadow">
+            <h2 class="mb-3 text-lg font-semibold">Usuario del alumno</h2>
+            @if ($usuarioAlumno)
+                <p>{{ $usuarioAlumno->nombre_completo }} ({{ $usuarioAlumno->username }})
+                    @if ($puedeGestionar) <button type="button" wire:click="quitarUsuario" class="ml-2 underline">Quitar vínculo</button> @endif
+                </p>
+            @else
+                <p class="text-sm text-gray-500">Sin usuario vinculado.</p>
+                @if ($puedeGestionar)
+                    <form wire:submit="vincularUsuario" class="mt-3 flex flex-wrap items-end gap-3">
+                        <div>
+                            <label for="usuarioAlumnoId" class="block text-sm font-medium">Usuario</label>
+                            <select id="usuarioAlumnoId" wire:model="usuarioAlumnoId" class="mt-1 rounded border border-gray-300 px-3 py-2">
+                                <option value="">Elige un usuario</option>
+                                @foreach ($usuariosAlumno as $u) <option value="{{ $u->id }}">{{ $u->nombre_completo }} ({{ $u->username }})</option> @endforeach
+                            </select>
+                        </div>
+                        <button type="submit" class="rounded bg-gray-800 px-4 py-2 text-white">Vincular</button>
+                    </form>
+                @endif
+            @endif
+        </section>
+
+        <section class="mb-6 rounded bg-white p-6 shadow">
+            <h2 class="mb-3 text-lg font-semibold">Apoderados</h2>
+            <ul class="mb-3">
+                @forelse ($apoderados as $apoderado)
+                    <li wire:key="apoderado-{{ $apoderado->id }}" class="py-1">
+                        {{ $apoderado->nombre_completo }} ({{ $apoderado->username }}) · {{ ucfirst($apoderado->pivot->parentesco) }}
+                        @if ($puedeGestionar) <button type="button" wire:click="quitarApoderado({{ $apoderado->id }})" class="ml-2 underline">Quitar</button> @endif
+                    </li>
+                @empty
+                    <li class="text-sm text-gray-500">Sin apoderados.</li>
+                @endforelse
+            </ul>
+            @if ($puedeGestionar)
+                <form wire:submit="agregarApoderado" class="flex flex-wrap items-end gap-3">
+                    <div>
+                        <label for="apoderadoId" class="block text-sm font-medium">Usuario apoderado</label>
+                        <select id="apoderadoId" wire:model="apoderadoId" class="mt-1 rounded border border-gray-300 px-3 py-2">
+                            <option value="">Elige un usuario</option>
+                            @foreach ($apoderadosElegibles as $u) <option value="{{ $u->id }}">{{ $u->nombre_completo }} ({{ $u->username }})</option> @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label for="parentesco" class="block text-sm font-medium">Parentesco</label>
+                        <select id="parentesco" wire:model="parentesco" class="mt-1 rounded border border-gray-300 px-3 py-2">
+                            <option value="">Elige</option>
+                            @foreach ($parentescos as $p) <option value="{{ $p->value }}">{{ $p->etiqueta() }}</option> @endforeach
+                        </select>
+                    </div>
+                    <button type="submit" class="rounded bg-gray-800 px-4 py-2 text-white">Agregar apoderado</button>
+                </form>
+            @endif
+        </section>
+    @endif
+
     <section class="mb-6 rounded bg-white p-6 shadow">
         <h2 class="mb-3 text-lg font-semibold">Historial de matrículas</h2>
         <table class="w-full text-left">

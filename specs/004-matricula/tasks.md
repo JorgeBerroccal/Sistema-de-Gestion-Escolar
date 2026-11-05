@@ -89,10 +89,10 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Matricula/`, modelos en `ap
 
 **Independent Test**: vincular un Alumno y dos Padres a una ficha; un padre a un segundo hijo.
 
-- [ ] T027 [P] [US3] `tests/Feature/Matricula/Vinculos/VinculosTest.php` (escenarios 1–6): vincular usuario con `matricula.ser_alumno` y activo; usuario ya vinculado → rechazo; sin el permiso o inactivo → rechazo; apoderado con parentesco, varios hijos, sin repetir el mismo apoderado en el alumno; sin `matricula.ser_apoderado` (por ejemplo un Docente) → rechazo; quitar un vínculo conserva los demás y las matrículas
-- [ ] T028 [US3] Ampliar `app/Matricula/AlumnoService.php` con `vincularUsuario`, `quitarUsuario`, `agregarApoderado`, `quitarApoderado`; elegibilidad por permisos marcadores (`matricula.ser_alumno`, `matricula.ser_apoderado`), usuario activo (FR-007–FR-010)
-- [ ] T029 [US3] Ampliar `Alumnos/Show.php` y su vista con la sección de vínculos y apoderados (selectores de usuarios elegibles, parentesco, quitar) bajo `matricula.gestionar`
-- [ ] T030 [P] [US3] `tests/Feature/Matricula/Vinculos/VinculoInactivoTest.php`: un usuario vinculado que se desactiva o pierde el permiso conserva el vínculo pero deja de ver datos (borde de la spec)
+- [x] T027 [P] [US3] `tests/Feature/Matricula/Vinculos/VinculosTest.php` (escenarios 1–6): vincular usuario con `matricula.ser_alumno` y activo; usuario ya vinculado → rechazo; sin el permiso o inactivo → rechazo; apoderado con parentesco, varios hijos, sin repetir el mismo apoderado en el alumno; sin `matricula.ser_apoderado` (por ejemplo un Docente) → rechazo; quitar un vínculo conserva los demás y las matrículas
+- [x] T028 [US3] Ampliar `app/Matricula/AlumnoService.php` con `vincularUsuario`, `quitarUsuario`, `agregarApoderado`, `quitarApoderado`; elegibilidad por permisos marcadores (`matricula.ser_alumno`, `matricula.ser_apoderado`), usuario activo (FR-007–FR-010)
+- [x] T029 [US3] Ampliar `Alumnos/Show.php` y su vista con la sección de vínculos y apoderados (selectores de usuarios elegibles, parentesco, quitar) bajo `matricula.gestionar`
+- [x] T030 [P] [US3] `tests/Feature/Matricula/Vinculos/VinculoInactivoTest.php`: un usuario vinculado que se desactiva o pierde el permiso conserva el vínculo pero deja de ver datos (borde de la spec)
 
 ---
 

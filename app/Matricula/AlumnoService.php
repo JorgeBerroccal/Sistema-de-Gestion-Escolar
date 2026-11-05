@@ -4,6 +4,8 @@ namespace App\Matricula;
 
 use App\Models\Alumno;
 use App\Models\TipoDocumento;
+use App\Models\Usuario;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 
@@ -77,6 +79,103 @@ class AlumnoService
 
             $bloqueado->delete();
         }, 3);
+    }
+
+    /** Usuarios activos cuyo rol tiene el permiso marcador de alumno y que aún no tienen ficha (R-05). */
+    public function usuariosAlumnoElegibles(?string $busqueda = null): Builder
+    {
+        return $this->usuariosConPermiso(Alumno::PERMISO_ALUMNO, $busqueda)
+            ->whereNotIn('usuarios.id', Alumno::query()->whereNotNull('usuario_id')->select('usuario_id'));
+    }
+
+    /** Usuarios activos cuyo rol tiene el permiso marcador de apoderado y que aún no lo son de este alumno. */
+    public function apoderadosElegibles(Alumno $alumno, ?string $busqueda = null): Builder
+    {
+        return $this->usuariosConPermiso(Alumno::PERMISO_APODERADO, $busqueda)
+            ->whereNotIn('usuarios.id', $alumno->apoderados()->select('usuarios.id'));
+    }
+
+    public function vincularUsuario(Alumno $alumno, Usuario $usuario): void
+    {
+        DB::transaction(function () use ($alumno, $usuario) {
+            $ficha = Alumno::query()->whereKey($alumno->id)->lockForUpdate()->firstOrFail();
+
+            if ($ficha->usuario_id !== null) {
+                throw new MatriculaIncumplida('La ficha ya tiene un usuario vinculado: quítalo antes de vincular otro.');
+            }
+
+            $this->exigirElegible($usuario, Alumno::PERMISO_ALUMNO, 'ser alumno');
+
+            if (Alumno::query()->where('usuario_id', $usuario->id)->exists()) {
+                throw new MatriculaIncumplida('Ese usuario ya está vinculado a otra ficha de alumno.');
+            }
+
+            try {
+                $ficha->update(['usuario_id' => $usuario->id]);
+            } catch (UniqueConstraintViolationException) {
+                throw new MatriculaIncumplida('Ese usuario ya está vinculado a otra ficha de alumno.');
+            }
+        }, 3);
+
+        $alumno->refresh();
+    }
+
+    public function quitarUsuario(Alumno $alumno): void
+    {
+        $alumno->update(['usuario_id' => null]);
+    }
+
+    public function agregarApoderado(Alumno $alumno, Usuario $usuario, Parentesco|string $parentesco): void
+    {
+        $parentesco = $parentesco instanceof Parentesco ? $parentesco : (Parentesco::tryFrom($parentesco)
+            ?? throw new MatriculaIncumplida('Elige el parentesco del apoderado.'));
+
+        DB::transaction(function () use ($alumno, $usuario, $parentesco) {
+            $ficha = Alumno::query()->whereKey($alumno->id)->lockForUpdate()->firstOrFail();
+
+            $this->exigirElegible($usuario, Alumno::PERMISO_APODERADO, 'ser apoderado');
+
+            if ($ficha->apoderados()->where('usuarios.id', $usuario->id)->exists()) {
+                throw new MatriculaIncumplida('Ese usuario ya es apoderado de este alumno.');
+            }
+
+            try {
+                $ficha->apoderados()->attach($usuario->id, ['parentesco' => $parentesco->value]);
+            } catch (UniqueConstraintViolationException) {
+                throw new MatriculaIncumplida('Ese usuario ya es apoderado de este alumno.');
+            }
+        }, 3);
+    }
+
+    /** Quita solo el vínculo: los demás apoderados y las matrículas no cambian. */
+    public function quitarApoderado(Alumno $alumno, Usuario $usuario): void
+    {
+        $alumno->apoderados()->detach($usuario->id);
+    }
+
+    private function exigirElegible(Usuario $usuario, string $permiso, string $accion): void
+    {
+        if (! $usuario->activo) {
+            throw new MatriculaIncumplida("El usuario está desactivado y no puede {$accion}.");
+        }
+
+        if (! $usuario->tienePermiso($permiso)) {
+            throw new MatriculaIncumplida("El rol del usuario no permite {$accion}.");
+        }
+    }
+
+    private function usuariosConPermiso(string $permiso, ?string $busqueda): Builder
+    {
+        $texto = trim((string) $busqueda);
+
+        return Usuario::query()
+            ->where('activo', true)
+            ->whereHas('rol.permisos', fn ($q) => $q->where('identificador', $permiso))
+            ->when($texto !== '', function ($q) use ($texto) {
+                $patron = '%'.addcslashes($texto, '\\%_').'%';
+                $q->where(fn ($w) => $w->where('nombres', 'like', $patron)->orWhere('apellidos', 'like', $patron)->orWhere('username', 'like', $patron));
+            })
+            ->orderBy('apellidos')->orderBy('nombres');
     }
 
     /** @param  array<string, mixed>  $datos */
