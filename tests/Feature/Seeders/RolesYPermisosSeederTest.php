@@ -9,17 +9,17 @@ function identificadoresDe(string $rol): array
     return Rol::where('nombre', $rol)->first()->permisos()->pluck('identificador')->sort()->values()->all();
 }
 
-it('crea los 5 roles, los 13 permisos y sus asignaciones', function () {
+it('crea los 5 roles, los 23 permisos y sus asignaciones', function () {
     $this->seed(RolesYPermisosSeeder::class);
 
     expect(Rol::count())->toBe(5)
-        ->and(Permiso::count())->toBe(19)
-        ->and(identificadoresDe('Administrador'))->toHaveCount(13)
+        ->and(Permiso::count())->toBe(23)
+        ->and(identificadoresDe('Administrador'))->toHaveCount(15)
         ->and(identificadoresDe('Administrador'))->not->toContain('docencia.dictar', 'asignaciones.ver_propias')
-        ->and(identificadoresDe('Director'))->toBe(['academico.ver', 'asignaciones.ver_todas', 'matricula.ver_todas', 'roles.ver', 'usuarios.ver'])
-        ->and(identificadoresDe('Docente'))->toBe(['asignaciones.ver_propias', 'docencia.dictar', 'matricula.ver_nomina_propia'])
-        ->and(identificadoresDe('Padre de Familia'))->toBe(['matricula.ser_apoderado', 'matricula.ver_propia'])
-        ->and(identificadoresDe('Alumno'))->toBe(['matricula.ser_alumno', 'matricula.ver_propia']);
+        ->and(identificadoresDe('Director'))->toBe(['academico.ver', 'asignaciones.ver_todas', 'asistencia.ver_todas', 'matricula.ver_todas', 'roles.ver', 'usuarios.ver'])
+        ->and(identificadoresDe('Docente'))->toBe(['asignaciones.ver_propias', 'asistencia.registrar_propia', 'docencia.dictar', 'matricula.ver_nomina_propia'])
+        ->and(identificadoresDe('Padre de Familia'))->toBe(['asistencia.ver_propia', 'matricula.ser_apoderado', 'matricula.ver_propia'])
+        ->and(identificadoresDe('Alumno'))->toBe(['asistencia.ver_propia', 'matricula.ser_alumno', 'matricula.ver_propia']);
 });
 
 it('es idempotente', function () {
@@ -27,8 +27,8 @@ it('es idempotente', function () {
     $this->seed(RolesYPermisosSeeder::class);
 
     expect(Rol::count())->toBe(5)
-        ->and(Permiso::count())->toBe(19)
-        ->and(identificadoresDe('Administrador'))->toHaveCount(13);
+        ->and(Permiso::count())->toBe(23)
+        ->and(identificadoresDe('Administrador'))->toHaveCount(15);
 });
 
 it('no vuelve a asignar un permiso que se quitó a un rol', function () {
@@ -52,9 +52,9 @@ it('no revierte permisos del Módulo 2 que el Administrador quitó o dio a otro 
         ->and(identificadoresDe('Director'))->toContain('docencia.dictar');
 });
 
-it('no da ningún permiso de los Módulos 1 y 2 a Padre de Familia ni a Alumno, solo los de matrícula propia', function () {
+it('no da ningún permiso de los Módulos 1 y 2 a Padre de Familia ni a Alumno, solo los de matrícula y asistencia propias', function () {
     $this->seed(RolesYPermisosSeeder::class);
 
-    expect(identificadoresDe('Padre de Familia'))->toBe(['matricula.ser_apoderado', 'matricula.ver_propia'])
-        ->and(identificadoresDe('Alumno'))->toBe(['matricula.ser_alumno', 'matricula.ver_propia']);
+    expect(identificadoresDe('Padre de Familia'))->toBe(['asistencia.ver_propia', 'matricula.ser_apoderado', 'matricula.ver_propia'])
+        ->and(identificadoresDe('Alumno'))->toBe(['asistencia.ver_propia', 'matricula.ser_alumno', 'matricula.ver_propia']);
 });

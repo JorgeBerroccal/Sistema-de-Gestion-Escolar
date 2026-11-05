@@ -2,6 +2,7 @@
 
 use App\Console\Commands\SincronizarBase;
 use App\Models\EscalaCalificacion;
+use App\Models\EstadoAsistencia;
 use App\Models\Permiso;
 use App\Models\Rol;
 use App\Models\TipoDocumento;
@@ -15,7 +16,7 @@ it('crea los permisos, roles, escalas y tipos de documento base', function () {
 
     expect(TipoDocumento::pluck('codigo')->sort()->values()->all())->toBe(['CE', 'DNI', 'OTRO'])
         ->and(Rol::count())->toBe(5)
-        ->and(Permiso::count())->toBe(19)
+        ->and(Permiso::count())->toBe(23)
         ->and(EscalaCalificacion::count())->toBe(2);
 });
 
@@ -25,9 +26,10 @@ it('dos ejecuciones dan el mismo resultado y no revierten cambios del Administra
 
     $this->artisan('sge:sincronizar-base')->assertSuccessful();
 
-    expect(Permiso::count())->toBe(19)
+    expect(Permiso::count())->toBe(23)
         ->and(EscalaCalificacion::count())->toBe(2)
         ->and(TipoDocumento::count())->toBe(3)
+        ->and(EstadoAsistencia::count())->toBe(4)
         ->and(Rol::where('nombre', 'Docente')->first()->permisos()->pluck('identificador')->all())->not->toContain('docencia.dictar');
 });
 
@@ -50,7 +52,7 @@ it('acepta --force en producción', function () {
 
     $this->artisan('sge:sincronizar-base --force')->assertSuccessful();
 
-    expect(Permiso::count())->toBe(19);
+    expect(Permiso::count())->toBe(23);
 });
 
 it('en producción sin --force pide confirmación y no hace nada si se rechaza', function () {
