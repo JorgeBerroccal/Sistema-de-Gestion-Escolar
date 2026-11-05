@@ -47,6 +47,7 @@ Route::middleware(['auth', 'activo'])->group(function () {
     Route::livewire('/matricula/alumnos/crear', Matricula\Alumnos\Form::class)->name('matricula.alumnos.create')->middleware('can:matricula.gestionar');
     Route::livewire('/matricula/alumnos/{alumno}/editar', Matricula\Alumnos\Form::class)->name('matricula.alumnos.edit')->middleware('can:matricula.gestionar');
     Route::livewire('/matricula/alumnos/{alumno}', Matricula\Alumnos\Show::class)->name('matricula.alumnos.show');
+    Route::livewire('/matricula/mis-alumnos', Matricula\MisAlumnos\Index::class)->name('matricula.propios.index');
     Route::livewire('/matricula/nominas', Matricula\Nominas\Index::class)->name('matricula.nominas.index');
     Route::livewire('/matricula/nominas/{seccion}', Matricula\Nominas\Show::class)->name('matricula.nominas.show');
 });

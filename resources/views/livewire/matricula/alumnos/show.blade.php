@@ -3,7 +3,7 @@
         <h1 class="text-2xl font-semibold">{{ $ficha->nombre_completo }}</h1>
         @can('matricula.ver_todas')
             <a href="{{ route('matricula.alumnos.index') }}" class="underline">Volver a alumnos</a>
-        @elseif (Route::has('matricula.propios.index'))
+        @else
             <a href="{{ route('matricula.propios.index') }}" class="underline">Volver</a>
         @endcan
     </div>

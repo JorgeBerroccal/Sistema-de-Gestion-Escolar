@@ -102,11 +102,11 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Matricula/`, modelos en `ap
 
 **Independent Test**: iniciar sesión con cada rol e intentar ver y modificar lo ajeno.
 
-- [ ] T031 [P] [US4] `tests/Feature/Matricula/Acceso/PorRolTest.php` (SC-003): Director ve todo y no ve acciones ni ejecuta modificaciones (403); Docente solo nóminas de sus secciones con nombres, apellidos y documento, 403 en la nómina de otra sección y en la ficha de un alumno; Padre solo sus hijos, 403 en alumno ajeno; Alumno solo su ficha, sin nóminas ni compañeros; usuario sin vínculos → lista vacía; Padre y Alumno 403 en `/matricula/alumnos` y `/matricula/nominas`
-- [ ] T032 [US4] `app/Livewire/Matricula/MisAlumnos/Index.php` + vista: alumnos del Padre (hijos) o del Alumno (propio) vía `Alumno::visiblePara()`, con enlace a la ficha de solo lectura; `mount` exige `matricula.ver_propia`
-- [ ] T033 [US4] Ajustar `Nominas/Index.php` y `Nominas/Show.php` para el Docente: secciones con asignación suya (`MatriculaRegla`), columnas limitadas a nombres, apellidos, documento, estado y fecha, sin enlace a la ficha; comprobar pertenencia antes de cargar relaciones (R-13, FR-022)
-- [ ] T034 [P] [US4] `tests/Feature/Matricula/Acceso/PermisosPorDatosTest.php`: quitar `matricula.ver_todas` al Director desde la gestión de roles corta su acceso sin cambiar código (escenario 8)
-- [ ] T035 [P] [US4] `tests/Feature/Matricula/Privacidad/DatosPersonalesTest.php` (FR-026): los mensajes de error de los servicios y el archivo de registro no contienen nombres ni documentos tras operaciones inválidas; la búsqueda de quien no tiene acceso no devuelve datos
+- [x] T031 [P] [US4] `tests/Feature/Matricula/Acceso/PorRolTest.php` (SC-003): Director ve todo y no ve acciones ni ejecuta modificaciones (403); Docente solo nóminas de sus secciones con nombres, apellidos y documento, 403 en la nómina de otra sección y en la ficha de un alumno; Padre solo sus hijos, 403 en alumno ajeno; Alumno solo su ficha, sin nóminas ni compañeros; usuario sin vínculos → lista vacía; Padre y Alumno 403 en `/matricula/alumnos` y `/matricula/nominas`
+- [x] T032 [US4] `app/Livewire/Matricula/MisAlumnos/Index.php` + vista: alumnos del Padre (hijos) o del Alumno (propio) vía `Alumno::visiblePara()`, con enlace a la ficha de solo lectura; `mount` exige `matricula.ver_propia`
+- [x] T033 [US4] Ajustar `Nominas/Index.php` y `Nominas/Show.php` para el Docente: secciones con asignación suya (`MatriculaRegla`), columnas limitadas a nombres, apellidos, documento, estado y fecha, sin enlace a la ficha; comprobar pertenencia antes de cargar relaciones (R-13, FR-022)
+- [x] T034 [P] [US4] `tests/Feature/Matricula/Acceso/PermisosPorDatosTest.php`: quitar `matricula.ver_todas` al Director desde la gestión de roles corta su acceso sin cambiar código (escenario 8)
+- [x] T035 [P] [US4] `tests/Feature/Matricula/Privacidad/DatosPersonalesTest.php` (FR-026): los mensajes de error de los servicios y el archivo de registro no contienen nombres ni documentos tras operaciones inválidas; la búsqueda de quien no tiene acceso no devuelve datos
 
 ---
 
