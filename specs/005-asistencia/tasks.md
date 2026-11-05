@@ -93,10 +93,10 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Asistencia/`, modelos en `a
 
 **Independent Test**: asistencia de dos secciones en varias fechas; el reporte de una sección coincide con los registros.
 
-- [ ] T022 [P] [US4] `tests/Feature/Asistencia/ReportesTest.php`: totales por estado, porcentaje y ranking de faltas injustificadas (las justificadas no cuentan) coinciden con la muestra (SC-004); rango libre y periodo de evaluación (R-10); rango sin registros → «sin datos»; detalle de un alumno
-- [ ] T023 [P] [US4] `tests/Feature/Asistencia/Acceso/ReportesAccesoTest.php`: Director y Administrador ven todas las secciones, el Director sin controles de edición; Docente solo las suyas (otra → 403); Padre y Alumno → 403; quitar `asistencia.ver_todas` al Director corta su acceso
-- [ ] T024 [US4] Ampliar `ResumenAsistencia` con `deSeccion(Seccion, desde, hasta)` (totales por estado, porcentaje) y `rankingFaltas(Seccion, desde, hasta)` paginado, ordenado por `cuenta_falta`, con agregados SQL
-- [ ] T025 [US4] `app/Livewire/Asistencia/Reportes/Index.php` y `Reportes/Alumno.php` con vistas: elección de sección visible, rango o periodo (limitado al año de la sección), totales, ranking paginado y enlace al detalle; rutas `asistencia.reportes.index` y `asistencia.reportes.alumno`; hacer pasar T022–T023
+- [x] T022 [P] [US4] `tests/Feature/Asistencia/ReportesTest.php`: totales por estado, porcentaje y ranking de faltas injustificadas (las justificadas no cuentan) coinciden con la muestra (SC-004); rango libre y periodo de evaluación (R-10); rango sin registros → «sin datos»; detalle de un alumno
+- [x] T023 [P] [US4] `tests/Feature/Asistencia/Acceso/ReportesAccesoTest.php`: Director y Administrador ven todas las secciones, el Director sin controles de edición; Docente solo las suyas (otra → 403); Padre y Alumno → 403; quitar `asistencia.ver_todas` al Director corta su acceso
+- [x] T024 [US4] Ampliar `ResumenAsistencia` con `deSeccion(Seccion, desde, hasta)` (totales por estado, porcentaje) y `rankingFaltas(Seccion, desde, hasta)` paginado, ordenado por `cuenta_falta`, con agregados SQL
+- [x] T025 [US4] `app/Livewire/Asistencia/Reportes/Index.php` y `Reportes/Alumno.php` con vistas: elección de sección visible, rango o periodo (limitado al año de la sección), totales, ranking paginado y enlace al detalle; rutas `asistencia.reportes.index` y `asistencia.reportes.alumno`; hacer pasar T022–T023
 
 ---
 

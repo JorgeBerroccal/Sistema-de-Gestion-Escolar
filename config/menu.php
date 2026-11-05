@@ -21,5 +21,7 @@ return [
     ['etiqueta' => 'Mis alumnos', 'ruta' => 'matricula.propios.index', 'permiso' => 'matricula.ver_propia'],
     ['etiqueta' => 'Tomar asistencia', 'ruta' => 'asistencia.tomar.index', 'permiso' => 'asistencia.gestionar'],
     ['etiqueta' => 'Asistencia de mis secciones', 'ruta' => 'asistencia.tomar.index', 'permiso' => 'asistencia.registrar_propia'],
+    ['etiqueta' => 'Reportes de asistencia', 'ruta' => 'asistencia.reportes.index', 'permiso' => 'asistencia.ver_todas'],
+    ['etiqueta' => 'Reportes de asistencia de mis secciones', 'ruta' => 'asistencia.reportes.index', 'permiso' => 'asistencia.registrar_propia'],
     ['etiqueta' => 'Mi asistencia', 'ruta' => 'asistencia.propia.index', 'permiso' => 'asistencia.ver_propia'],
 ];

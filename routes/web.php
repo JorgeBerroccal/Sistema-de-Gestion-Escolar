@@ -56,4 +56,6 @@ Route::middleware(['auth', 'activo'])->group(function () {
     Route::livewire('/asistencia/tomar', Asistencia\Tomar\Index::class)->name('asistencia.tomar.index');
     Route::livewire('/asistencia/tomar/{seccion}', Asistencia\Tomar\Show::class)->name('asistencia.tomar.show');
     Route::livewire('/asistencia/mia', Asistencia\Propia\Index::class)->name('asistencia.propia.index');
+    Route::livewire('/asistencia/reportes', Asistencia\Reportes\Index::class)->name('asistencia.reportes.index');
+    Route::livewire('/asistencia/reportes/{seccion}/alumnos/{alumno}', Asistencia\Reportes\Alumno::class)->name('asistencia.reportes.alumno');
 });
