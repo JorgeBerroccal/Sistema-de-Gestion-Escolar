@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Database\Seeders\EscalasCalificacionSeeder;
+use Database\Seeders\EstadosAsistenciaSeeder;
 use Database\Seeders\RolesYPermisosSeeder;
 use Database\Seeders\TiposDocumentoSeeder;
 use Illuminate\Console\Command;
@@ -27,6 +28,7 @@ class SincronizarBase extends Command
         RolesYPermisosSeeder::class,
         EscalasCalificacionSeeder::class,
         TiposDocumentoSeeder::class,
+        EstadosAsistenciaSeeder::class,
     ];
 
     protected $signature = 'sge:sincronizar-base {--force : Ejecutar sin confirmar en producción}';

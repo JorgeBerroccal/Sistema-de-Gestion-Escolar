@@ -5,6 +5,7 @@ use App\Livewire\Academico;
 use App\Livewire\Admin\Permisos;
 use App\Livewire\Admin\Roles;
 use App\Livewire\Admin\Usuarios;
+use App\Livewire\Asistencia;
 use App\Livewire\Matricula;
 use Illuminate\Support\Facades\Route;
 
@@ -50,4 +51,11 @@ Route::middleware(['auth', 'activo'])->group(function () {
     Route::livewire('/matricula/mis-alumnos', Matricula\MisAlumnos\Index::class)->name('matricula.propios.index');
     Route::livewire('/matricula/nominas', Matricula\Nominas\Index::class)->name('matricula.nominas.index');
     Route::livewire('/matricula/nominas/{seccion}', Matricula\Nominas\Show::class)->name('matricula.nominas.show');
+
+    // Módulo 4 — Asistencia. El permiso (doble) y la pertenencia se comprueban en `mount()`.
+    Route::livewire('/asistencia/tomar', Asistencia\Tomar\Index::class)->name('asistencia.tomar.index');
+    Route::livewire('/asistencia/tomar/{seccion}', Asistencia\Tomar\Show::class)->name('asistencia.tomar.show');
+    Route::livewire('/asistencia/mia', Asistencia\Propia\Index::class)->name('asistencia.propia.index');
+    Route::livewire('/asistencia/reportes', Asistencia\Reportes\Index::class)->name('asistencia.reportes.index');
+    Route::livewire('/asistencia/reportes/{seccion}/alumnos/{alumno}', Asistencia\Reportes\Alumno::class)->name('asistencia.reportes.alumno');
 });
