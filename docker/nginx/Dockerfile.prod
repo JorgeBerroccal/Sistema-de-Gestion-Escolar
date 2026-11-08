@@ -1,7 +1,7 @@
 # Imagen nginx de staging/producción. Toma public/ (incluido public/build) de la imagen sge-app de
 # la MISMA versión, para que los assets servidos coincidan siempre con el manifiesto de Vite del código.
 #   docker build -f docker/nginx/Dockerfile.prod --build-arg APP_IMAGE=ghcr.io/<propietario>/sge-app:<etiqueta> .
-ARG APP_IMAGE
+ARG APP_IMAGE=sge-app:local
 FROM ${APP_IMAGE} AS app
 
 FROM nginx:alpine

@@ -41,6 +41,10 @@ class RolesYPermisosSeeder extends Seeder
         'matricula.ver_propia' => ['Ver los alumnos y matrículas propios o de los hijos', ['Padre de Familia', 'Alumno']],
         'matricula.ser_alumno' => ['Puede vincularse a una ficha de alumno', ['Alumno']],
         'matricula.ser_apoderado' => ['Puede vincularse como apoderado de alumnos', ['Padre de Familia']],
+        'asistencia.ver_todas' => ['Ver la asistencia y los reportes de todas las secciones', ['Administrador', 'Director']],
+        'asistencia.gestionar' => ['Tomar, corregir y justificar asistencia en cualquier sección', ['Administrador']],
+        'asistencia.registrar_propia' => ['Tomar, corregir, justificar y reportar asistencia en las secciones propias', ['Docente']],
+        'asistencia.ver_propia' => ['Ver la asistencia propia o de los hijos', ['Padre de Familia', 'Alumno']],
     ];
 
     public function run(): void
