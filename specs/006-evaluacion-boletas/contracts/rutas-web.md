@@ -12,7 +12,7 @@ HTML (Blade/Livewire) bajo el grupo `auth` + `activo`. Sin permiso → **403**; 
 | GET | `/notas/cierres` | `notas.cierres.index` | `Cierres\Index` | `notas.cerrar_periodo` |
 | GET | `/notas/mias` | `notas.propia.index` | `Propia\Index` | `notas.ver_propia` |
 | GET | `/notas/reportes` | `notas.reportes.index` | `Reportes\Index` | `notas.ver_todas` **o** `notas.registrar_propia` |
-| GET | `/boletas/{alumno}/{periodo}` | `boletas.descargar` | `BoletaController@descargar` | ver abajo |
+| GET | `/boletas/{estudiante}/{periodo}` | `boletas.descargar` | `BoletaController@descargar` | ver abajo |
 
 - `Registro\Show` recibe el periodo como `?periodo=` (por defecto el último periodo del año con `fecha_inicio` ≤ hoy; si ninguno, el primero). Muestra el editor de criterios
   (agregar, quitar con confirmación, pesos con total en vivo) y la tabla alumno × criterio con el promedio del periodo

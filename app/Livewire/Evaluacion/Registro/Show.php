@@ -11,7 +11,6 @@ use App\Models\PeriodoEvaluacion;
 use App\Models\Seccion;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -151,7 +150,7 @@ class Show extends Component
             'soloLectura' => $soloLectura,
             'aviso' => $aviso,
             'escala' => $escala,
-            'verBoleta' => $usuario->tienePermiso('boletas.ver_todas') && Route::has('boletas.descargar'),
+            'verBoleta' => $usuario->tienePermiso('boletas.ver_todas'),
         ]);
     }
 }

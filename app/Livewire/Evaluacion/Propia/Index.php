@@ -9,7 +9,6 @@ use App\Models\Alumno;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -93,7 +92,7 @@ class Index extends Component
             'datos' => $datos,
             'anual' => $anual,
             'aviso' => $aviso,
-            'hayBoleta' => Route::has('boletas.descargar') && $usuario->tienePermiso('boletas.ver_propia'),
+            'hayBoleta' => $usuario->tienePermiso('boletas.ver_propia'),
         ]);
     }
 }

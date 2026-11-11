@@ -68,7 +68,10 @@
             @endforeach
             <p class="font-medium">Promedio general del periodo: {{ $datos['etiqueta'] ?? 'sin notas' }}</p>
             @if ($hayBoleta)
-                <p class="mt-4"><a href="{{ route('boletas.descargar', [$alumnoActual->id, $datos['periodo']->id]) }}" class="underline">Descargar boleta</a></p>
+                <p class="mt-4">
+                    <a href="{{ route('boletas.descargar', [$alumnoActual->id, $datos['periodo']->id]) }}" class="mr-4 underline">Descargar boleta</a>
+                    <a href="{{ route('boletas.descargar', [$alumnoActual->id, 'anual']) }}" class="underline">Descargar boleta anual</a>
+                </p>
             @endif
         @endif
     @endif

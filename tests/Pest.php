@@ -4,6 +4,7 @@ use App\Evaluacion\EvaluacionService;
 use App\Models\Alumno;
 use App\Models\AnioEscolar;
 use App\Models\AsignacionDocente;
+use App\Models\CierrePeriodo;
 use App\Models\CriterioEvaluacion;
 use App\Models\Curso;
 use App\Models\EscalaCalificacion;
@@ -228,4 +229,20 @@ function esquemaEvaluacion(array $e, ?array $criterios = null): Collection
         $criterios ?? [['nombre' => 'Práctica', 'peso' => 60], ['nombre' => 'Examen', 'peso' => 40]],
         $e['admin'],
     );
+}
+
+/** Escenario con un alumno con notas 15/10 en el periodo y, opcionalmente, el periodo cerrado. */
+function escenarioBoleta(bool $cerrar = true, string $escala = 'vigesimal'): array
+{
+    $e = escenarioEvaluacion(2, $escala);
+    $criterios = esquemaEvaluacion($e);
+    [$ana, $beto] = $e['alumnos']->all();
+    $ana->update(['apellidos' => 'Alfa', 'nombres' => 'Ana']);
+    $valores = $escala === 'literal' ? ['AD', 'C'] : ['15', '10'];
+    app(EvaluacionService::class)->guardarNotas($e['seccion'], $e['curso'], $e['periodo'], [
+        $ana->id => [$criterios[0]->id => $valores[0], $criterios[1]->id => $valores[1]],
+    ], $e['admin']);
+    $cerrar && CierrePeriodo::factory()->create(['seccion_id' => $e['seccion']->id, 'periodo_id' => $e['periodo']->id]);
+
+    return $e + ['ana' => $ana, 'beto' => $beto, 'criterios' => $criterios];
 }

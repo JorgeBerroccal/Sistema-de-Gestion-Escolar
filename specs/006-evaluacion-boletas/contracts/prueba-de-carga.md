@@ -11,7 +11,7 @@ Script: `tests/Load/evaluacion.js` (reutiliza el login de `tests/Load/carga.js`)
 |---|---|---|---|---|
 | Login | todos, en su primera iteración | `GET /login` + `POST /login` (`_token`) | una vez por VU | `login` |
 | Consulta de notas | `carga0001…1000` (rol de carga con `notas.ver_propia` y `boletas.ver_propia`, vinculadas a un alumno ficticio con periodo cerrado) | `GET /notas/mias` | **~97 %** de las iteraciones | `consulta` |
-| Boleta PDF | las mismas cuentas | `GET /boletas/{alumno}/{periodo}` | **~3 %** (1 de cada ~30 iteraciones) | `boleta` |
+| Boleta PDF | las mismas cuentas | `GET /boletas/{estudiante}/{periodo}` | **~3 %** (1 de cada ~30 iteraciones) | `boleta` |
 | Registro de notas | **20** cuentas `cargadoc01…20` (rol de carga con `notas.registrar_propia` y `docencia.dictar`), una sección ficticia de 30 alumnos × 5 criterios cada una | `GET /notas/registro/{seccion}/{curso}` (lee `_token` y campos) y `POST` del formulario con las 150 notas | 1 guardado por docente cada ~60 s | `notas` |
 
 Pausa entre iteraciones de familias: 10–30 s (igual que `carga.js`). Con 1000 VU en el pico son ~50 iteraciones/s:

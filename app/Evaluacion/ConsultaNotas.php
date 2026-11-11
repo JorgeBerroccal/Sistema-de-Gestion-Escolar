@@ -187,14 +187,14 @@ class ConsultaNotas
      * @param  iterable<PeriodoEvaluacion>  $periodos
      * @return array{cursos: list<array<string, mixed>>, promedio: float|null, etiqueta: string|null, periodos: list<int>}
      */
-    public function anualDelAlumno(Alumno $alumno, iterable $periodos, ?Usuario $para = null): array
+    public function anualDelAlumno(Alumno $alumno, iterable $periodos, ?Usuario $para = null, bool $soloPublicados = true): array
     {
         $calculo = $this->evaluacion->calculo();
         $porCurso = [];
         $usados = [];
 
         foreach ($periodos as $periodo) {
-            $datos = $this->delAlumno($alumno, $periodo, $para);
+            $datos = $this->delAlumno($alumno, $periodo, $para, $this->seccionDelPeriodo($alumno, $periodo, $soloPublicados));
 
             if (! $datos) {
                 continue;
