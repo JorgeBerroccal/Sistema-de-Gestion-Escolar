@@ -12,6 +12,7 @@ use App\Models\Nota;
 use App\Models\PeriodoEvaluacion;
 use App\Models\Seccion;
 use App\Models\Usuario;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -217,5 +218,61 @@ class ConsultaNotas
         $general = $calculo->promedioSimple(array_column($cursos, 'promedio'));
 
         return ['cursos' => $cursos, 'promedio' => $general, 'etiqueta' => $calculo->etiqueta($general), 'periodos' => $usados];
+    }
+
+    /**
+     * Reporte de una sección en un periodo: promedio y desaprobados por curso y orden de mérito paginado (FR-011).
+     * Solo cuenta lo que `$para` puede ver (el Docente, únicamente los cursos que dicta). Los alumnos sin notas
+     * quedan al final y sin puesto. Una consulta de criterios, una de notas y una de cursos, todas acotadas a la sección.
+     *
+     * @return array{cursos: list<array<string, mixed>>, alumnos: LengthAwarePaginator, sin_datos: bool}
+     */
+    public function reporteSeccion(Seccion $seccion, PeriodoEvaluacion $periodo, Usuario $para, int $porPagina = 15): array
+    {
+        $calculo = $this->evaluacion->calculo();
+
+        $criterios = CriterioEvaluacion::query()->where('seccion_id', $seccion->id)->where('periodo_id', $periodo->id)
+            ->visiblePara($para)->orderBy('orden')->orderBy('id')->get();
+        $notas = Nota::query()->whereIn('criterio_id', $criterios->pluck('id'))->visiblePara($para)->get()
+            ->groupBy('alumno_id')->map(fn ($g) => $g->keyBy('criterio_id'));
+        $cursos = Curso::query()->whereIn('id', $criterios->pluck('curso_id')->unique())->orderBy('nombre')->orderBy('id')->limit(50)->get();
+        $porCurso = $criterios->groupBy('curso_id');
+
+        $filas = $this->evaluacion->nominaActiva($seccion)->map(function (Alumno $alumno) use ($cursos, $porCurso, $notas, $calculo) {
+            $promedios = [];
+
+            foreach ($cursos as $curso) {
+                $promedios[$curso->id] = $calculo->promedioPonderado($porCurso->get($curso->id)->map(fn (CriterioEvaluacion $c) => [
+                    'peso' => $c->peso, 'nota' => $notas->get($alumno->id)?->get($c->id)?->valor_numerico,
+                ]));
+            }
+
+            $general = $calculo->promedioSimple($promedios);
+
+            return ['estudiante' => $alumno, 'promedios' => $promedios, 'promedio' => $general, 'etiqueta' => $calculo->etiqueta($general), 'puesto' => null];
+        });
+
+        // sortByDesc es estable: los empates conservan el orden de la nómina (apellidos, nombres, id).
+        $conNotas = $filas->filter(fn ($f) => $f['promedio'] !== null)->sortByDesc('promedio')->values()
+            ->map(fn ($f, $i) => ['puesto' => $i + 1] + $f);
+        $ordenados = $conNotas->concat($filas->filter(fn ($f) => $f['promedio'] === null))->values();
+
+        $resumen = $cursos->map(function (Curso $curso) use ($filas, $calculo) {
+            $promedios = $filas->map(fn ($f) => $f['promedios'][$curso->id]);
+            $promedio = $calculo->promedioSimple($promedios);
+
+            return [
+                'curso' => $curso, 'promedio' => $promedio, 'etiqueta' => $calculo->etiqueta($promedio),
+                'desaprobados' => $promedios->filter(fn ($p) => $calculo->aprueba($p) === false)->count(),
+            ];
+        })->all();
+
+        $pagina = LengthAwarePaginator::resolveCurrentPage();
+
+        return [
+            'cursos' => $resumen,
+            'alumnos' => new LengthAwarePaginator($ordenados->forPage($pagina, $porPagina)->values(), $ordenados->count(), $porPagina, $pagina, ['path' => LengthAwarePaginator::resolveCurrentPath()]),
+            'sin_datos' => $conNotas->isEmpty(),
+        ];
     }
 }

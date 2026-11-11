@@ -69,6 +69,7 @@ Route::middleware(['auth', 'activo'])->group(function () {
     Route::post('/notas/registro/{seccion}/{curso}', [NotasController::class, 'guardar'])->name('notas.registro.guardar');
     Route::livewire('/notas/mias', Evaluacion\Propia\Index::class)->name('notas.propia.index');
     Route::livewire('/notas/cierres', Evaluacion\Cierres\Index::class)->name('notas.cierres.index')->middleware('can:notas.cerrar_periodo');
+    Route::livewire('/notas/reportes', Evaluacion\Reportes\Index::class)->name('notas.reportes.index');
     // La boleta autoriza en el controlador (permiso, vínculo y publicación) antes de generar el PDF.
     Route::get('/boletas/{estudiante}/{periodo}', [BoletaController::class, 'descargar'])->name('boletas.descargar')->whereNumber('estudiante')->where('periodo', '[0-9]+|anual');
 });
