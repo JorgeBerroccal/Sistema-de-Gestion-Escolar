@@ -27,8 +27,8 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Evaluacion/`, modelos en `a
 
 ## Phase 1: Setup
 
-- [ ] T001 Crear los directorios `app/Evaluacion/`, `app/Livewire/Evaluacion/{Registro,Cierres,Propia,Reportes}`, `resources/views/livewire/evaluacion/`, `resources/views/boletas/`, `tests/Feature/Evaluacion/`, `tests/Unit/Evaluacion/` y `specs/006-evaluacion-boletas/evidencias/`
-- [ ] T002 Instalar el único paquete nuevo con `docker compose exec app composer require barryvdh/laravel-dompdf` (PHP puro; justificado en plan.md, Complejidad) y confirmar que `composer.json`/`composer.lock` lo recogen y que la imagen Docker lo instala con `composer install` sin pasos manuales. **Antes de implementar la boleta (T034)**: revisar en el `Dockerfile` (y en la imagen de staging) que estén `mbstring`, `dom` y `gd` (`php -m`), añadir las que falten, y generar un **PDF mínimo en el contenedor** (`docker compose exec app php artisan tinker --execute=...` con `Pdf::loadHTML(...)->output()`, cuerpo que empieza con `%PDF` y acentos «áéíóúñ» legibles); registrar el resultado en el mensaje del commit
+- [x] T001 Crear los directorios `app/Evaluacion/`, `app/Livewire/Evaluacion/{Registro,Cierres,Propia,Reportes}`, `resources/views/livewire/evaluacion/`, `resources/views/boletas/`, `tests/Feature/Evaluacion/`, `tests/Unit/Evaluacion/` y `specs/006-evaluacion-boletas/evidencias/`
+- [x] T002 Instalar el único paquete nuevo con `docker compose exec app composer require barryvdh/laravel-dompdf` (PHP puro; justificado en plan.md, Complejidad) y confirmar que `composer.json`/`composer.lock` lo recogen y que la imagen Docker lo instala con `composer install` sin pasos manuales. **Antes de implementar la boleta (T034)**: revisar en el `Dockerfile` (y en la imagen de staging) que estén `mbstring`, `dom` y `gd` (`php -m`), añadir las que falten, y generar un **PDF mínimo en el contenedor** (`docker compose exec app php artisan tinker --execute=...` con `Pdf::loadHTML(...)->output()`, cuerpo que empieza con `%PDF` y acentos «áéíóúñ» legibles); registrar el resultado en el mensaje del commit
 
 ---
 
