@@ -195,7 +195,7 @@ coinciden con los registros.
   de carga ejecutadas y documentadas en una única sesión de carga de este módulo, que cubre todos los
   endpoints críticos existentes (constitución, Principio V).
 - **FR-017**: Los datos de alumnos y notas de los seeders de ejemplo y de staging MUST ser siempre ficticios;
-  ningún seeder crea cuentas con contraseña conocida fuera de local.
+  ningún seeder de ejemplo crea cuentas con contraseña conocida fuera de local. La única excepción son los seeders de la sesión de carga (`LoadTestSeeder`, ya existente, y `EvaluacionCargaSeeder`): solo local, staging y testing, nunca producción, con las cuentas `carga*` desactivadas fuera de la sesión k6.
 - **FR-018**: Los permisos nuevos del módulo MUST cargarse por seeder y asignarse a los roles sin cambiar código.
 - **FR-019**: El sistema MUST NOT codificar nombres de cursos, periodos ni criterios; todo es dato configurable
   (Principio II).

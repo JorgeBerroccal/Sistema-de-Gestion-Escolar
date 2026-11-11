@@ -24,6 +24,14 @@ on:
         required: false
         default: false
         type: boolean
+      script:
+        description: 'Script k6 de tests/Load: evaluacion.js (Módulo 5: login, registro de notas y boletas; sesión única) o carga.js (Módulo 1: login y consultas)'
+        required: false
+        default: 'evaluacion.js'
+        type: choice
+        options:
+          - evaluacion.js
+          - carga.js
 
 permissions:
   contents: read
@@ -81,6 +89,7 @@ jobs:
         env:
           BASE: ${{ steps.objetivo.outputs.base }}
           HUMO: ${{ inputs.humo }}
+          SCRIPT: ${{ inputs.script }}
         run: |
           mkdir -p resultados
           chmod 777 resultados
@@ -90,7 +99,7 @@ jobs:
           docker run --rm --user "$(id -u):$(id -g)" \
             -v "$PWD/tests/Load:/scripts:ro" -v "$PWD/resultados:/out" \
             -e BASE_URL="$BASE" "${opciones[@]}" \
-            grafana/k6:2.3.0 run --summary-export=/out/k6-resumen.json /scripts/carga.js \
+            grafana/k6:2.3.0 run --summary-export=/out/k6-resumen.json "/scripts/$SCRIPT" \
             2>&1 | tee resultados/k6-salida.txt
 
       - name: Metadatos de la evidencia
@@ -101,6 +110,7 @@ jobs:
           DECLARADA: ${{ inputs.version }}
           INFORMADA: ${{ steps.objetivo.outputs.version_informada }}
           HUMO: ${{ inputs.humo }}
+          SCRIPT: ${{ inputs.script }}
           RESULTADO_K6: ${{ steps.k6.outcome }}
         run: |
           mkdir -p resultados
@@ -113,6 +123,7 @@ jobs:
             "version_informada_por_up": "$INFORMADA",
             "tamano_vm_declarado": "$TAMANO",
             "modalidad": "$modalidad",
+            "script": "$SCRIPT",
             "umbrales_cumplidos": "$RESULTADO_K6",
             "commit": "$GITHUB_SHA",
             "run_id": "$GITHUB_RUN_ID",

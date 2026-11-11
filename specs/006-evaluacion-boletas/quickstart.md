@@ -46,6 +46,6 @@ Ver [contracts/prueba-de-carga.md](contracts/prueba-de-carga.md) y `docs/desplie
 
 ```bash
 docker compose exec app php artisan db:seed --class=EvaluacionCargaSeeder   # local / staging
-k6 run -e SMOKE=1 tests/Load/evaluacion.js                                  # ensayo (10 VU): login, consulta, boleta y POST del formulario
-k6 run tests/Load/evaluacion.js                                             # rampa completa
+docker compose --profile load run --rm k6 run -e SMOKE=1 /scripts/evaluacion.js   # ensayo (10 VU): login, consulta, boleta y POST del formulario
+# En staging: GitHub → Actions → carga (script = evaluacion.js), primero «humo» y luego la rampa completa de 1000 VU.
 ```
