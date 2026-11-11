@@ -22,6 +22,14 @@ obtienen reportes por sección y rango o periodo. Se rechazan los **sábados y d
 calendario); los **feriados y días no lectivos no se modelan**: ese día simplemente no se registra y no cuenta.
 "Hoy" se calcula en la zona horaria de la institución (`ASISTENCIA_ZONA_HORARIA`, por defecto `America/Lima`);
 la zona global de la aplicación sigue en UTC.
+El **Módulo 5: Evaluación y Boletas** registra las notas por curso, sección y periodo: el Docente asignado define criterios
+con peso (suman 100 %) y guarda la tabla de la sección de una vez (todo o nada, formulario clásico con CSRF); el
+Administrador cierra y reabre cada periodo por sección (el cierre bloquea al Docente y **publica** notas y boleta); el
+Alumno y el Padre de Familia consultan lo propio de los periodos publicados, con promedio por periodo y anual; y el
+Administrador y el Director descargan la **boleta en PDF** (un solo formato, con el resumen de asistencia), mientras la familia
+descarga la propia. El Docente no accede a la boleta completa. Los promedios no se guardan: se calculan al leer. La escala
+(literal o vigesimal), sus **equivalentes numéricos y el umbral de aprobación son configuración de la institución, no una regla
+del Currículo Nacional**; con escala literal la boleta muestra el calificativo literal. Detalle en [`docs/evaluacion.md`](docs/evaluacion.md).
 
 ## Stack
 
@@ -64,6 +72,8 @@ con niveles, grados, secciones, cursos, tres docentes y algunas asignaciones (`A
 | Institución y datos académicos de ejemplo | `php artisan db:seed --class=AcademicoDemoSeeder` | `local` (automático; incluye cuentas `docente.demo*` y asignaciones), `staging` (a mano; **solo datos académicos, sin cuentas**); **rechaza producción** |
 | Alumnos y matrículas de ejemplo (Módulo 3, **ficticios**, sin cuentas de usuario) | `php artisan db:seed --class=MatriculaDemoSeeder` | `local` (automático), `staging` (a mano); **rechaza producción** |
 | Asistencia de ejemplo (Módulo 4, **ficticia**, sin cuentas de usuario; solo alumnos del rango `9000xxxx`) | `php artisan db:seed --class=AsistenciaDemoSeeder` | `local` (automático), `staging` (a mano, tras `MatriculaDemoSeeder`); **rechaza producción** |
+| Criterios y notas de ejemplo (Módulo 5, **ficticios**, sin cuentas de usuario; solo alumnos del rango `9000xxxx`) | `php artisan db:seed --class=EvaluacionDemoSeeder` | `local` (automático), `staging` (a mano, tras `MatriculaDemoSeeder`); **rechaza producción** |
+| Datos de la sesión de carga k6 del Módulo 5 (1020 alumnos ficticios `9001xxxx`, cuentas `carga0001…1000` y `cargadoc01…20` con la contraseña de `CARGA_PASSWORD`, obligatoria fuera de local) | `CARGA_PASSWORD=… php artisan db:seed --class=EvaluacionCargaSeeder` | `local`, `staging` (solo justo antes de la sesión; **desactivar las cuentas `carga*` al terminar**); **rechaza producción** |
 
 **Regla operativa: en staging solo datos ficticios** (Ley 29733, Protección de Datos Personales). Los alumnos, apoderados y matrículas incluyen datos personales
 de menores (Ley 29733): ni en staging ni en la demo se cargan nombres, documentos o correos reales, y ningún

@@ -109,7 +109,7 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Asistencia/`, modelos en `a
 - [x] T030 Actualizar `README.md` (módulo 4, seeder ficticio, regla sábado/domingo y exclusión de feriados) y `docs/despliegue/` (estados de asistencia en la sincronización base y carga de asistencia ficticia en staging)
 - [x] T031 Ejecutar la suite completa, `pint --test` y `/speckit-analyze` final; corregir hallazgos
   - _Estado_ (2026-11-05): suite completa en verde (598 pruebas), `pint --test` limpio y análisis final sin hallazgos críticos ni altos; un hallazgo medio corregido (excepción de paginación justificada en la tabla de complejidad del plan).
-- [ ] T032 (manual) Etiquetar `v0.5.0` sobre `main` tras integrar la rama, esperar a `release` y desplegar con `deploy/deploy.sh`; comprobar que los permisos suman 24; cargar `AsistenciaDemoSeeder`; ejecutar la **prueba de humo de ~10 min** de `quickstart.md` §2 con el Administrador y un Padre ficticio. **En staging solo datos ficticios.** Registrar en `specs/005-asistencia/evidencias/staging.md` dentro del primer commit de la rama del Módulo 5 (SC-002, SC-003)
+- [x] T032 (manual) Etiquetar `v0.5.0` sobre `main` tras integrar la rama, esperar a `release` y desplegar con `deploy/deploy.sh`; comprobar que los permisos suman 23; cargar `AsistenciaDemoSeeder`; ejecutar la **prueba de humo de ~10 min** de `quickstart.md` §2 con el Administrador y un Padre ficticio. **En staging solo datos ficticios.** Registrar en `specs/005-asistencia/evidencias/staging.md` dentro del primer commit de la rama del Módulo 5 (SC-002, SC-003)
 
 ---
 

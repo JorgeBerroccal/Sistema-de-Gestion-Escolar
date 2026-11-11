@@ -7,6 +7,7 @@ use Database\Seeders\LoadTestSeeder;
 
 it('se ejecuta en el entorno :dataset', function (string $entorno) {
     app()->detectEnvironment(fn () => $entorno);
+    config(['sge.carga.password' => 'contrasena-de-prueba-1']); // obligatoria fuera de local y testing
 
     (new LoadTestSeeder)->run();
 

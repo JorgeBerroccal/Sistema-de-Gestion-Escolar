@@ -52,16 +52,17 @@ las casillas a medida que avanzas.
 - [ ] **5.** Portal: **Start**. La IP y el nombre DNS no cambian; `ssh sge@<fqdn>`. Anotar la hora UTC del arranque (será `<desde-utc>` del paso 13).
 - [ ] **6.** `.env`: `PERFIL_TAMANO=carga` → `./deploy/deploy.sh --reconfigurar` → `curl https://<fqdn>/up` correcto.
 - [ ] **7.** `./deploy/metrics.sh tamano` imprime `Standard_B2als_v2`.
-- [ ] **8.** Sembrar los 1000 usuarios de prueba (solo staging): `docker compose -p sge -f docker-compose.prod.yml exec app php artisan db:seed --class=LoadTestSeeder --force`.
-  **Las cuentas `carga*` viven desactivadas entre sesiones** (su contraseña está en el script k6 del repositorio público). Este paso las **reactiva**: el seeder hace *upsert* con `activo = true`. Hazlo justo antes de la sesión, no días antes; si ya existen y solo hay que reactivarlas, basta con volver a ejecutar el seeder.
-- [ ] **9.** Humo: GitHub → Actions → **carga** → *Run workflow* con `humo` marcado, `tamano_vm=Standard_B2als_v2`, `version=<etiqueta desplegada>`; debe terminar en verde.
+- [ ] **8.** Sembrar los 1000 usuarios de prueba (solo staging): `docker compose -p sge -f docker-compose.prod.yml exec -e CARGA_PASSWORD='<la contraseña>' app php artisan db:seed --class=LoadTestSeeder --force`. **`CARGA_PASSWORD` es obligatoria (mínimo 12 caracteres) y debe ser el mismo valor que el secreto de GitHub Actions `CARGA_PASSWORD`** (ver «Contraseña de las cuentas de carga» abajo); el seeder se niega a sembrar sin ella.
+  **Las cuentas `carga*` viven desactivadas entre sesiones** (se reactivan con la contraseña de `CARGA_PASSWORD`, que no está en el repositorio). Este paso las **reactiva**: el seeder hace *upsert* con `activo = true`. Hazlo justo antes de la sesión, no días antes; si ya existen y solo hay que reactivarlas, basta con volver a ejecutar el seeder.
+- [ ] **8 bis.** *(Módulo 5, sesión única)* Sembrar también los datos de evaluación: `docker compose -p sge -f docker-compose.prod.yml exec -e CARGA_PASSWORD='<la misma contraseña>' app php artisan db:seed --class=EvaluacionCargaSeeder --force` (solo staging; **requiere `AcademicoDemoSeeder`**). Crea 1020 alumnos ficticios en 34 secciones `K01…K34`, vincula `carga0001…1000` a un alumno con el primer periodo cerrado y crea 20 docentes `cargadoc01…20`; estas cuentas también viven **desactivadas entre sesiones**.
+- [ ] **9.** Humo: GitHub → Actions → **carga** → *Run workflow* con `humo` marcado y `script = evaluacion.js` (Módulo 5; `carga.js` es el del Módulo 1), `tamano_vm=Standard_B2als_v2`, `version=<etiqueta desplegada>`; debe terminar en verde.
 - [ ] **10.** **Créditos de partida**: en *Metrics*, «CPU Credits Remaining» **≥ 200** (recomendado ≥ 400). Si es menor, esperar con la VM encendida y sin carga, y volver a mirar (36 créditos/h). Anotar valor y hora UTC. Se repite antes de cada nueva rampa.
 - [ ] **11.** `./deploy/metrics.sh start` (imprime la hora UTC de inicio de la rampa; anotarla) y a continuación lanzar **carga** con `humo` desmarcado (rampa completa).
 - [ ] **12.** Al terminar el workflow: `./deploy/metrics.sh stop`; descargar `/var/log/sge/metricas-*.csv` y `meta-servidor.json` (`scp`), y el artefacto `evidencia-carga-<run_id>` de GitHub.
 - [ ] **13.** **Créditos de CPU** (en tu PC, ≥ 10 min después del `stop`): `./deploy/creditos-cpu.sh <desde-utc> <fin-utc> <inicio-rampa-utc>` → `creditos-cpu-*.csv` y `creditos-resumen.json` (créditos al iniciar, mínimo y ¿agotados?, minuto de la rampa en que la CPU quedó limitada).
 - [ ] **14.** Copiar la evidencia a `specs/001-auth-roles-rbac/evidencias/` y resumir umbrales, picos y créditos en el registro de la sesión (si hay otra repetición en la misma sesión, volver al paso 10).
 - [ ] **15.** `.env`: `PERFIL_TAMANO=diario` → `./deploy/deploy.sh --reconfigurar`.
-- [ ] **15 bis.** **Desactivar las cuentas `carga*`** al terminar y **antes del cierre**: `docker compose -p sge -f docker-compose.prod.yml exec app php artisan tinker --execute="echo App\\Models\\Usuario::where('username','like','carga%')->update(['activo'=>false]);"` → debe imprimir `1000`. Anotar el resultado en el registro de la sesión.
+- [ ] **15 bis.** **Desactivar las cuentas `carga*`** al terminar y **antes del cierre**: `docker compose -p sge -f docker-compose.prod.yml exec app php artisan tinker --execute="echo App\\Models\\Usuario::where('username','like','carga%')->update(['activo'=>false]);"` → debe imprimir `1000` con `LoadTestSeeder` solo, o `1020` si se sembró `EvaluacionCargaSeeder` (las 20 cuentas `cargadoc*` también empiezan por `carga`). Anotar el resultado en el registro de la sesión.
 - [ ] **16.** **Volver a B2ats_v2** (último paso): Portal **Stop** (*deallocated*) → *Size* **B2ats_v2** → **Start**; `curl https://<fqdn>/up`; `./deploy/metrics.sh cierre` → **`evidencia_completa: true`**. Solo entonces descargar `cierre-carga.json` y hacer commit de la evidencia.
 
 ## Qué contiene la evidencia
@@ -73,6 +74,8 @@ las casillas a medida que avanzas.
 | `meta-servidor.json` | Servidor | Tamaño real (metadatos de Azure), vCPU, RAM, **modelo de CPU** (Basv2 corre sobre AMD EPYC Milan), versión, perfil, inicio y fin |
 | `cierre-carga.json` | Servidor (`metrics.sh cierre`) | `evidencia_completa`, horas aproximadas en B2als_v2 (incluida la espera de créditos) y su costo |
 | `creditos-cpu-*.csv`, `creditos-resumen.json` | Tu PC (`creditos-cpu.sh`, Azure Monitor) | «CPU Credits Remaining/Consumed» y «Percentage CPU» cada minuto; créditos al iniciar, mínimo, si se agotaron y el minuto de la rampa en que la CPU quedó limitada |
+
+Umbrales del Módulo 5 (login, registro de notas y boletas): ver `specs/006-evaluacion-boletas/contracts/prueba-de-carga.md`.
 
 Umbrales de SC-006 del Módulo 1 (DC-006 de la spec 002): login p95 < 3,5 s, consultas p95 < 1,5 s,
 solicitudes fallidas < 1 %. Si los créditos de CPU se agotaron durante la rampa, la ejecución se guarda y se
@@ -104,3 +107,13 @@ sesión no termina hasta volver a B2ats_v2**:
 Horas en B2als_v2 × 0,0526 USD (lo calcula `cierre`, **incluida la espera para acumular créditos**; contrástalo con
 *Cost analysis*). El presupuesto contempla 2 sesiones (una completa y una de repetición) con hasta 24 h de acumulación y 4 h de prueba cada una
 (56 h ≈ 2,95 USD en total).
+
+## Contraseña de las cuentas de carga
+
+La contraseña de `carga0001…1000` y `cargadoc01…20` **no está en el repositorio** (excepción A4 del Módulo 5):
+
+1. Genera un valor aleatorio de 12 caracteres o más, p. ej. `openssl rand -base64 18`.
+2. **Secreto de GitHub Actions:** en GitHub, *Settings → Secrets and variables → Actions → Secrets → New repository secret*; nombre `CARGA_PASSWORD`, valor el generado. (Con la CLI: `gh secret set CARGA_PASSWORD`, que pide el valor sin dejarlo en el historial de la terminal.) El workflow `carga` falla si no existe.
+3. **Servidor:** pásala solo al sembrar, con `exec -e CARGA_PASSWORD=…` (pasos 8 y 8 bis); no se guarda en `.env`.
+4. Tras la sesión se desactivan las cuentas y se puede borrar o rotar el secreto.
+5. En local, sin variable, los seeders usan `password` y k6 también (solo con la `BASE_URL` por defecto).

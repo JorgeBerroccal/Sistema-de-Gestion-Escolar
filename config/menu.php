@@ -24,4 +24,10 @@ return [
     ['etiqueta' => 'Reportes de asistencia', 'ruta' => 'asistencia.reportes.index', 'permiso' => 'asistencia.ver_todas'],
     ['etiqueta' => 'Reportes de asistencia de mis secciones', 'ruta' => 'asistencia.reportes.index', 'permiso' => 'asistencia.registrar_propia'],
     ['etiqueta' => 'Mi asistencia', 'ruta' => 'asistencia.propia.index', 'permiso' => 'asistencia.ver_propia'],
+    ['etiqueta' => 'Registro de notas', 'ruta' => 'notas.registro.index', 'permiso' => 'notas.gestionar'],
+    ['etiqueta' => 'Notas de mis cursos', 'ruta' => 'notas.registro.index', 'permiso' => 'notas.registrar_propia'],
+    ['etiqueta' => 'Cierres de periodo', 'ruta' => 'notas.cierres.index', 'permiso' => 'notas.cerrar_periodo'],
+    ['etiqueta' => 'Reportes de notas', 'ruta' => 'notas.reportes.index', 'permiso' => 'notas.ver_todas'],
+    ['etiqueta' => 'Reportes de notas de mis cursos', 'ruta' => 'notas.reportes.index', 'permiso' => 'notas.registrar_propia'],
+    ['etiqueta' => 'Mis notas', 'ruta' => 'notas.propia.index', 'permiso' => 'notas.ver_propia'],
 ];

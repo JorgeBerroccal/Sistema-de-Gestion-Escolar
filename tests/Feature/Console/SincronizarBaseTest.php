@@ -16,7 +16,7 @@ it('crea los permisos, roles, escalas y tipos de documento base', function () {
 
     expect(TipoDocumento::pluck('codigo')->sort()->values()->all())->toBe(['CE', 'DNI', 'OTRO'])
         ->and(Rol::count())->toBe(5)
-        ->and(Permiso::count())->toBe(23)
+        ->and(Permiso::count())->toBe(30)
         ->and(EscalaCalificacion::count())->toBe(2);
 });
 
@@ -26,7 +26,7 @@ it('dos ejecuciones dan el mismo resultado y no revierten cambios del Administra
 
     $this->artisan('sge:sincronizar-base')->assertSuccessful();
 
-    expect(Permiso::count())->toBe(23)
+    expect(Permiso::count())->toBe(30)
         ->and(EscalaCalificacion::count())->toBe(2)
         ->and(TipoDocumento::count())->toBe(3)
         ->and(EstadoAsistencia::count())->toBe(4)
@@ -52,14 +52,16 @@ it('acepta --force en producción', function () {
 
     $this->artisan('sge:sincronizar-base --force')->assertSuccessful();
 
-    expect(Permiso::count())->toBe(23);
+    expect(Permiso::count())->toBe(30);
 });
 
-it('en producción sin --force pide confirmación y no hace nada si se rechaza', function () {
+it('en producción sin --force pide confirmación y no hace nada si no se acepta', function () {
     app()['env'] = 'production';
 
+    // Con el entorno en producción Laravel Prompts ya no usa el modo de pruebas: sin terminal interactiva toma la
+    // respuesta por defecto («no») en lugar de hacer la pregunta, y el comando se cancela sin sembrar nada.
     $this->artisan('sge:sincronizar-base')
-        ->expectsConfirmation('Are you sure you want to run this command?', 'no')
+        ->expectsOutputToContain('Command cancelled.')
         ->assertFailed();
 
     expect(Permiso::count())->toBe(0);

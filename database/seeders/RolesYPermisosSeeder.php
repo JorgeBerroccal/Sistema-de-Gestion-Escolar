@@ -45,6 +45,13 @@ class RolesYPermisosSeeder extends Seeder
         'asistencia.gestionar' => ['Tomar, corregir y justificar asistencia en cualquier sección', ['Administrador']],
         'asistencia.registrar_propia' => ['Tomar, corregir, justificar y reportar asistencia en las secciones propias', ['Docente']],
         'asistencia.ver_propia' => ['Ver la asistencia propia o de los hijos', ['Padre de Familia', 'Alumno']],
+        'notas.ver_todas' => ['Ver notas y reportes de todas las secciones', ['Administrador', 'Director']],
+        'notas.gestionar' => ['Definir criterios y registrar o corregir notas en cualquier sección, incluso con periodo cerrado', ['Administrador']],
+        'notas.registrar_propia' => ['Definir criterios, registrar y reportar notas de los cursos y secciones propios', ['Docente']],
+        'notas.ver_propia' => ['Ver las notas propias o de los hijos (periodos publicados)', ['Padre de Familia', 'Alumno']],
+        'notas.cerrar_periodo' => ['Cerrar y reabrir periodos de evaluación por sección', ['Administrador']],
+        'boletas.ver_todas' => ['Generar la boleta de cualquier alumno, también en borrador', ['Administrador', 'Director']],
+        'boletas.ver_propia' => ['Descargar la boleta propia o de los hijos (periodos publicados)', ['Padre de Familia', 'Alumno']],
     ];
 
     public function run(): void
