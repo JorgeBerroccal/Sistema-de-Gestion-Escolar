@@ -4,7 +4,7 @@
 
 ## Permisos nuevos (se añaden a `RolesYPermisosSeeder::PERMISOS`)
 
-Se asignan a los roles **solo al crearse** el permiso. Total en staging tras el módulo: 24 + 7 = **31**.
+Se asignan a los roles **solo al crearse** el permiso. Total en staging tras el módulo: 23 + 7 = **30**.
 
 | Identificador | Nombre visible | Administrador | Director | Docente | Padre de Familia | Alumno |
 |---|---|:-:|:-:|:-:|:-:|:-:|

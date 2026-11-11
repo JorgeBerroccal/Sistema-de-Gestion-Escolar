@@ -4,14 +4,18 @@ use App\Models\Alumno;
 use App\Models\AnioEscolar;
 use App\Models\AsignacionDocente;
 use App\Models\Curso;
+use App\Models\EscalaCalificacion;
 use App\Models\Grado;
+use App\Models\Institucion;
 use App\Models\Matricula;
+use App\Models\PeriodoEvaluacion;
 use App\Models\Permiso;
 use App\Models\Rol;
 use App\Models\Seccion;
 use App\Models\Usuario;
 use Carbon\CarbonImmutable;
 use Database\Factories\AsignacionDocenteFactory;
+use Database\Seeders\EscalasCalificacionSeeder;
 use Database\Seeders\EstadosAsistenciaSeeder;
 use Database\Seeders\RolesYPermisosSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -170,4 +174,40 @@ function diaHabilReciente(int $atras = 0): CarbonImmutable
     }
 
     return $dia;
+}
+
+/**
+ * Escenario de evaluación: año vigente con un periodo que cubre hoy, sección con alumnos matriculados (ficticios),
+ * un curso, un Docente asignado a (sección, curso) y un Administrador. Escala vigesimal en la institución.
+ *
+ * @return array{anio: AnioEscolar, periodo: PeriodoEvaluacion, seccion: Seccion, curso: Curso, alumnos: Collection, docente: Usuario, admin: Usuario}
+ */
+function escenarioEvaluacion(int $alumnos = 3, string $escala = 'vigesimal'): array
+{
+    (new EscalasCalificacionSeeder)->run();
+    $institucion = Institucion::factory()->create(['escala_calificacion_id' => EscalaCalificacion::where('codigo', $escala)->value('id')]);
+
+    $anio = AnioEscolar::factory()->vigente()->create([
+        'fecha_inicio' => now()->subMonths(6)->toDateString(),
+        'fecha_fin' => now()->addMonths(6)->toDateString(),
+    ]);
+    $periodo = PeriodoEvaluacion::factory()->create([
+        'anio_escolar_id' => $anio->id, 'orden' => 1, 'nombre' => 'Periodo 1',
+        'fecha_inicio' => now()->subMonths(2)->toDateString(), 'fecha_fin' => now()->addMonth()->toDateString(),
+    ]);
+    $grado = Grado::factory()->create();
+    $seccion = Seccion::factory()->for($grado)->for($anio, 'anio')->create(['identificador' => 'A']);
+    $curso = Curso::factory()->create(['nivel_id' => $grado->nivel_id]);
+    $lista = Alumno::factory()->count($alumnos)->create();
+    $lista->each(fn ($a) => Matricula::factory()->create([
+        'alumno_id' => $a->id, 'seccion_id' => $seccion->id, 'fecha_matricula' => now()->subMonths(5)->toDateString(),
+    ]));
+    $docente = usuarioConPermisos(['notas.registrar_propia', 'docencia.dictar']);
+    AsignacionDocente::factory()->create(['seccion_id' => $seccion->id, 'curso_id' => $curso->id, 'usuario_id' => $docente->id]);
+
+    return [
+        'institucion' => $institucion, 'anio' => $anio, 'periodo' => $periodo, 'seccion' => $seccion, 'curso' => $curso,
+        'alumnos' => $lista, 'docente' => $docente,
+        'admin' => usuarioConPermisos(['notas.gestionar', 'notas.ver_todas', 'notas.cerrar_periodo', 'boletas.ver_todas']),
+    ];
 }

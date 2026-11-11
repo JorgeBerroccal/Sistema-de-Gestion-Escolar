@@ -3,11 +3,15 @@
 use App\Autorizacion\Pertenencia\Reglas\AlumnoRegla;
 use App\Autorizacion\Pertenencia\Reglas\AsignacionDocenteRegla;
 use App\Autorizacion\Pertenencia\Reglas\AsistenciaRegla;
+use App\Autorizacion\Pertenencia\Reglas\CriterioRegla;
 use App\Autorizacion\Pertenencia\Reglas\MatriculaRegla;
+use App\Autorizacion\Pertenencia\Reglas\NotaRegla;
 use App\Models\Alumno;
 use App\Models\AsignacionDocente;
 use App\Models\Asistencia;
+use App\Models\CriterioEvaluacion;
 use App\Models\Matricula;
+use App\Models\Nota;
 
 return [
 
@@ -26,6 +30,8 @@ return [
         Alumno::class => AlumnoRegla::class,
         Matricula::class => MatriculaRegla::class,
         Asistencia::class => AsistenciaRegla::class,
+        CriterioEvaluacion::class => CriterioRegla::class,
+        Nota::class => NotaRegla::class,
     ],
 
 ];

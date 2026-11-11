@@ -38,7 +38,7 @@ denegaciones (SC-003) y la boleta en PDF (SC-006).
 | 7 | Administrador | Reabrir el periodo; el Padre vuelve a Mis notas | El periodo ya no aparece |
 
 Registrar la evidencia en `specs/006-evaluacion-boletas/evidencias/staging.md` (versión `v0.6.0`, 7 permisos nuevos →
-31 en total).
+30 en total).
 
 ## 3. Sesión única de carga k6 (17–18/11, sobre `v0.6.0` ya desplegada y con humo hecho)
 

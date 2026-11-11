@@ -8,10 +8,10 @@ class EscalaCalificacion extends Model
 {
     protected $table = 'escalas_calificacion';
 
-    protected $fillable = ['codigo', 'nombre', 'valores'];
+    protected $fillable = ['codigo', 'nombre', 'valores', 'equivalentes', 'umbral_aprobacion'];
 
     protected function casts(): array
     {
-        return ['valores' => 'array'];
+        return ['valores' => 'array', 'equivalentes' => 'array'];
     }
 }
