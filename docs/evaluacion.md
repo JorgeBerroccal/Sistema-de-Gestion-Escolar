@@ -57,5 +57,5 @@ mayor equivalente); la boleta muestra siempre el calificativo literal, no el nú
 - `EvaluacionDemoSeeder`: criterios y notas **ficticios** de los alumnos de ejemplo (`9000xxxx`), con el primer periodo cerrado
   en la primera sección. Rechaza producción y no crea cuentas.
 - `EvaluacionCargaSeeder`: datos de la sesión única de carga k6 (ver [`despliegue/prueba-de-carga.md`](despliegue/prueba-de-carga.md)).
-  Crea cuentas con contraseña conocida: solo local, staging y testing, nunca producción, y las cuentas `carga*` se desactivan al
+  Crea cuentas cuya contraseña sale de `CARGA_PASSWORD` (obligatoria fuera de local; no está en el repositorio): solo local, staging y testing, nunca producción, y las cuentas `carga*` se desactivan al
   terminar la sesión.

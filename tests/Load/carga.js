@@ -1,12 +1,20 @@
 // Prueba de carga del login y consultas (SC-006, research R-12).
 //   Rampa completa (1000 VUs, ~15 min):  k6 run /scripts/carga.js
 //   Prueba de humo (10 VUs, ~30 s):      k6 run -e SMOKE=1 /scripts/carga.js
+//   Contraseña de las cuentas carga*:    -e CARGA_PASSWORD=…  (obligatoria fuera de local)
 //   Otro servidor:                       k6 run -e BASE_URL=https://staging.ejemplo.pe /scripts/carga.js
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 const BASE_URL = __ENV.BASE_URL || 'http://web';
 const SMOKE = __ENV.SMOKE === '1';
+
+// Contraseña de las cuentas `carga*`: no está en el repositorio. En GitHub Actions llega del secreto CARGA_PASSWORD;
+// en local (BASE_URL por defecto, la pila de docker compose) se admite `password`, la de los seeders en local.
+const PASSWORD = __ENV.CARGA_PASSWORD || (BASE_URL === 'http://web' ? 'password' : '');
+if (!PASSWORD) {
+  throw new Error('Falta CARGA_PASSWORD (-e CARGA_PASSWORD=…): la contraseña de las cuentas de carga no está en el repositorio.');
+}
 
 export const options = {
   // El login ocurre una sola vez por VU: sin esto k6 vacía las cookies entre iteraciones, las peticiones siguientes
@@ -54,7 +62,7 @@ function iniciarSesion() {
 
   const res = http.post(
     `${BASE_URL}/login`,
-    { _token: token, login: usuario, password: 'password' },
+    { _token: token, login: usuario, password: PASSWORD },
     { tags: { name: 'login' } },
   );
 

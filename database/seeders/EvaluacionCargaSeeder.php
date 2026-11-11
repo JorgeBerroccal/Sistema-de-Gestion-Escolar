@@ -19,6 +19,7 @@ use App\Models\Rol;
 use App\Models\Seccion;
 use App\Models\TipoDocumento;
 use App\Models\Usuario;
+use Database\Seeders\Concerns\ContrasenaDeCarga;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -30,12 +31,14 @@ use RuntimeException;
  * secciones `K01…K34` de un mismo grado (documentos `9001xxxx`; Ley 29733), con notas del primer periodo cerrado
  * (publicado); las cuentas `carga0001…1000` quedan vinculadas a un alumno y pueden ver notas y boletas; y 20
  * cuentas `cargadoc01…20` (Docente de carga) asignadas a las 20 primeras secciones, con los criterios del segundo
- * periodo —que queda abierto— para registrar notas. Tiene contraseña conocida (`password`): solo local, staging y
- * testing, nunca producción (FR-017), y fuera de `DatabaseSeeder`. Las cuentas `carga*` se desactivan al terminar
+ * periodo —que queda abierto— para registrar notas. La contraseña sale de `CARGA_PASSWORD` (obligatoria fuera de local y
+ * testing; no está en el repositorio): solo local, staging y testing, nunca producción (FR-017), y fuera de `DatabaseSeeder`. Las cuentas `carga*` se desactivan al terminar
  * la sesión. Idempotente. Requiere `AcademicoDemoSeeder` (año vigente con dos periodos y un grado).
  */
 class EvaluacionCargaSeeder extends Seeder
 {
+    use ContrasenaDeCarga;
+
     public const ENTORNOS_PERMITIDOS = ['local', 'staging', 'testing'];
 
     public const SECCIONES = 34;
@@ -60,6 +63,8 @@ class EvaluacionCargaSeeder extends Seeder
                 app()->environment(),
             ));
         }
+
+        $this->contrasenaDeCarga(); // falla antes de sembrar nada si falta en staging
 
         $this->call([RolesYPermisosSeeder::class, EscalasCalificacionSeeder::class, TiposDocumentoSeeder::class, LoadTestSeeder::class]);
 
@@ -102,7 +107,7 @@ class EvaluacionCargaSeeder extends Seeder
     /** @return Collection<int, Usuario> `cargadoc01…20` */
     private function docentes(Rol $rol)
     {
-        $hash = Hash::make('password');
+        $hash = Hash::make($this->contrasenaDeCarga());
         $ahora = now();
         $filas = [];
 

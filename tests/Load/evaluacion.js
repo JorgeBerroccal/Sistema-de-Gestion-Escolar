@@ -3,7 +3,8 @@
 //   Rampa completa (1000 VUs, ~14 min):  k6 run /scripts/evaluacion.js
 //   Prueba de humo (10 VUs, ~35 s):      k6 run -e SMOKE=1 /scripts/evaluacion.js
 //   Otro servidor:                       k6 run -e BASE_URL=https://staging.ejemplo.pe /scripts/evaluacion.js
-// Datos: `php artisan db:seed --class=EvaluacionCargaSeeder` (solo local, staging y testing; contraseña `password`).
+// Datos: `php artisan db:seed --class=EvaluacionCargaSeeder` (solo local, staging y testing).
+//   Contraseña: `-e CARGA_PASSWORD=…` (el mismo valor con el que se sembró; en local, `password` por defecto).
 //
 // El guardado de notas es un formulario clásico (POST con CSRF), igual que el login: el script lee el token y los
 // nombres de los campos de la página, así que no depende del protocolo interno de Livewire.
@@ -13,6 +14,13 @@ import exec from 'k6/execution';
 
 const BASE_URL = __ENV.BASE_URL || 'http://web';
 const SMOKE = __ENV.SMOKE === '1';
+
+// Contraseña de las cuentas `carga*`: no está en el repositorio. En GitHub Actions llega del secreto CARGA_PASSWORD;
+// en local (BASE_URL por defecto, la pila de docker compose) se admite `password`, la de los seeders en local.
+const PASSWORD = __ENV.CARGA_PASSWORD || (BASE_URL === 'http://web' ? 'password' : '');
+if (!PASSWORD) {
+  throw new Error('Falta CARGA_PASSWORD (-e CARGA_PASSWORD=…): la contraseña de las cuentas de carga no está en el repositorio.');
+}
 
 // Cuentas del seeder: cargadoc01…20 (docentes) y carga0001…1000 (familias). Cada VU elige su cuenta con
 // `(id de VU - 1) % total`: no depende del orden en que k6 reparte los ids entre escenarios.
@@ -77,7 +85,7 @@ function iniciarSesion(usuario) {
 
   const res = http.post(
     `${BASE_URL}/login`,
-    { _token: token, login: usuario, password: 'password' },
+    { _token: token, login: usuario, password: PASSWORD },
     { tags: { name: 'login' } },
   );
 

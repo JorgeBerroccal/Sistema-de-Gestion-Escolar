@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Permiso;
 use App\Models\Rol;
+use Database\Seeders\Concerns\ContrasenaDeCarga;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -11,11 +12,13 @@ use RuntimeException;
 
 /**
  * Datos para la prueba de carga (SC-006): 1000 usuarios carga0001…carga1000 con el rol `Carga`
- * (solo `usuarios.ver`). Idempotente. Solo se permite en local, staging y testing (FR-020 de la
+ * (solo `usuarios.ver`). La contraseña sale de `CARGA_PASSWORD` (obligatoria fuera de local y testing). Idempotente. Solo se permite en local, staging y testing (FR-020 de la
  * spec 002); cualquier otro entorno, incluido producción, lo rechaza. Fuera de DatabaseSeeder.
  */
 class LoadTestSeeder extends Seeder
 {
+    use ContrasenaDeCarga;
+
     public const TOTAL = 1000;
 
     /** Entornos donde es seguro sembrar 1000 cuentas con contraseña conocida. */
@@ -31,12 +34,14 @@ class LoadTestSeeder extends Seeder
             ));
         }
 
+        $contrasena = $this->contrasenaDeCarga(); // falla antes de tocar la base si falta en staging
+
         $this->call(RolesYPermisosSeeder::class);
 
         $rol = Rol::firstOrCreate(['nombre' => 'Carga'], ['descripcion' => 'Rol de la prueba de carga.']);
         $rol->permisos()->sync([Permiso::where('identificador', 'usuarios.ver')->value('id')]);
 
-        $hash = Hash::make('password'); // un solo hash bcrypt reutilizado
+        $hash = Hash::make($contrasena); // un solo hash bcrypt reutilizado
         $ahora = now();
 
         $filas = [];
