@@ -67,4 +67,5 @@ Route::middleware(['auth', 'activo'])->group(function () {
     Route::livewire('/notas/registro/{seccion}/{curso}', Evaluacion\Registro\Show::class)->name('notas.registro.show');
     Route::post('/notas/registro/{seccion}/{curso}', [NotasController::class, 'guardar'])->name('notas.registro.guardar');
     Route::livewire('/notas/mias', Evaluacion\Propia\Index::class)->name('notas.propia.index');
+    Route::livewire('/notas/cierres', Evaluacion\Cierres\Index::class)->name('notas.cierres.index')->middleware('can:notas.cerrar_periodo');
 });

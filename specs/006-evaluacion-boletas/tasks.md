@@ -91,11 +91,11 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Evaluacion/`, modelos en `a
 
 **Independent Test**: cerrar, comprobar que el Docente no edita y el Padre ve las notas; reabrir y comprobar lo contrario.
 
-- [ ] T027 [P] [US3] `tests/Feature/Evaluacion/CierrePeriodoTest.php`: cerrar crea una fila única con `cerrado_por` y `cerrado_en`; cerrar dos veces no duplica; reabrir elimina la fila; tras cerrar el Docente no guarda y la familia ve; tras reabrir, lo contrario; el Administrador sigue pudiendo corregir notas con el periodo cerrado; solo del año vigente y de un periodo del año de la sección (R-05, FR-009)
-- [ ] T028 [P] [US3] `tests/Feature/Evaluacion/Acceso/CierresAccesoTest.php`: solo `notas.cerrar_periodo` (Administrador) abre `/notas/cierres`, cierra y reabre; Docente, Padre, Alumno y Director → 403; rol creado en la prueba con y sin el permiso (SC-003, escenario 3.3)
-- [ ] T029 [US3] Ampliar `app/Evaluacion/EvaluacionService.php`: `cerrarPeriodo(Seccion, PeriodoEvaluacion, Usuario)` (idempotente, exige `notas.cerrar_periodo` y año vigente) y `reabrirPeriodo(...)` (elimina la fila)
-- [ ] T030 [US3] `app/Livewire/Evaluacion/Cierres/Index.php` y vista `/notas/cierres` (`notas.cierres.index`, `can:notas.cerrar_periodo`): secciones del año vigente × periodos con su estado, paginado y con `with()`, acciones cerrar/reabrir con confirmación; ítem de menú «Cierres de periodo»
-- [ ] T031 [US3] Hacer pasar T027–T028
+- [x] T027 [P] [US3] `tests/Feature/Evaluacion/CierrePeriodoTest.php`: cerrar crea una fila única con `cerrado_por` y `cerrado_en`; cerrar dos veces no duplica; reabrir elimina la fila; tras cerrar el Docente no guarda y la familia ve; tras reabrir, lo contrario; el Administrador sigue pudiendo corregir notas con el periodo cerrado; solo del año vigente y de un periodo del año de la sección (R-05, FR-009)
+- [x] T028 [P] [US3] `tests/Feature/Evaluacion/Acceso/CierresAccesoTest.php`: solo `notas.cerrar_periodo` (Administrador) abre `/notas/cierres`, cierra y reabre; Docente, Padre, Alumno y Director → 403; rol creado en la prueba con y sin el permiso (SC-003, escenario 3.3)
+- [x] T029 [US3] Ampliar `app/Evaluacion/EvaluacionService.php`: `cerrarPeriodo(Seccion, PeriodoEvaluacion, Usuario)` (idempotente, exige `notas.cerrar_periodo` y año vigente) y `reabrirPeriodo(...)` (elimina la fila)
+- [x] T030 [US3] `app/Livewire/Evaluacion/Cierres/Index.php` y vista `/notas/cierres` (`notas.cierres.index`, `can:notas.cerrar_periodo`): secciones del año vigente × periodos con su estado, paginado y con `with()`, acciones cerrar/reabrir con confirmación; ítem de menú «Cierres de periodo»
+- [x] T031 [US3] Hacer pasar T027–T028
 
 **Checkpoint**: la publicación funciona de punta a punta (US1 + US2 + US3).
 

@@ -14,6 +14,7 @@ use App\Models\Nota;
 use App\Models\PeriodoEvaluacion;
 use App\Models\Seccion;
 use App\Models\Usuario;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -291,5 +292,41 @@ class EvaluacionService
         });
 
         return ['guardadas' => count($llenas), 'borradas' => array_sum(array_map('count', $vacias))];
+    }
+
+    /**
+     * Cierra y publica un periodo para una sección (R-05, FR-009). Idempotente: cerrar dos veces no duplica la fila.
+     * Solo quien tiene `notas.cerrar_periodo`; solo del año vigente.
+     */
+    public function cerrarPeriodo(Seccion $seccion, PeriodoEvaluacion $periodo, Usuario $usuario): CierrePeriodo
+    {
+        $this->exigirCierre($usuario, $seccion, $periodo);
+
+        $atributos = ['seccion_id' => $seccion->id, 'periodo_id' => $periodo->id];
+
+        try {
+            return CierrePeriodo::query()->firstOrCreate($atributos, ['cerrado_por' => $usuario->id, 'cerrado_en' => now()]);
+        } catch (UniqueConstraintViolationException) {
+            // Otro cierre simultáneo ganó la carrera: el resultado es el mismo.
+            return CierrePeriodo::query()->where($atributos)->firstOrFail();
+        }
+    }
+
+    /** Reabre el periodo: elimina la fila de cierre; los Docentes vuelven a editar y la familia deja de verlo. */
+    public function reabrirPeriodo(Seccion $seccion, PeriodoEvaluacion $periodo, Usuario $usuario): void
+    {
+        $this->exigirCierre($usuario, $seccion, $periodo);
+
+        CierrePeriodo::query()->where('seccion_id', $seccion->id)->where('periodo_id', $periodo->id)->delete();
+    }
+
+    private function exigirCierre(Usuario $usuario, Seccion $seccion, PeriodoEvaluacion $periodo): void
+    {
+        if (! $usuario->tienePermiso('notas.cerrar_periodo')) {
+            throw new AccessDeniedHttpException('No puedes cerrar ni reabrir periodos.');
+        }
+
+        $this->exigirAnioVigente($seccion);
+        $this->exigirPeriodoDelAnio($seccion, $periodo);
     }
 }
