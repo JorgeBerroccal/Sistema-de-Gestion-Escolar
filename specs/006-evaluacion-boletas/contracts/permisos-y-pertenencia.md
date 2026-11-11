@@ -4,7 +4,7 @@
 
 ## Permisos nuevos (se añaden a `RolesYPermisosSeeder::PERMISOS`)
 
-Se asignan a los roles **solo al crearse** el permiso. Total en staging tras el módulo: 24 + 8 = **32**.
+Se asignan a los roles **solo al crearse** el permiso. Total en staging tras el módulo: 24 + 7 = **31**.
 
 | Identificador | Nombre visible | Administrador | Director | Docente | Padre de Familia | Alumno |
 |---|---|:-:|:-:|:-:|:-:|:-:|
@@ -13,8 +13,7 @@ Se asignan a los roles **solo al crearse** el permiso. Total en staging tras el 
 | `notas.registrar_propia` | Definir criterios, registrar y reportar notas de los cursos y secciones propios | | | ✔ | | |
 | `notas.ver_propia` | Ver las notas propias o de los hijos (periodos publicados) | | | | ✔ | ✔ |
 | `notas.cerrar_periodo` | Cerrar y reabrir periodos por sección | ✔ | | | | |
-| `boletas.gestionar` | Generar la boleta de cualquier alumno, también borrador | ✔ | | | | |
-| `boletas.generar_propia` | Generar la boleta de los alumnos de las secciones propias, también borrador | | | ✔ | | |
+| `boletas.ver_todas` | Generar la boleta de cualquier alumno, también borrador | ✔ | ✔ | | | |
 | `boletas.ver_propia` | Descargar la boleta propia o de los hijos (periodos publicados) | | | | ✔ | ✔ |
 
 `gestionar` no implica `ver_todas` (igual que Matrícula y Asistencia). Sin permiso marcador nuevo: se reutilizan
@@ -34,7 +33,9 @@ Se asignan a los roles **solo al crearse** el permiso. Total en staging tras el 
 
 **Escritura** (esquema, notas): `notas.gestionar` (cualquier sección) o `notas.registrar_propia` + asignación en el par;
 ambos exigen año vigente; el Docente exige además periodo abierto. **Cierre/reapertura**: `notas.cerrar_periodo`.
-**Boleta**: ver `contracts/rutas-web.md`. Nunca se compara el nombre del rol.
+**Boleta**: ver `contracts/rutas-web.md`; `BoletaService` aplica vínculo y cierre directamente, sin `NotaRegla`. **El Docente no
+tiene permiso de boleta** (mínimo privilegio, decisión 8 del Módulo 3). **Reporte**: usa `NotaRegla` tal cual (el Docente ve
+solo sus cursos). Nunca se compara el nombre del rol.
 
 ## Orden de verificación
 
@@ -46,6 +47,8 @@ ambos exigen año vigente; el Docente exige además periodo abierto. **Cierre/re
 
 Permitido y denegado por cada rol por defecto y por un rol sin permiso creado en la prueba. Docente sin asignación
 no abre ni guarda otro par; Docente con periodo cerrado no guarda y el Administrador sí; Padre/Alumno no ven notas
-ajenas ni de periodos sin cerrar ni descargan boletas ajenas o en borrador; Director consulta pero no modifica;
+ajenas ni de periodos sin cerrar ni descargan boletas ajenas o en borrador; el Docente recibe 403 en la boleta; un rol con
+solo `boletas.ver_propia` descarga la boleta de su hijo; el reporte del Docente muestra solo sus cursos; Director consulta
+pero no modifica;
 quitar `notas.ver_todas` al Director corta su acceso; usuario sin vínculos → lista vacía; solo el Administrador
 cierra y reabre.

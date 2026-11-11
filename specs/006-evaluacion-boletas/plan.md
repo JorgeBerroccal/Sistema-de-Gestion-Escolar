@@ -49,7 +49,7 @@ limita a la interacción de la pantalla; así k6 lo prueba sin depender del prot
 |---|---|---|
 | I. Stack fijo | Laravel 13 / PHP 8.3, Blade + Livewire, MySQL 8, Redis sin cambios. Dompdf es una librería PHP (no un servicio ni otro lenguaje); se descarta Chromium/wkhtmltopdf por ser binarios externos. | ✅ |
 | II. Genérico y configurable | Criterios, periodos y cursos son datos. Escala, equivalentes numéricos y umbral viven en `escalas_calificacion` (no en código). Nada de ejemplo fuera de seeders. | ✅ |
-| III. RBAC por tablas | Ocho permisos nuevos en `rol_permiso`; docente = marcador `docencia.dictar` + asignaciones; familia = vínculos del Módulo 3. Pertenencia por `NotaRegla` y `CriterioRegla`. `SinCondicionalesDeRolTest` sigue en verde. | ✅ |
+| III. RBAC por tablas | Siete permisos nuevos en `rol_permiso`; docente = marcador `docencia.dictar` + asignaciones; familia = vínculos del Módulo 3. Pertenencia por `NotaRegla` y `CriterioRegla`. `SinCondicionalesDeRolTest` sigue en verde. | ✅ |
 | IV. Alcance MVP | Módulo 5. Excluidos: conducta, recuperaciones, Excel, plantillas múltiples, firma, notificaciones, chatbot. | ✅ |
 | V. Pruebas | Cada regla de autorización con Feature test permitido/denegado; unitarias del cálculo; concurrencia y volumen. **Sesión única k6** de este módulo para login, registro de notas y boletas (Constitución 2.2.0). Prueba de humo de ~10 min. | ✅ |
 | VI. IA restringida | Sin chatbot aquí; `Nota::visiblePara()` y el cálculo quedan listos para el Módulo 6. | ✅ N/A |
@@ -82,7 +82,7 @@ specs/006-evaluacion-boletas/
 ```text
 app/
 ├── Evaluacion/
-│   ├── CalculoPromedios.php        # puro: ponderado, renormalización, escala literal, redondeo, anual
+│   ├── CalculoPromedios.php        # puro: ponderado, renormalización, escala literal, redondeo, anual y validación del valor contra la escala
 │   ├── EvaluacionService.php       # esquema de criterios, guardar notas (todo o nada), cerrar/reabrir, reglas de escritura
 │   ├── ConsultaNotas.php           # notas y promedios de un alumno / de una sección (con with(), acotado)
 │   ├── BoletaService.php           # arma los datos de la boleta (notas + asistencia del Módulo 4) y el PDF
@@ -105,7 +105,7 @@ database/
 resources/views/{livewire/evaluacion/…, boletas/boleta.blade.php}
 routes/web.php                            # grupo /notas y /boletas
 tests/{Feature/Evaluacion/**, Unit/Evaluacion/**, Load/evaluacion.js}
-docs/despliegue/prueba-de-carga.md        # se amplía con los endpoints nuevos
+docs/{evaluacion.md, despliegue/prueba-de-carga.md}   # módulo (escala como configuración) y carga con los flujos nuevos
 ```
 
 **Structure Decision**: monolito Laravel existente; el dominio se agrupa en `app/Evaluacion`, la UI en

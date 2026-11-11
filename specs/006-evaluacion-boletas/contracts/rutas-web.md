@@ -14,7 +14,7 @@ HTML (Blade/Livewire) bajo el grupo `auth` + `activo`. Sin permiso → **403**; 
 | GET | `/notas/reportes` | `notas.reportes.index` | `Reportes\Index` | `notas.ver_todas` **o** `notas.registrar_propia` |
 | GET | `/boletas/{alumno}/{periodo}` | `boletas.descargar` | `BoletaController@descargar` | ver abajo |
 
-- `Registro\Show` recibe el periodo como `?periodo=` (por defecto el vigente por fecha). Muestra el editor de criterios
+- `Registro\Show` recibe el periodo como `?periodo=` (por defecto el último periodo del año con `fecha_inicio` ≤ hoy; si ninguno, el primero). Muestra el editor de criterios
   (agregar, quitar con confirmación, pesos con total en vivo) y la tabla alumno × criterio con el promedio del periodo
   por alumno. Dos acciones separadas, cada una todo o nada: *Guardar criterios* (Livewire) y *Guardar notas*, un
   **formulario clásico** `POST` con `@csrf` a `notas.registro.guardar` (R-18). Con periodo cerrado y usuario sin
@@ -27,12 +27,13 @@ HTML (Blade/Livewire) bajo el grupo `auth` + `activo`. Sin permiso → **403**; 
 - `Propia\Index` lista a los hijos (o al propio alumno), con selector de periodo (solo publicados), detalle por curso y
   criterio, promedio y enlace «Descargar boleta» (periodo y anual).
 - `Reportes\Index` elige sección (solo las visibles) y periodo; muestra promedios por curso, orden de mérito paginado
-  y desaprobados por curso; sin controles de edición.
+  y desaprobados por curso; sin controles de edición. El Docente ve solo los cursos que dicta (`NotaRegla`).
 - `boletas.descargar`: `{periodo}` es el id de un periodo o `anual`. Autoriza **antes** de generar:
-  1. `boletas.gestionar` → cualquier alumno; `boletas.generar_propia` → alumno de una sección con asignación mía;
+  1. `boletas.ver_todas` (Administrador, Director) → cualquier alumno; **el Docente no tiene acceso** (403);
      `boletas.ver_propia` → alumno propio o hijo y solo periodos con cierre (anual: solo con ≥ 1 periodo publicado,
      y solo incluye los publicados).
-  2. Periodo sin cierre → solo Admin/Docente, PDF con marca «BORRADOR».
+  2. Periodo sin cierre → solo `boletas.ver_todas`, PDF con marca «BORRADOR».
+  3. La boleta muestra la sección vigente del alumno; cada periodo se toma con las notas de la sección donde se registraron.
   Con escala literal el PDF muestra el calificativo literal del promedio. Respuesta: `200 application/pdf` con `Content-Disposition: attachment`; 403 si no autorizado; 404 si el periodo no
   existe. Nombre del archivo sin datos personales (`boleta-{alumno_id}-{periodo|anual}.pdf`).
 - Menú (`config/menu.php`): Registro de notas (`gestionar`/`registrar_propia`), Cierres de periodo

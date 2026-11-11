@@ -91,9 +91,10 @@ notas; reabrir y comprobar lo contrario.
 
 ### User Story 4 - Generar la boleta de notas en PDF (Priority: P2)
 
-El Administrador o el Docente de la sección generan la boleta de un alumno para un periodo (o la anual): un
+El Administrador y el Director generan la boleta de un alumno para un periodo (o la anual): un
 documento PDF con los datos de la institución, del alumno, sección, cursos con sus notas y promedios, y el
-resumen de asistencia del periodo. El Padre y el Alumno descargan la boleta propia de periodos publicados.
+resumen de asistencia del periodo. El Padre y el Alumno descargan la boleta propia de periodos publicados. El Docente no accede a la boleta completa
+(mínimo privilegio, como en la matrícula: ve solo sus cursos en la tabla de notas y en el reporte).
 Existe un único formato de boleta.
 
 **Why this priority**: Es el entregable visible del módulo para las familias; depende de las Stories 1–3.
@@ -109,8 +110,10 @@ comprobar que sus cursos, notas, promedios y asistencia coinciden con los regist
    curso aparece como «sin notas».
 3. **Given** un Padre o Alumno, **When** intenta descargar la boleta de un alumno ajeno o de un periodo no
    publicado, **Then** el sistema deniega el acceso.
-4. **Given** un Administrador, **When** genera la boleta de un periodo no publicado, **Then** la obtiene
-   marcada como «borrador».
+4. **Given** un Administrador o un Director, **When** genera la boleta de un periodo no publicado, **Then** la
+   obtiene marcada como «borrador».
+5. **Given** un Docente, **When** intenta descargar la boleta de un alumno de su sección, **Then** el sistema
+   deniega el acceso.
 
 ---
 
@@ -118,7 +121,7 @@ comprobar que sus cursos, notas, promedios y asistencia coinciden con los regist
 
 El Administrador y el Director consultan, para una sección y periodo, los promedios por curso y por alumno,
 con el orden de mérito de la sección y el conteo de alumnos desaprobados por curso. El Docente accede a lo
-mismo para sus secciones.
+mismo, pero solo con los cursos donde tiene asignación (mínimo privilegio).
 
 **Why this priority**: Da visibilidad a la dirección pero no es necesario para la boleta; es recortable.
 
@@ -129,7 +132,8 @@ coinciden con los registros.
 
 1. **Given** un Director, **When** abre el reporte de una sección y periodo, **Then** ve promedios por curso,
    orden de mérito y desaprobados, sin controles de edición.
-2. **Given** un Docente, **When** abre el reporte, **Then** solo elige secciones donde tiene asignación.
+2. **Given** un Docente, **When** abre el reporte, **Then** solo elige secciones donde tiene asignación y ve
+   únicamente los cursos que dicta.
 3. **Given** una sección sin notas en el periodo, **When** se abre el reporte, **Then** se muestra «sin datos».
 
 ---
@@ -148,6 +152,8 @@ coinciden con los registros.
 - Una asignación docente desactivada o un año que ya no es el vigente: se deniega la edición; la consulta se
   conserva.
 - Un alumno desactivado conserva su historial de notas y sus boletas.
+- Un alumno que se traslada de sección a mitad de año: sus notas quedan en la sección original y la boleta
+  muestra la sección vigente.
 - Escala de calificación literal: el promedio se calcula con equivalentes numéricos y se muestra en letra
   (ver Supuestos).
 
@@ -177,10 +183,10 @@ coinciden con los registros.
 - **FR-011**: El sistema MUST generar la boleta de un alumno por periodo y anual en un único formato PDF, con
   datos de la institución, alumno y sección, cursos con notas por criterio y promedio, y resumen de asistencia
   del periodo (Módulo 4).
-- **FR-012**: La boleta de un periodo no publicado MUST estar disponible solo para Administrador y Docente de
-  la sección, marcada como borrador.
+- **FR-012**: La boleta de un periodo no publicado MUST estar disponible solo para Administrador y Director,
+  marcada como borrador. El Docente MUST NOT acceder a la boleta completa.
 - **FR-013**: El Administrador y el Director MUST poder consultar el reporte de notas por sección y periodo; el
-  Director solo consulta; el Docente accede a sus secciones.
+  Director solo consulta; el Docente accede a sus secciones, limitado a los cursos que dicta.
 - **FR-014**: Toda autorización MUST basarse en permisos de la tabla de roles y permisos, más el filtro de
   pertenencia (docente a sus secciones, familia a sus hijos), con denegación por defecto.
 - **FR-015**: Los listados MUST estar paginados; las consultas con relaciones MUST evitar consultas repetidas
