@@ -55,11 +55,13 @@ it('acepta --force en producción', function () {
     expect(Permiso::count())->toBe(30);
 });
 
-it('en producción sin --force pide confirmación y no hace nada si se rechaza', function () {
+it('en producción sin --force pide confirmación y no hace nada si no se acepta', function () {
     app()['env'] = 'production';
 
+    // Con el entorno en producción Laravel Prompts ya no usa el modo de pruebas: sin terminal interactiva toma la
+    // respuesta por defecto («no») en lugar de hacer la pregunta, y el comando se cancela sin sembrar nada.
     $this->artisan('sge:sincronizar-base')
-        ->expectsConfirmation('Are you sure you want to run this command?', 'no')
+        ->expectsOutputToContain('Command cancelled.')
         ->assertFailed();
 
     expect(Permiso::count())->toBe(0);
