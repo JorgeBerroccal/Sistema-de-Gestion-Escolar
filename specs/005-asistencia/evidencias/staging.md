@@ -7,7 +7,7 @@ Administrador y una cuenta de Padre de Familia ficticia (Constitución 2.2.0). S
 
 - `./deploy/deploy.sh v0.5.0`: resultado no detallado en el reporte del responsable.
 - `AsistenciaDemoSeeder`: no detallado en el reporte del responsable.
-- Permisos en base: no detallado en el reporte (esperado: 24).
+- Permisos en base: no detallado en el reporte (esperado: 23, según el código tras el Módulo 4: 30 de v0.6.0 menos los 7 de evaluación; el 24 inicial era un error de conteo).
 
 ## Pasos (quickstart §2)
 
