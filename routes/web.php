@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\NotasController;
 use App\Livewire\Academico;
 use App\Livewire\Admin\Permisos;
 use App\Livewire\Admin\Roles;
 use App\Livewire\Admin\Usuarios;
 use App\Livewire\Asistencia;
+use App\Livewire\Evaluacion;
 use App\Livewire\Matricula;
 use Illuminate\Support\Facades\Route;
 
@@ -61,4 +63,7 @@ Route::middleware(['auth', 'activo'])->group(function () {
 
     // Módulo 5 — Evaluación y Boletas. Cada historia registra aquí sus rutas junto a su componente; el permiso (doble)
     // y la pertenencia se comprueban en `mount()` o en el controlador.
+    Route::livewire('/notas/registro', Evaluacion\Registro\Index::class)->name('notas.registro.index');
+    Route::livewire('/notas/registro/{seccion}/{curso}', Evaluacion\Registro\Show::class)->name('notas.registro.show');
+    Route::post('/notas/registro/{seccion}/{curso}', [NotasController::class, 'guardar'])->name('notas.registro.guardar');
 });

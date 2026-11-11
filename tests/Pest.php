@@ -1,8 +1,10 @@
 <?php
 
+use App\Evaluacion\EvaluacionService;
 use App\Models\Alumno;
 use App\Models\AnioEscolar;
 use App\Models\AsignacionDocente;
+use App\Models\CriterioEvaluacion;
 use App\Models\Curso;
 use App\Models\EscalaCalificacion;
 use App\Models\Grado;
@@ -210,4 +212,20 @@ function escenarioEvaluacion(int $alumnos = 3, string $escala = 'vigesimal'): ar
         'alumnos' => $lista, 'docente' => $docente,
         'admin' => usuarioConPermisos(['notas.gestionar', 'notas.ver_todas', 'notas.cerrar_periodo', 'boletas.ver_todas']),
     ];
+}
+
+/**
+ * Guarda un esquema de criterios (por defecto 60 % y 40 %) con el Administrador del escenario.
+ *
+ * @param  array<string, mixed>  $e  resultado de `escenarioEvaluacion()`
+ * @param  list<array{nombre: string, peso: int|float|string}>|null  $criterios
+ * @return Collection<int, CriterioEvaluacion>
+ */
+function esquemaEvaluacion(array $e, ?array $criterios = null): Collection
+{
+    return app(EvaluacionService::class)->guardarEsquema(
+        $e['seccion'], $e['curso'], $e['periodo'],
+        $criterios ?? [['nombre' => 'Práctica', 'peso' => 60], ['nombre' => 'Examen', 'peso' => 40]],
+        $e['admin'],
+    );
 }
