@@ -52,6 +52,7 @@ class RolesYPermisosSeeder extends Seeder
         'notas.cerrar_periodo' => ['Cerrar y reabrir periodos de evaluación por sección', ['Administrador']],
         'boletas.ver_todas' => ['Generar la boleta de cualquier alumno, también en borrador', ['Administrador', 'Director']],
         'boletas.ver_propia' => ['Descargar la boleta propia o de los hijos (periodos publicados)', ['Padre de Familia', 'Alumno']],
+        'asistente.usar' => ['Usar el asistente virtual', ['Padre de Familia', 'Alumno']],
     ];
 
     public function run(): void
