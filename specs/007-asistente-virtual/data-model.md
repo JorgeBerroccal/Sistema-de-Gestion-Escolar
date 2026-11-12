@@ -29,7 +29,7 @@
 ## Estado en memoria (no persistente)
 
 - **Turno**: `{rol: usuario|asistente, texto}`; lista de los últimos N turnos en el componente Livewire.
-- **ContextoAsistente**: texto construido por pregunta; no se guarda ni se registra.
+- **Contexto del asistente**: texto construido por pregunta; no se guarda ni se registra.
 
 ## Datos leídos (fuente única)
 

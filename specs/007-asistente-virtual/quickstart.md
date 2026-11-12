@@ -32,7 +32,7 @@ de permisos de la receta de despliegue (conteo de staging 32 = 31 del seeder + `
 
 1. Padre de Familia: preguntar por el promedio de un curso y por las faltas; comparar con «Mis notas» y «Mi asistencia».
 2. Padre con varios hijos: preguntar sin nombrar hijo ⇒ pide aclaración.
-3. Pedir las notas de un alumno ajeno ⇒ rechazo neutro.
+3. Pedir las notas de un alumno ajeno ⇒ rechazo neutro y sin datos del alumno (el tono lo decide el modelo; es la verificación manual de R-13).
 4. Comprobar el aviso de IA y que las respuestas estén en español.
 5. Superar el límite por usuario ⇒ aviso con el tiempo de espera.
 6. Docente/Director/Administrador: no ven «Asistente virtual».

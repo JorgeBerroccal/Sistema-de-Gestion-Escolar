@@ -56,7 +56,10 @@ Decisiones técnicas tomadas para resolver las incógnitas del plan. Formato: de
 
 ## R-07 — Contexto mínimo
 
-- **Decisión**: `ConstructorContexto` arma texto plano con: nombre y apellidos del alumno, año, grado, nivel,
+- **Decisión**: `ConstructorContexto` arma texto plano, y cada bloque se incluye solo si el usuario tiene el
+  permiso de su pantalla (`matricula.ser_alumno`/`matricula.ser_apoderado` para matrícula y sección,
+  `notas.ver_propia` para notas, `asistencia.ver_propia` para asistencia), porque `ResumenAsistencia` no filtra
+  por permiso. El texto contiene: nombre y apellidos del alumno, año, grado, nivel,
   sección y estado de matrícula; por cada periodo **cerrado y publicado** (`ConsultaNotas::periodosPublicados`),
   cursos con promedio y notas por criterio (`ConsultaNotas::delAlumno($alumno, $periodo, $usuario)`); y
   resumen de asistencia del año vigente y del mes en curso (`ResumenAsistencia::delAlumno`). No se consulta ni
@@ -65,6 +68,17 @@ Decisiones técnicas tomadas para resolver las incógnitas del plan. Formato: de
 - **Razón**: FR-005/FR-007; reutilizar las consultas de las pantallas garantiza «no saber más que las
   pantallas» y evita duplicar reglas de publicación.
 - **Alternativas**: consultar tablas directamente (duplica y puede divergir de las reglas del Módulo 5).
+
+## R-13 — Principio de diseño: la seguridad no depende del modelo
+
+- **Decisión**: ninguna garantía de privacidad se apoya en que el modelo obedezca instrucciones. La frontera es
+  el contexto: solo contiene datos que el usuario podría ver en las pantallas (R-06, R-07), de un único alumno
+  elegido por el servidor y sin identificadores personales. Lo que el proveedor nunca recibió no lo puede
+  revelar, ni por error ni por inyección de instrucciones.
+- **Consecuencia**: las pruebas automáticas verifican el **payload** que recibe el adaptador (SC-002 a SC-004),
+  no el texto de la respuesta. El tono neutro del rechazo (instrucción de R-08) es comportamiento del modelo y
+  se comprueba a mano en la prueba de humo (`quickstart.md` §3, paso 3).
+- **Razón**: Principio VI («un LLM no es una frontera de seguridad»).
 
 ## R-08 — Instrucciones e inyección
 
