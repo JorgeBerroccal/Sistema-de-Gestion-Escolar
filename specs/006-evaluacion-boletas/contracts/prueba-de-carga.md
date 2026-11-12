@@ -3,7 +3,7 @@
 **Feature**: `006-evaluacion-boletas` · Constitución 2.2.0, Principio V · Responde a FR-016 y SC-005.
 
 Script: `tests/Load/evaluacion.js` (reutiliza el login de `tests/Load/carga.js`). Procedimiento de la sesión:
-`docs/despliegue/prueba-de-carga.md` (workflow `carga` con `script = evaluacion.js`; VM en `B2als_v2`, perfil `PERFIL_TAMANO=carga`, 2 vCPU / 4 GB, y vuelta a `B2ats_v2` / `diario` al terminar). Calendario: 17–18/11, sobre `v0.6.0` ya desplegada.
+`docs/despliegue/prueba-de-carga.md` (workflow `carga` con `script = evaluacion.js`; VM en `B2als_v2`, perfil `PERFIL_TAMANO=carga`, 2 vCPU / 4 GB, y vuelta a `B2ats_v2` / `diario` al terminar). Calendario: 13/11, sobre `v0.6.0` ya desplegada.
 
 ## Escenario (lo que hace cada usuario virtual)
 
