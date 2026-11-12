@@ -64,4 +64,10 @@ class ProveedorFalso implements ProveedorIA
     {
         return collect($this->recibidos)->flatten(1)->pluck('texto')->implode("\n");
     }
+
+    /** Solo lo que construye el servidor (instrucciones y contexto), sin lo que escribió el usuario. */
+    public function textoDelSistema(): string
+    {
+        return collect($this->recibidos)->flatten(1)->where('rol', 'system')->pluck('texto')->implode("\n");
+    }
 }
