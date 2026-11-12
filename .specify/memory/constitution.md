@@ -84,7 +84,13 @@ previenen regresiones en un calendario sin margen para corregirlas tarde.
 
 ### VI. Asistente IA Restringido por RBAC
 
-- El chatbot MUST usar la API de Claude con un modelo de la familia Haiku, por costo.
+- El chatbot MUST consumir el modelo de IA a través de una interfaz de proveedor (puerto) con
+  adaptadores intercambiables, elegidos por variable de entorno; los adaptadores concretos y el
+  modelo se definen en la especificación del módulo. MUST existir un adaptador falso para pruebas
+  y desarrollo, y las pruebas automáticas MUST NOT llamar a servicios externos.
+- Cada adaptador MUST declarar si admite datos reales de alumnos. Un adaptador que no los admite
+  (por ejemplo, uno de plan gratuito) MUST NOT recibir datos reales; el sistema MUST fallar cerrado
+  si se configura así en producción.
 - El chatbot MUST responder únicamente con información a la que el usuario autenticado tiene
   acceso según su rol y sus relaciones de pertenencia (Principio III).
 - Los datos enviados al modelo como contexto MUST obtenerse en el backend aplicando las mismas
@@ -184,5 +190,14 @@ prueba de humo breve dan confianza suficiente sin cronometrajes ni sesiones repe
     sesión, en el Módulo 5. Justificación: decisión del responsable del proyecto por limitación de
     tiempo, manteniendo la evidencia automatizada. Es MINOR porque amplía y precisa guías sin
     invalidar código conforme a 2.1.0.
+  - 2.3.0 (2026-11-12): Principio VI — el chatbot usa una interfaz de proveedor (puerto) con
+    adaptadores intercambiables por variable de entorno, en lugar de fijar un proveedor y modelo
+    concretos; se exige un adaptador falso para pruebas, sin llamadas externas en la suite, y que
+    cada adaptador declare si admite datos reales de alumnos, con falla cerrada en producción si no
+    los admite. Los adaptadores concretos se definen en la spec del módulo, por lo que cambiar de
+    proveedor no requiere enmendar la constitución. Justificación: no hay presupuesto para créditos
+    de la API de Anthropic; el proveedor por defecto pasa a un plan gratuito. Es MINOR porque amplía
+    materialmente una guía sin invalidar código conforme a 2.2.0: un chatbot con Claude Haiku sigue
+    cumpliendo, ya que el puerto admite ese proveedor.
 
-**Version**: 2.2.0 | **Ratified**: 2026-09-27 | **Last Amended**: 2026-11-04
+**Version**: 2.3.0 | **Ratified**: 2026-09-27 | **Last Amended**: 2026-11-12
