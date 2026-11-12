@@ -3,6 +3,7 @@
 namespace App\Livewire\Asistente\Chat;
 
 use App\Asistente\AsistenteService;
+use App\Asistente\Disponibilidad;
 use App\Asistente\ResultadoAsistente;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
@@ -52,9 +53,9 @@ class Index extends Component
         $this->mensaje = '';
     }
 
-    public function render(): View
+    public function render(Disponibilidad $disponibilidad): View
     {
-        return view('livewire.asistente.chat.index');
+        return view('livewire.asistente.chat.index', ['noDisponible' => $disponibilidad->verificar()]);
     }
 
     private function autorizar(): void

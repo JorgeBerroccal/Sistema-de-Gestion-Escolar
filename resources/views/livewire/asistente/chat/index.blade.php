@@ -5,6 +5,9 @@
         Las respuestas las genera una IA y pueden contener errores. Para datos oficiales consulta Mis notas, Mi asistencia o tu boleta.
     </p>
 
+    @if ($noDisponible)
+        <p class="rounded border border-red-300 bg-red-50 p-4 text-red-900" role="alert" data-asistente-no-disponible>{{ $noDisponible }}</p>
+    @else
     <section class="mb-4 space-y-3 rounded bg-white p-4 shadow" aria-label="Conversación" aria-live="polite">
         @forelse ($turnos as $i => $turno)
             <div wire:key="turno-{{ $i }}" class="{{ $turno['rol'] === 'usuario' ? 'text-right' : '' }}">
@@ -24,4 +27,5 @@
             <span wire:loading.remove wire:target="enviar">Enviar</span><span wire:loading wire:target="enviar">Consultando…</span>
         </button>
     </form>
+    @endif
 </div>

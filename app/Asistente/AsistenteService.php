@@ -9,7 +9,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Orquesta una pregunta: validación → (disponibilidad, fase siguiente) → alumno → límite → contexto → proveedor.
+ * Orquesta una pregunta: validación → disponibilidad → alumno → límite → contexto → proveedor.
  * La aclaración y el «sin datos» se resuelven antes del límite: no llaman al proveedor y no consumen cupo.
  * El contenido de mensajes y respuestas nunca se registra: solo metadatos (usuario, adaptador, resultado).
  */
@@ -20,6 +20,7 @@ class AsistenteService
         private readonly ResolverAlumno $alumnos,
         private readonly ConstructorContexto $contexto,
         private readonly LimiteSolicitudes $limite,
+        private readonly Disponibilidad $disponibilidad,
     ) {}
 
     /**
@@ -42,6 +43,10 @@ class AsistenteService
 
         if (mb_strlen($mensaje) > $maximo) {
             return $this->resultado($usuario, new ResultadoAsistente(ResultadoAsistente::INVALIDO, "Tu mensaje es demasiado largo. Usa como máximo {$maximo} caracteres."));
+        }
+
+        if (($noDisponible = $this->disponibilidad->verificar()) !== null) {
+            return $this->resultado($usuario, new ResultadoAsistente(ResultadoAsistente::NO_DISPONIBLE, $noDisponible));
         }
 
         $resolucion = $this->alumnos->resolver($usuario, $mensaje);
