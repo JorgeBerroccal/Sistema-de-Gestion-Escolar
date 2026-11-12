@@ -47,7 +47,7 @@
                 <p class="mt-4"><a href="{{ route('boletas.descargar', [$alumnoActual->id, 'anual']) }}" class="underline">Descargar boleta anual</a></p>
             @endif
         @elseif ($datos)
-            <p class="mb-2 text-sm text-gray-600">{{ $datos['seccion']->grado->nombre }} {{ $datos['seccion']->identificador }} · {{ $datos['periodo']->nombre }}</p>
+            <p class="mb-2 text-sm text-gray-600">{{ $datos['seccion']->etiqueta }} · {{ $datos['periodo']->nombre }}</p>
             @foreach ($datos['cursos'] as $fila)
                 <section class="mb-4 bg-white p-4 shadow" wire:key="curso-{{ $fila['curso']->id }}">
                     <h2 class="mb-2 text-lg font-semibold">{{ $fila['curso']->nombre }}</h2>

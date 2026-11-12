@@ -58,8 +58,8 @@ class Index extends Component
 
         $secciones = Seccion::query()->with(['grado.nivel'])
             ->where('secciones.activo', true)->where('secciones.anio_escolar_id', $vigente?->id ?? 0)
-            ->join('grados', 'grados.id', '=', 'secciones.grado_id')
-            ->orderBy('grados.nombre')->orderBy('secciones.identificador')->orderBy('secciones.id')
+            ->join('grados', 'grados.id', '=', 'secciones.grado_id')->join('niveles', 'niveles.id', '=', 'grados.nivel_id')
+            ->orderBy('niveles.orden')->orderBy('grados.nombre')->orderBy('secciones.identificador')->orderBy('secciones.id')
             ->select('secciones.*')->paginate(15);
 
         $cierres = CierrePeriodo::query()->with('cerrador')->whereIn('seccion_id', $secciones->pluck('id'))

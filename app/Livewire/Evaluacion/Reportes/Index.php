@@ -75,9 +75,9 @@ class Index extends Component
 
     public function render(ConsultaNotas $consulta): View
     {
-        $secciones = $this->seccionesVisibles()->with('grado')
-            ->join('grados', 'grados.id', '=', 'secciones.grado_id')
-            ->orderBy('grados.nombre')->orderBy('secciones.identificador')->orderBy('secciones.id')
+        $secciones = $this->seccionesVisibles()->with('grado.nivel')
+            ->join('grados', 'grados.id', '=', 'secciones.grado_id')->join('niveles', 'niveles.id', '=', 'grados.nivel_id')
+            ->orderBy('niveles.orden')->orderBy('grados.nombre')->orderBy('secciones.identificador')->orderBy('secciones.id')
             ->select('secciones.*')->limit(200)->get();
 
         $vigente = AnioEscolar::query()->where('vigente', 1)->first();

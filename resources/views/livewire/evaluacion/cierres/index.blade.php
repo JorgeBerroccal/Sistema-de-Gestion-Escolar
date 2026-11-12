@@ -24,7 +24,7 @@
         <tbody>
             @forelse ($secciones as $seccion)
                 <tr wire:key="seccion-{{ $seccion->id }}" class="border-t">
-                    <td class="p-2">{{ $seccion->grado->nombre }} {{ $seccion->identificador }}</td>
+                    <td class="p-2">{{ $seccion->etiqueta }}</td>
                     @foreach ($periodos as $p)
                         @php($cierre = $cierres->get($seccion->id.'-'.$p->id))
                         <td class="p-2" wire:key="celda-{{ $seccion->id }}-{{ $p->id }}">

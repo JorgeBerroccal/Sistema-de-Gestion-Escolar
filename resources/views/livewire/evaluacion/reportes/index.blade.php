@@ -6,7 +6,7 @@
             <select wire:model.live="seccion" class="ml-1 rounded border p-1">
                 <option value="">Elige una sección</option>
                 @foreach ($secciones as $s)
-                    <option value="{{ $s->id }}">{{ $s->grado->nombre }} {{ $s->identificador }}</option>
+                    <option value="{{ $s->id }}">{{ $s->etiqueta }}</option>
                 @endforeach
             </select>
         </label>

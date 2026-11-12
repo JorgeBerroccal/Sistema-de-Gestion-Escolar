@@ -1,6 +1,6 @@
 <div>
     <div class="mb-4 flex items-center justify-between gap-4">
-        <h1 class="text-2xl font-semibold">Notas de {{ $curso->nombre }} · {{ $seccion->grado->nombre }} {{ $seccion->identificador }} ({{ $seccion->anio->nombre }})</h1>
+        <h1 class="text-2xl font-semibold">Notas de {{ $curso->nombre }} · {{ $seccion->etiqueta }} ({{ $seccion->anio->nombre }})</h1>
         <a href="{{ route('notas.registro.index') }}" class="underline">Volver</a>
     </div>
 
