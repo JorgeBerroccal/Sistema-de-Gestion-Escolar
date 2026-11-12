@@ -7,7 +7,18 @@ function disponibilidad(string $entorno, bool $admiteDatosReales): ?string
 {
     app()->detectEnvironment(fn () => $entorno);
 
-    return (new Disponibilidad((new ProveedorFalso)->declararDatosReales($admiteDatosReales)))->verificar();
+    // El falso nunca admite datos reales en producción, así que se usa un adaptador que lo declara a mano.
+    $proveedor = new class($admiteDatosReales) extends ProveedorFalso
+    {
+        public function __construct(private bool $admite) {}
+
+        public function admiteDatosReales(): bool
+        {
+            return $this->admite;
+        }
+    };
+
+    return (new Disponibilidad($proveedor))->verificar();
 }
 
 it('en producción niega el servicio si el adaptador no admite datos reales', function () {

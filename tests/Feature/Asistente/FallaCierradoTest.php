@@ -1,6 +1,8 @@
 <?php
 
 use App\Asistente\AsistenteService;
+use App\Asistente\Proveedores\ProveedorFalso;
+use App\Asistente\Proveedores\ProveedorIA;
 use App\Asistente\ResultadoAsistente as R;
 use App\Livewire\Asistente\Chat\Index;
 use Livewire\Livewire;
@@ -52,9 +54,26 @@ it('la negativa ocurre antes del límite: no consume cupo', function () {
     expect($servicio->preguntar($e['alumno_usuario'], 'tres')->tipo)->toBe(R::RESPUESTA);
 });
 
-it('en producción con un adaptador que sí admite datos reales funciona', function () {
+it('en producción el adaptador falso nunca admite datos reales aunque se declare que sí', function () {
     $e = escenarioAsistente();
     app()->detectEnvironment(fn () => 'production');
+    $e['falso']->declararDatosReales(true);
+
+    $r = app(AsistenteService::class)->preguntar($e['alumno_usuario'], 'hola');
+
+    expect($r->tipo)->toBe(R::NO_DISPONIBLE)->and($e['falso']->llamadas())->toBe(0);
+});
+
+it('en producción un adaptador que sí admite datos reales funciona', function () {
+    $e = escenarioAsistente();
+    app()->detectEnvironment(fn () => 'production');
+    app()->instance(ProveedorIA::class, new class extends ProveedorFalso
+    {
+        public function admiteDatosReales(): bool
+        {
+            return true;
+        }
+    });
 
     expect(app(AsistenteService::class)->preguntar($e['alumno_usuario'], 'hola')->tipo)->toBe(R::RESPUESTA);
 });

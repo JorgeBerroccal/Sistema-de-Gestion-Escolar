@@ -28,9 +28,10 @@ class ProveedorFalso implements ProveedorIA
         return new RespuestaIA(trim("Respuesta de prueba en español con la información disponible.\n".$contexto), 'falso');
     }
 
+    /** Es un adaptador de pruebas: en producción nunca admite datos reales, haga lo que haga la configuración. */
     public function admiteDatosReales(): bool
     {
-        return $this->datosReales;
+        return $this->datosReales && ! app()->environment('production');
     }
 
     public function nombre(): string

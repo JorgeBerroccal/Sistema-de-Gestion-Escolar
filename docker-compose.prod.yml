@@ -86,6 +86,11 @@ services:
       ASISTENTE_LIMITE_USUARIO_DIA: ${ASISTENTE_LIMITE_USUARIO_DIA:-15}
       ASISTENTE_LIMITE_GLOBAL_MINUTO: ${ASISTENTE_LIMITE_GLOBAL_MINUTO:-18}
       ASISTENTE_LIMITE_GLOBAL_DIA: ${ASISTENTE_LIMITE_GLOBAL_DIA:-45}
+      ASISTENTE_OPENROUTER_URL: ${ASISTENTE_OPENROUTER_URL:-https://openrouter.ai/api/v1}
+      ASISTENTE_MENSAJE_MAXIMO: ${ASISTENTE_MENSAJE_MAXIMO:-500}
+      ASISTENTE_TURNOS: ${ASISTENTE_TURNOS:-6}
+      # Zona horaria de la institución (qué día es «hoy» en asistencia, evaluación y asistente); app.timezone sigue en UTC.
+      ASISTENCIA_ZONA_HORARIA: ${ASISTENCIA_ZONA_HORARIA:-America/Lima}
     depends_on:
       db:
         condition: service_healthy
