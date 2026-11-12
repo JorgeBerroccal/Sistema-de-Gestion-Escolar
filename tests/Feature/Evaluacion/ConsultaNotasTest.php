@@ -36,7 +36,7 @@ it('devuelve por curso el detalle por criterio y el promedio del periodo', funct
     expect($fila['criterios'])->toHaveCount(2)
         ->and($fila['criterios'][0]['nota']->valor)->toBe('15')
         ->and($fila['promedio'])->toBe(13.0)
-        ->and($fila['etiqueta'])->toBe('13.00')
+        ->and($fila['etiqueta'])->toBe('13,00')
         ->and($fila['aprobado'])->toBeTrue()
         ->and($datos['promedio'])->toBe(13.0);
 });

@@ -52,9 +52,14 @@ las casillas a medida que avanzas.
 - [ ] **5.** Portal: **Start**. La IP y el nombre DNS no cambian; `ssh sge@<fqdn>`. Anotar la hora UTC del arranque (será `<desde-utc>` del paso 13).
 - [ ] **6.** `.env`: `PERFIL_TAMANO=carga` → `./deploy/deploy.sh --reconfigurar` → `curl https://<fqdn>/up` correcto.
 - [ ] **7.** `./deploy/metrics.sh tamano` imprime `Standard_B2als_v2`.
-- [ ] **8.** Sembrar los 1000 usuarios de prueba (solo staging): `docker compose -p sge -f docker-compose.prod.yml exec -e CARGA_PASSWORD='<la contraseña>' app php artisan db:seed --class=LoadTestSeeder --force`. **`CARGA_PASSWORD` es obligatoria (mínimo 12 caracteres) y debe ser el mismo valor que el secreto de GitHub Actions `CARGA_PASSWORD`** (ver «Contraseña de las cuentas de carga» abajo); el seeder se niega a sembrar sin ella.
+- [ ] **8.** Sembrar los 1000 usuarios de prueba (solo staging): 
+  ```bash
+  read -s -p 'CARGA_PASSWORD: ' CARGA_PASSWORD; echo; export CARGA_PASSWORD   # no queda en el historial
+  docker compose -p sge -f docker-compose.prod.yml exec -e CARGA_PASSWORD="$CARGA_PASSWORD" app php artisan db:seed --class=LoadTestSeeder --force
+  ```
+  **`CARGA_PASSWORD` es obligatoria (mínimo 12 caracteres) y debe ser el mismo valor que el secreto de GitHub Actions `CARGA_PASSWORD`** (ver «Contraseña de las cuentas de carga» abajo); el seeder se niega a sembrar sin ella.
   **Las cuentas `carga*` viven desactivadas entre sesiones** (se reactivan con la contraseña de `CARGA_PASSWORD`, que no está en el repositorio). Este paso las **reactiva**: el seeder hace *upsert* con `activo = true`. Hazlo justo antes de la sesión, no días antes; si ya existen y solo hay que reactivarlas, basta con volver a ejecutar el seeder.
-- [ ] **8 bis.** *(Módulo 5, sesión única)* Sembrar también los datos de evaluación: `docker compose -p sge -f docker-compose.prod.yml exec -e CARGA_PASSWORD='<la misma contraseña>' app php artisan db:seed --class=EvaluacionCargaSeeder --force` (solo staging; **requiere `AcademicoDemoSeeder`**). Crea 1020 alumnos ficticios en 34 secciones `K01…K34`, vincula `carga0001…1000` a un alumno con el primer periodo cerrado y crea 20 docentes `cargadoc01…20`; estas cuentas también viven **desactivadas entre sesiones**.
+- [ ] **8 bis.** *(Módulo 5, sesión única)* Sembrar también los datos de evaluación: `docker compose -p sge -f docker-compose.prod.yml exec -e CARGA_PASSWORD="$CARGA_PASSWORD" app php artisan db:seed --class=EvaluacionCargaSeeder --force` (con la misma variable ya leída con `read -s`; al terminar, `unset CARGA_PASSWORD`) (solo staging; **requiere `AcademicoDemoSeeder`**). Crea 1020 alumnos ficticios en 34 secciones `K01…K34`, vincula `carga0001…1000` a un alumno con el primer periodo cerrado y crea 20 docentes `cargadoc01…20`; estas cuentas también viven **desactivadas entre sesiones**.
 - [ ] **9.** Humo: GitHub → Actions → **carga** → *Run workflow* con `humo` marcado y `script = evaluacion.js` (Módulo 5; `carga.js` es el del Módulo 1), `tamano_vm=Standard_B2als_v2`, `version=<etiqueta desplegada>`; debe terminar en verde.
 - [ ] **10.** **Créditos de partida**: en *Metrics*, «CPU Credits Remaining» **≥ 200** (recomendado ≥ 400). Si es menor, esperar con la VM encendida y sin carga, y volver a mirar (36 créditos/h). Anotar valor y hora UTC. Se repite antes de cada nueva rampa.
 - [ ] **11.** `./deploy/metrics.sh start` (imprime la hora UTC de inicio de la rampa; anotarla) y a continuación lanzar **carga** con `humo` desmarcado (rampa completa).
@@ -114,6 +119,6 @@ La contraseña de `carga0001…1000` y `cargadoc01…20` **no está en el reposi
 
 1. Genera un valor aleatorio de 12 caracteres o más, p. ej. `openssl rand -base64 18`.
 2. **Secreto de GitHub Actions:** en GitHub, *Settings → Secrets and variables → Actions → Secrets → New repository secret*; nombre `CARGA_PASSWORD`, valor el generado. (Con la CLI: `gh secret set CARGA_PASSWORD`, que pide el valor sin dejarlo en el historial de la terminal.) El workflow `carga` falla si no existe.
-3. **Servidor:** pásala solo al sembrar, con `exec -e CARGA_PASSWORD=…` (pasos 8 y 8 bis); no se guarda en `.env`.
+3. **Servidor:** pídela con `read -s` y pásala solo al sembrar, con `exec -e CARGA_PASSWORD="$CARGA_PASSWORD"` (pasos 8 y 8 bis); nunca la escribas en la línea de comandos (quedaría en el historial) ni en `.env`.
 4. Tras la sesión se desactivan las cuentas y se puede borrar o rotar el secreto.
 5. En local, sin variable, los seeders usan `password` y k6 también (solo con la `BASE_URL` por defecto).

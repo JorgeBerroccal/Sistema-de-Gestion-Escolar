@@ -8,6 +8,7 @@ use App\Models\Institucion;
 use App\Models\Matricula;
 use App\Models\PeriodoEvaluacion;
 use App\Models\Seccion;
+use App\Support\ZonaHoraria;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Barryvdh\DomPDF\PDF as DomPdf;
 
@@ -89,7 +90,7 @@ class BoletaService
             'general' => $general,
             'asistencia' => $this->asistencia->delAlumno($alumno, $desde, $hasta),
             'borrador' => $periodos->contains(fn (PeriodoEvaluacion $p) => ! $this->periodoPublicadoDelAlumno($alumno, $p)),
-            'generado' => now(),
+            'generado' => ZonaHoraria::ahora(),
             'etiquetar' => fn (?float $n) => $calculo->etiqueta($n),
         ];
     }

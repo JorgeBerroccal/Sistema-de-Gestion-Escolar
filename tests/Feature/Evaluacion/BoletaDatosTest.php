@@ -26,7 +26,7 @@ it('arma institución, alumno, sección, cursos con notas por criterio y promedi
         ->and($fila['criterios'])->toHaveCount(2)
         ->and($fila['criterios'][0]['nota']->valor)->toBe('15')
         ->and($fila['promedio'])->toBe(13.0)
-        ->and($datos['general']['etiqueta'])->toBe('13.00')
+        ->and($datos['general']['etiqueta'])->toBe('13,00')
         ->and($datos['borrador'])->toBeFalse();
 });
 
@@ -59,7 +59,7 @@ it('con escala numérica la boleta muestra el número', function () {
 
     $html = view('boletas.boleta', app(BoletaService::class)->datos($b['ana'], $b['periodo'], true))->render();
 
-    expect($html)->toContain('13.00')->not->toContain('equivalentes numéricos');
+    expect($html)->toContain('13,00')->not->toContain('equivalentes numéricos');
 });
 
 it('incluye el resumen de asistencia del rango del periodo del Módulo 4 y «sin datos» si no hay', function () {
@@ -86,7 +86,7 @@ it('incluye el resumen de asistencia del rango del periodo del Módulo 4 y «sin
 
     expect($datos['asistencia']['registrados'])->toBe(4)->and($datos['asistencia']['asistencias'])->toBe(3)
         ->and($datos['asistencia']['faltas'])->toBe(1)->and($datos['asistencia']['porcentaje'])->toBe(75.0)
-        ->and(view('boletas.boleta', $datos)->render())->toContain('75.0 %');
+        ->and(view('boletas.boleta', $datos)->render())->toContain('75 %');
 });
 
 it('la boleta anual incluye solo periodos publicados con notas, sin contar los demás como cero', function () {

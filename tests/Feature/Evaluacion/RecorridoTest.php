@@ -44,7 +44,7 @@ it('recorrido de la prueba de humo: el docente define criterios y guarda, el Adm
     expect(Nota::where('alumno_id', $ana->id)->where('criterio_id', $practica->id)->value('valor'))->toBe('15');
 
     // 5–6. El Padre ve a su hijo (y a ningún otro) con promedio 13.00 y descarga la boleta.
-    Livewire::actingAs($padre)->test(Propia::class)->assertSee('Hijo, Propio')->assertDontSee('Reservado')->assertSee('13.00');
+    Livewire::actingAs($padre)->test(Propia::class)->assertSee('Hijo, Propio')->assertDontSee('Reservado')->assertSee('13,00');
     $r = $this->actingAs($padre)->get(route('boletas.descargar', [$ana->id, $e['periodo']->id]));
     $r->assertOk()->assertHeader('content-type', 'application/pdf');
     expect($r->getContent())->toStartWith('%PDF');

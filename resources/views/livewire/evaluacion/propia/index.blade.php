@@ -47,7 +47,7 @@
                 <p class="mt-4"><a href="{{ route('boletas.descargar', [$alumnoActual->id, 'anual']) }}" class="underline">Descargar boleta anual</a></p>
             @endif
         @elseif ($datos)
-            <p class="mb-2 text-sm text-gray-600">{{ $datos['seccion']->grado->nombre }} {{ $datos['seccion']->identificador }} · {{ $datos['periodo']->nombre }}</p>
+            <p class="mb-2 text-sm text-gray-600">{{ $datos['seccion']->etiqueta }} · {{ $datos['periodo']->nombre }}</p>
             @foreach ($datos['cursos'] as $fila)
                 <section class="mb-4 bg-white p-4 shadow" wire:key="curso-{{ $fila['curso']->id }}">
                     <h2 class="mb-2 text-lg font-semibold">{{ $fila['curso']->nombre }}</h2>
@@ -58,7 +58,7 @@
                             <thead><tr><th class="py-1">Criterio</th><th class="py-1">Peso</th><th class="py-1">Nota</th></tr></thead>
                             <tbody>
                                 @foreach ($fila['criterios'] as $d)
-                                    <tr class="border-t"><td class="py-1">{{ $d['criterio']->nombre }}</td><td class="py-1">{{ rtrim(rtrim((string) $d['criterio']->peso, '0'), '.') }} %</td><td class="py-1">{{ $d['nota']?->valor ?? '—' }}</td></tr>
+                                    <tr class="border-t"><td class="py-1">{{ $d['criterio']->nombre }}</td><td class="py-1">{{ \App\Support\Formato::recortado($d['criterio']->peso) }} %</td><td class="py-1">{{ $d['nota'] ? \App\Support\Formato::recortado($d['nota']->valor) : '—' }}</td></tr>
                                 @endforeach
                             </tbody>
                         </table>

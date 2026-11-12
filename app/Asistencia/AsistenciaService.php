@@ -9,6 +9,7 @@ use App\Models\EstadoAsistencia;
 use App\Models\Matricula;
 use App\Models\Seccion;
 use App\Models\Usuario;
+use App\Support\ZonaHoraria;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +25,7 @@ class AsistenciaService
     /** «Hoy» según la zona horaria de la institución (`config/asistencia.php`), no la global de la aplicación. */
     public function hoy(): string
     {
-        return now(config('asistencia.zona_horaria'))->toDateString();
+        return ZonaHoraria::hoy();
     }
 
     /** Lanza si la fecha no admite registro: fin de semana, futura, fuera del año o año no vigente. */

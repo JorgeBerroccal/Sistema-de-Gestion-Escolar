@@ -26,6 +26,12 @@ class Seccion extends Model
         return Attribute::set(fn (?string $valor) => $valor === null ? null : mb_strtoupper(preg_replace('/\s+/u', ' ', trim($valor))));
     }
 
+    /** «Nivel · Grado A»: el nivel evita confundir grados homónimos. Requiere `grado.nivel` cargado. */
+    protected function etiqueta(): Attribute
+    {
+        return Attribute::get(fn () => $this->grado->nivel->nombre.' · '.$this->grado->nombre.' '.$this->identificador);
+    }
+
     public function grado(): BelongsTo
     {
         return $this->belongsTo(Grado::class);

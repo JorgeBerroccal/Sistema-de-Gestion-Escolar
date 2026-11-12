@@ -11,7 +11,7 @@
         @else
             <ul class="flex flex-wrap gap-6 text-sm">
                 @foreach ($resumen['por_estado'] as $fila) <li>{{ $fila->nombre }}: <strong>{{ $fila->total }}</strong></li> @endforeach
-                <li>Asistencia: <strong>{{ $resumen['porcentaje'] === null ? 'sin datos' : $resumen['porcentaje'].' %' }}</strong></li>
+                <li>Asistencia: <strong>{{ $resumen['porcentaje'] === null ? 'sin datos' : \App\Support\Formato::recortado($resumen['porcentaje']).' %' }}</strong></li>
             </ul>
         @endif
     </section>

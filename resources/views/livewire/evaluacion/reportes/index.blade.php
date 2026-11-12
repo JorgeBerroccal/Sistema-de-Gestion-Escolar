@@ -6,7 +6,7 @@
             <select wire:model.live="seccion" class="ml-1 rounded border p-1">
                 <option value="">Elige una sección</option>
                 @foreach ($secciones as $s)
-                    <option value="{{ $s->id }}">{{ $s->grado->nombre }} {{ $s->identificador }}</option>
+                    <option value="{{ $s->id }}">{{ $s->etiqueta }}</option>
                 @endforeach
             </select>
         </label>
@@ -39,12 +39,16 @@
         </table>
 
         <h2 class="mb-2 text-lg font-semibold">Orden de mérito</h2>
+        <p class="mb-2 text-sm text-gray-600">
+            Se ordena por el promedio general@if ($reporte['literal']) numérico (equivalentes de la escala literal), que se muestra en la última columna@endif.
+            Los empates se resuelven por apellidos y nombres; quienes no tienen notas quedan sin puesto.
+        </p>
         <table class="w-full bg-white text-left shadow">
             <thead class="bg-gray-200 text-sm">
                 <tr>
                     <th class="p-2">Puesto</th><th class="p-2">Alumno</th>
                     @foreach ($reporte['cursos'] as $fila) <th class="p-2">{{ $fila['curso']->nombre }}</th> @endforeach
-                    <th class="p-2">Promedio general</th>
+                    <th class="p-2">Promedio general</th>@if ($reporte['literal'])<th class="p-2">Valor de orden</th>@endif
                 </tr>
             </thead>
             <tbody>
@@ -56,6 +60,7 @@
                             <td class="p-2">{{ $fila['promedios'][$c['curso']->id] === null ? '—' : app(\App\Evaluacion\EvaluacionService::class)->calculo()->etiqueta($fila['promedios'][$c['curso']->id]) }}</td>
                         @endforeach
                         <td class="p-2">{{ $fila['etiqueta'] ?? 'Sin notas' }}</td>
+                        @if ($reporte['literal'])<td class="p-2">{{ $fila['promedio'] === null ? '—' : \App\Support\Formato::decimal($fila['promedio'], 2) }}</td>@endif
                     </tr>
                 @endforeach
             </tbody>

@@ -35,7 +35,7 @@
             @else
                 <ul class="flex flex-wrap gap-6 text-sm">
                     @foreach ($resumen['por_estado'] as $fila) <li>{{ $fila->nombre }}: <strong>{{ $fila->total }}</strong></li> @endforeach
-                    <li>Asistencia: <strong>{{ $resumen['porcentaje'] === null ? 'sin datos' : $resumen['porcentaje'].' %' }}</strong></li>
+                    <li>Asistencia: <strong>{{ $resumen['porcentaje'] === null ? 'sin datos' : \App\Support\Formato::recortado($resumen['porcentaje']).' %' }}</strong></li>
                 </ul>
             @endif
         </section>
@@ -50,7 +50,7 @@
                         <td class="p-2">{{ $fila->apellidos }}, {{ $fila->nombres }}</td>
                         <td class="p-2">{{ $fila->faltas }}</td>
                         <td class="p-2">{{ $fila->justificadas }}</td>
-                        <td class="p-2">@php($pct = \App\Asistencia\ResumenAsistencia::porcentaje((int) $fila->asistencias, (int) $fila->faltas)){{ $pct === null ? 'sin datos' : $pct.' %' }}</td>
+                        <td class="p-2">@php($pct = \App\Asistencia\ResumenAsistencia::porcentaje((int) $fila->asistencias, (int) $fila->faltas)){{ $pct === null ? 'sin datos' : \App\Support\Formato::recortado($pct).' %' }}</td>
                         <td class="p-2"><a href="{{ route('asistencia.reportes.alumno', [$elegida, $fila->alumno_id, 'desde' => $rangoDesde->toDateString(), 'hasta' => $rangoHasta->toDateString()]) }}" class="underline">Ver días</a></td>
                     </tr>
                 @empty

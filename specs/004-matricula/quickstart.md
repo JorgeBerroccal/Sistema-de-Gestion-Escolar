@@ -36,7 +36,7 @@ Solo el flujo principal, con el Administrador y un rol limitado (el Padre de Fam
 | 4 | Administrador | Matricular al alumno en una sección del año vigente; matricular 2 más en forma masiva | Nómina de la sección con los tres |
 | 5 | Administrador | Retirar uno con motivo | Sale de la nómina activa; sigue en su historial |
 | 6 | Administrador | Crear desde el panel una cuenta Padre de Familia (datos ficticios) y vincularla a un alumno | Vínculo visible en la ficha |
-| 7 | Padre de Familia (la cuenta del paso 6) | Abrir *Mis alumnos*; intentar abrir un alumno ajeno y una nómina por URL | Ve solo a su hijo; lo ajeno da 403 |
+| 7 | Padre de Familia (la cuenta del paso 6) | Abrir *Estudiantes a mi cargo*; intentar abrir un alumno ajeno y una nómina por URL | Ve solo a su hijo; lo ajeno da 403 |
 
 ## 3. Despliegue a staging (FR-030)
 

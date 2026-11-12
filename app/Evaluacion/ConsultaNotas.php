@@ -225,7 +225,7 @@ class ConsultaNotas
      * Solo cuenta lo que `$para` puede ver (el Docente, únicamente los cursos que dicta). Los alumnos sin notas
      * quedan al final y sin puesto. Una consulta de criterios, una de notas y una de cursos, todas acotadas a la sección.
      *
-     * @return array{cursos: list<array<string, mixed>>, alumnos: LengthAwarePaginator, sin_datos: bool}
+     * @return array{cursos: list<array<string, mixed>>, alumnos: LengthAwarePaginator, sin_datos: bool, literal: bool}
      */
     public function reporteSeccion(Seccion $seccion, PeriodoEvaluacion $periodo, Usuario $para, int $porPagina = 15): array
     {
@@ -273,6 +273,7 @@ class ConsultaNotas
             'cursos' => $resumen,
             'alumnos' => new LengthAwarePaginator($ordenados->forPage($pagina, $porPagina)->values(), $ordenados->count(), $porPagina, $pagina, ['path' => LengthAwarePaginator::resolveCurrentPath()]),
             'sin_datos' => $conNotas->isEmpty(),
+            'literal' => $calculo->esLiteral(),
         ];
     }
 }

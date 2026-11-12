@@ -55,7 +55,7 @@
                         <td>{{ $fila['curso']->nombre }}</td>
                         <td>
                             @forelse ($fila['criterios'] as $d)
-                                {{ $d['criterio']->nombre }} ({{ rtrim(rtrim((string) $d['criterio']->peso, '0'), '.') }} %): <strong>{{ $d['nota']?->valor ?? '—' }}</strong><br>
+                                {{ $d['criterio']->nombre }} ({{ \App\Support\Formato::recortado($d['criterio']->peso) }} %): <strong>{{ $d['nota'] ? \App\Support\Formato::recortado($d['nota']->valor) : '—' }}</strong><br>
                             @empty
                                 <span class="muted">sin notas</span>
                             @endforelse
@@ -105,7 +105,7 @@
                 <tr>
                     <td class="num">{{ $asistencia['registrados'] }}</td>
                     @foreach ($asistencia['por_estado'] as $estado) <td class="num">{{ $estado->total }}</td> @endforeach
-                    <td class="num">{{ $asistencia['porcentaje'] === null ? 'sin datos' : number_format($asistencia['porcentaje'], 1).' %' }}</td>
+                    <td class="num">{{ $asistencia['porcentaje'] === null ? 'sin datos' : \App\Support\Formato::recortado($asistencia['porcentaje']).' %' }}</td>
                 </tr>
             </tbody>
         </table>

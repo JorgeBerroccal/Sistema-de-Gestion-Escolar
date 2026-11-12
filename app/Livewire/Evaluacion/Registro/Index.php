@@ -34,6 +34,7 @@ class Index extends Component
 
         $base = DB::table('secciones')
             ->join('grados', 'grados.id', '=', 'secciones.grado_id')
+            ->join('niveles', 'niveles.id', '=', 'grados.nivel_id')
             ->where('secciones.activo', true)
             ->where('secciones.anio_escolar_id', $vigente?->id ?? 0);
 
@@ -47,8 +48,8 @@ class Index extends Component
         }
 
         $pares = $base
-            ->select('secciones.id as seccion_id', 'cursos.id as curso_id', 'grados.nombre as grado', 'secciones.identificador', 'cursos.nombre as curso')
-            ->orderBy('grados.nombre')->orderBy('secciones.identificador')->orderBy('cursos.nombre')->orderBy('cursos.id')
+            ->select('secciones.id as seccion_id', 'cursos.id as curso_id', 'niveles.nombre as nivel', 'grados.nombre as grado', 'secciones.identificador', 'cursos.nombre as curso')
+            ->orderBy('niveles.orden')->orderBy('grados.nombre')->orderBy('secciones.identificador')->orderBy('cursos.nombre')->orderBy('cursos.id')
             ->paginate(15);
 
         return view('livewire.evaluacion.registro.index', ['pares' => $pares, 'vigente' => $vigente]);

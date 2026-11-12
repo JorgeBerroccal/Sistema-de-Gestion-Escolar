@@ -28,7 +28,7 @@
             </div>
             <div>
                 <label for="fecha_nacimiento" class="block text-sm font-medium">Fecha de nacimiento</label>
-                <input id="fecha_nacimiento" type="date" wire:model="fecha_nacimiento" max="{{ now()->toDateString() }}" class="mt-1 w-full rounded border border-gray-300 px-3 py-2">
+                <input id="fecha_nacimiento" type="date" wire:model="fecha_nacimiento" max="{{ \App\Support\ZonaHoraria::hoy() }}" class="mt-1 w-full rounded border border-gray-300 px-3 py-2">
             </div>
             <div>
                 <label for="sexo" class="block text-sm font-medium">Sexo</label>

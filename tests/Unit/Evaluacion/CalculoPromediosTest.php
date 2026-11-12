@@ -70,7 +70,7 @@ it('en escala literal promedia equivalentes y muestra la letra más cercana', fu
 });
 
 it('en escala vigesimal la etiqueta es el número con dos decimales', function () {
-    expect(escalaVigesimal()->etiqueta(13.0))->toBe('13.00')->and(escalaVigesimal()->etiqueta(12.3))->toBe('12.30');
+    expect(escalaVigesimal()->etiqueta(13.0))->toBe('13,00')->and(escalaVigesimal()->etiqueta(12.3))->toBe('12,30');
 });
 
 it('valida y normaliza valores literales sin importar mayúsculas ni espacios', function () {

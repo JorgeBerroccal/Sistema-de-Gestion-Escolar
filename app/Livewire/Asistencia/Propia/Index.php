@@ -6,6 +6,7 @@ use App\Asistencia\ResumenAsistencia;
 use App\Autorizacion\Pertenencia\Reglas\MatriculaRegla;
 use App\Models\Alumno;
 use App\Models\AnioEscolar;
+use App\Support\ZonaHoraria;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -39,7 +40,7 @@ class Index extends Component
         }
 
         if (preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $this->mes) !== 1) {
-            $this->mes = now(config('asistencia.zona_horaria'))->format('Y-m');
+            $this->mes = ZonaHoraria::ahora()->format('Y-m');
         }
     }
 

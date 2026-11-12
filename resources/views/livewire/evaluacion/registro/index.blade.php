@@ -12,7 +12,7 @@
         <tbody>
             @forelse ($pares as $par)
                 <tr wire:key="par-{{ $par->seccion_id }}-{{ $par->curso_id }}" class="border-t">
-                    <td class="p-2">{{ $par->grado }} {{ $par->identificador }}</td>
+                    <td class="p-2">{{ $par->nivel }} · {{ $par->grado }} {{ $par->identificador }}</td>
                     <td class="p-2">{{ $par->curso }}</td>
                     <td class="p-2"><a href="{{ route('notas.registro.show', ['seccion' => $par->seccion_id, 'curso' => $par->curso_id]) }}" class="underline">Registrar notas</a></td>
                 </tr>
