@@ -5,6 +5,7 @@ namespace App\Livewire\Asistente\Chat;
 use App\Asistente\AsistenteService;
 use App\Asistente\ResultadoAsistente;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -58,7 +59,9 @@ class Index extends Component
 
     private function autorizar(): void
     {
-        if (! Auth::user()->tienePermiso('asistente.usar')) {
+        $usuario = Auth::user() ?? throw new AuthenticationException;
+
+        if (! $usuario->tienePermiso('asistente.usar')) {
             throw new AccessDeniedHttpException('No tienes acceso al asistente virtual.');
         }
     }

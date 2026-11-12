@@ -32,4 +32,5 @@ return [
     ['etiqueta' => 'Reportes de notas', 'ruta' => 'notas.reportes.index', 'permiso' => 'notas.ver_todas'],
     ['etiqueta' => 'Reportes de notas de mis cursos', 'ruta' => 'notas.reportes.index', 'permiso' => 'notas.registrar_propia'],
     ['etiqueta' => 'Mis notas', 'ruta' => 'notas.propia.index', 'permiso' => 'notas.ver_propia'],
+    ['etiqueta' => 'Asistente virtual', 'ruta' => 'asistente.index', 'permiso' => 'asistente.usar'],
 ];

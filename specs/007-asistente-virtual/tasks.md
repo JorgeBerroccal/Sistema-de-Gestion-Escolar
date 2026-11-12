@@ -81,9 +81,9 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Asistente/`, componente en 
 
 **Independent Test**: Iniciar sesión con cada rol; asignar el permiso a otro rol y comprobar que lo obtiene.
 
-- [ ] T017 [P] [US3] Ítem «Asistente virtual» (`asistente.index`, permiso `asistente.usar`) en `config/menu.php`; prueba `tests/Feature/Asistente/MenuTest.php` (Padre y Alumno lo ven; Docente, Director y Administrador no)
-- [ ] T018 [US3] Aviso fijo en `resources/views/livewire/asistente/chat/index.blade.php` con el texto de `contracts/chat.md`, presente en todo estado de la pantalla (vacía, con mensajes, con error, con límite, no disponible); prueba `tests/Feature/Asistente/AvisoIATest.php`
-- [ ] T019 [P] [US3] `tests/Feature/Asistente/AccesoPorPermisoTest.php`: 403 en `GET /asistente` y en `enviar()` para Docente, Director y Administrador y usuario sin sesión (redirige al login); un `enviar()` de Livewire con la sesión expirada no llega al proveedor y pide iniciar sesión (U1); asignar `asistente.usar` a otro rol (solo datos, sin código) lo habilita; quitárselo a Alumno lo bloquea
+- [x] T017 [P] [US3] Ítem «Asistente virtual» (`asistente.index`, permiso `asistente.usar`) en `config/menu.php`; prueba `tests/Feature/Asistente/MenuTest.php` (Padre y Alumno lo ven; Docente, Director y Administrador no)
+- [x] T018 [US3] Aviso fijo en `resources/views/livewire/asistente/chat/index.blade.php` con el texto de `contracts/chat.md`, presente en todo estado de la pantalla (vacía, con mensajes, con error, con límite, no disponible); prueba `tests/Feature/Asistente/AvisoIATest.php`
+- [x] T019 [P] [US3] `tests/Feature/Asistente/AccesoPorPermisoTest.php`: 403 en `GET /asistente` y en `enviar()` para Docente, Director y Administrador y usuario sin sesión (redirige al login); un `enviar()` de Livewire con la sesión expirada no llega al proveedor y pide iniciar sesión (U1); asignar `asistente.usar` a otro rol (solo datos, sin código) lo habilita; quitárselo a Alumno lo bloquea
 
 **Checkpoint**: US1–US3 en verde.
 
