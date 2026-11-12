@@ -27,9 +27,9 @@ Monolito Laravel 13 (ver plan.md): servicios en `app/Asistente/`, componente en 
 
 ## Phase 1: Setup
 
-- [ ] T001 Crear los directorios `app/Asistente/Proveedores/`, `app/Livewire/Asistente/Chat/`, `resources/views/livewire/asistente/chat/`, `tests/Unit/Asistente/` y `tests/Feature/Asistente/`
-- [ ] T002 [P] `config/asistente.php` con todas las claves de `data-model.md` («Configuración»): `proveedor` (`falso` por defecto), `openrouter.{clave,url,modelo,respaldo,datos_reales,timeout}`, `limites.{usuario_minuto,usuario_dia,global_minuto,global_dia}` (3/15/18/45), `mensaje.maximo` (500), `conversacion.turnos` (6); `respaldo` se lee como lista separada por comas; la clave sale solo de `OPENROUTER_API_KEY`
-- [ ] T003 [P] Agregar las variables `ASISTENTE_*` y `OPENROUTER_API_KEY` (vacía, comentada con el aviso de no versionar) a `.env.example` y fijar `ASISTENTE_PROVEEDOR=falso` en `phpunit.xml`
+- [x] T001 Crear los directorios `app/Asistente/Proveedores/`, `app/Livewire/Asistente/Chat/`, `resources/views/livewire/asistente/chat/`, `tests/Unit/Asistente/` y `tests/Feature/Asistente/`
+- [x] T002 [P] `config/asistente.php` con todas las claves de `data-model.md` («Configuración»): `proveedor` (`falso` por defecto), `openrouter.{clave,url,modelo,respaldo,datos_reales,timeout}`, `limites.{usuario_minuto,usuario_dia,global_minuto,global_dia}` (3/15/18/45), `mensaje.maximo` (500), `conversacion.turnos` (6); `respaldo` se lee como lista separada por comas; la clave sale solo de `OPENROUTER_API_KEY`
+- [x] T003 [P] Agregar las variables `ASISTENTE_*` y `OPENROUTER_API_KEY` (vacía, comentada con el aviso de no versionar) a `.env.example` y fijar `ASISTENTE_PROVEEDOR=falso` en `phpunit.xml`
 
 ---
 
