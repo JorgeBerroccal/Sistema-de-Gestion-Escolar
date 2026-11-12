@@ -27,8 +27,8 @@ Entrar como un usuario Padre de Familia o Alumno de los seeders demo y abrir `/a
 ## 3. Prueba de humo en staging (~10 min, datos ficticios)
 
 Prerrequisitos: VM de staging en `v0.7.0`, `OPENROUTER_API_KEY` y `ASISTENTE_PROVEEDOR=openrouter` en el `.env`
-del servidor, modelo gratuito y lista de respaldo configurados (ver `docs/despliegue/`). Ejecutar el seeder
-de permisos de la receta de despliegue (conteo de staging 32 = 31 del seeder + `reportes.ver` manual).
+del servidor, modelo gratuito y lista de respaldo configurados (ver `docs/despliegue/`). El permiso `asistente.usar` lo crea `sge:sincronizar-base` en el despliegue
+(conteo de staging 32 = 31 del seeder + `reportes.ver` manual).
 
 1. Padre de Familia: preguntar por el promedio de un curso y por las faltas; comparar con «Mis notas» y «Mi asistencia».
 2. Padre con varios hijos: preguntar sin nombrar hijo ⇒ pide aclaración.
