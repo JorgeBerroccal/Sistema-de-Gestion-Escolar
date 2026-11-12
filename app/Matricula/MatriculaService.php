@@ -6,6 +6,7 @@ use App\Models\Alumno;
 use App\Models\AnioEscolar;
 use App\Models\Matricula;
 use App\Models\Seccion;
+use App\Support\ZonaHoraria;
 use Carbon\CarbonInterface;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Collection;
@@ -151,7 +152,7 @@ class MatriculaService
                 'alumno_id' => $alumno->id,
                 'seccion_id' => $seccion->id,
                 'anio_id' => $seccion->anio_escolar_id,
-                'fecha_matricula' => ($fecha ?? now())->toDateString(),
+                'fecha_matricula' => ($fecha ?? ZonaHoraria::ahora())->toDateString(),
                 'estado' => EstadoMatricula::Matriculado,
             ]);
         } catch (UniqueConstraintViolationException) {

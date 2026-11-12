@@ -7,6 +7,7 @@ use App\Models\Alumno;
 use App\Models\AnioEscolar;
 use App\Models\Matricula;
 use App\Models\Seccion;
+use App\Support\ZonaHoraria;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 
@@ -19,7 +20,7 @@ it('matricula a un alumno activo en una sección activa del año vigente', funct
     expect($matricula->estado)->toBe(EstadoMatricula::Matriculado)
         ->and($matricula->anio_id)->toBe($anio->id)
         ->and($matricula->anio_id)->toBe($seccion->anio_escolar_id)
-        ->and($matricula->fecha_matricula->toDateString())->toBe(now()->toDateString());
+        ->and($matricula->fecha_matricula->toDateString())->toBe(ZonaHoraria::hoy()); // el día de la institución, no el de UTC
 });
 
 it('rechaza al alumno que ya tiene una matrícula activa en el año', function () {

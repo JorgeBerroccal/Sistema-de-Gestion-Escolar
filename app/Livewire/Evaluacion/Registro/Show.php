@@ -9,6 +9,7 @@ use App\Models\CriterioEvaluacion;
 use App\Models\Curso;
 use App\Models\PeriodoEvaluacion;
 use App\Models\Seccion;
+use App\Support\ZonaHoraria;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Url;
@@ -93,7 +94,7 @@ class Show extends Component
         $periodos = PeriodoEvaluacion::query()->where('anio_escolar_id', $this->seccion->anio_escolar_id)->orderBy('orden')->get();
 
         return $periodos->firstWhere('id', $this->periodo)
-            ?? $periodos->filter(fn ($p) => $p->fecha_inicio->toDateString() <= now()->toDateString())->last()
+            ?? $periodos->filter(fn ($p) => $p->fecha_inicio->toDateString() <= ZonaHoraria::hoy())->last()
             ?? $periodos->first();
     }
 

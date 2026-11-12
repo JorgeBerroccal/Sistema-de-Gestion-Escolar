@@ -11,6 +11,7 @@ use App\Models\AnioEscolar;
 use App\Models\Matricula;
 use App\Models\Seccion;
 use App\Models\Usuario;
+use App\Support\ZonaHoraria;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -78,7 +79,7 @@ class Show extends Component
         $this->alumno->matriculas()->findOrFail($matriculaId);
         $this->cambioMatriculaId = $matriculaId;
         $this->cambioTipo = $tipo;
-        $this->cambioFecha = now()->toDateString();
+        $this->cambioFecha = ZonaHoraria::hoy();
         $this->cambioMotivo = '';
         $this->resetErrorBag();
     }

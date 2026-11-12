@@ -5,6 +5,7 @@ namespace App\Matricula;
 use App\Models\Alumno;
 use App\Models\TipoDocumento;
 use App\Models\Usuario;
+use App\Support\ZonaHoraria;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
@@ -224,7 +225,7 @@ class AlumnoService
             throw new MatriculaIncumplida('La fecha de nacimiento no es válida.');
         }
 
-        if ($nacimiento > now()) {
+        if ($nacimiento->format('Y-m-d') > ZonaHoraria::hoy()) {
             throw new MatriculaIncumplida('La fecha de nacimiento no puede ser futura.');
         }
 
