@@ -20,4 +20,4 @@
 | `error(texto)` | proveedor caído, sin cuota o respuesta inválida | sí (intento) |
 
 Todos los textos están en español y sin datos técnicos. El orden de evaluación es: validación → disponibilidad
-→ límite → alumno → contexto → proveedor.
+→ alumno → límite → contexto → proveedor (la aclaración y el «sin datos» no consumen cupo del límite).

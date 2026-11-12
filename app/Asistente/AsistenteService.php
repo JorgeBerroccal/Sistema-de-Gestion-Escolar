@@ -9,7 +9,8 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Orquesta una pregunta: validación → (disponibilidad → límite, fases siguientes) → alumno → contexto → proveedor.
+ * Orquesta una pregunta: validación → (disponibilidad, fase siguiente) → alumno → límite → contexto → proveedor.
+ * La aclaración y el «sin datos» se resuelven antes del límite: no llaman al proveedor y no consumen cupo.
  * El contenido de mensajes y respuestas nunca se registra: solo metadatos (usuario, adaptador, resultado).
  */
 class AsistenteService
@@ -18,6 +19,7 @@ class AsistenteService
         private readonly ProveedorIA $proveedor,
         private readonly ResolverAlumno $alumnos,
         private readonly ConstructorContexto $contexto,
+        private readonly LimiteSolicitudes $limite,
     ) {}
 
     /**
@@ -50,6 +52,14 @@ class AsistenteService
 
         if ($resolucion->aclaracion !== null) {
             return $this->resultado($usuario, new ResultadoAsistente(ResultadoAsistente::ACLARACION, $resolucion->aclaracion));
+        }
+
+        if (($espera = $this->limite->intentar($usuario)) !== null) {
+            return $this->resultado($usuario, new ResultadoAsistente(
+                ResultadoAsistente::LIMITE,
+                'Has alcanzado el límite de preguntas por ahora. Podrás volver a preguntar en '.LimiteSolicitudes::textoEspera($espera).'.',
+                $espera,
+            ));
         }
 
         $mensajes = [
