@@ -117,6 +117,19 @@ it('el menú muestra a cada rol solo sus ítems de matrícula', function () {
     expect($etiquetas(usuarioConRolDeSeeder('Administrador')))->toBe(['Alumnos', 'Nóminas'])
         ->and($etiquetas(usuarioConRolDeSeeder('Director')))->toBe(['Alumnos', 'Nóminas'])
         ->and($etiquetas(usuarioConRolDeSeeder('Docente')))->toBe(['Mis secciones'])
-        ->and($etiquetas(usuarioConRolDeSeeder('Padre de Familia')))->toBe(['Mis alumnos'])
-        ->and($etiquetas(usuarioConRolDeSeeder('Alumno')))->toBe(['Mis alumnos']);
+        ->and($etiquetas(usuarioConRolDeSeeder('Padre de Familia')))->toBe(['Estudiantes a mi cargo'])
+        ->and($etiquetas(usuarioConRolDeSeeder('Alumno')))->toBe(['Mi ficha']);
+});
+
+it('el título de la pantalla propia depende del permiso de vínculo, no del rol', function () {
+    $apoderado = usuarioConPermisos(['matricula.ver_propia', 'matricula.ser_apoderado']);
+    $alumno = usuarioConPermisos(['matricula.ver_propia', 'matricula.ser_alumno']);
+    $ambos = usuarioConPermisos(['matricula.ver_propia', 'matricula.ser_apoderado', 'matricula.ser_alumno']);
+
+    Livewire::actingAs($apoderado)->test(MisAlumnos::class)->assertSee('Estudiantes a mi cargo')->assertDontSee('Mi ficha');
+    Livewire::actingAs($alumno)->test(MisAlumnos::class)->assertSee('Mi ficha')->assertDontSee('Estudiantes a mi cargo');
+    Livewire::actingAs($ambos)->test(MisAlumnos::class)->assertSee('Mis alumnos');
+
+    $this->actingAs($apoderado)->get('/inicio')->assertSee('Estudiantes a mi cargo')->assertDontSee('Mi ficha')->assertDontSee('Mis alumnos');
+    $this->actingAs($alumno)->get('/inicio')->assertSee('Mi ficha')->assertDontSee('Estudiantes a mi cargo');
 });

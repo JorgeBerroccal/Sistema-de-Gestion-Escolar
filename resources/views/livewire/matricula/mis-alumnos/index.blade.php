@@ -1,5 +1,5 @@
 <div>
-    <h1 class="mb-4 text-2xl font-semibold">Mis alumnos</h1>
+    <h1 class="mb-4 text-2xl font-semibold">{{ $titulo }}</h1>
 
     <table class="w-full bg-white text-left shadow">
         <thead class="bg-gray-200 text-sm">

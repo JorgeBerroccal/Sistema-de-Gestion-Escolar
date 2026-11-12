@@ -18,7 +18,9 @@ return [
     ['etiqueta' => 'Alumnos', 'ruta' => 'matricula.alumnos.index', 'permiso' => 'matricula.ver_todas'],
     ['etiqueta' => 'Nóminas', 'ruta' => 'matricula.nominas.index', 'permiso' => 'matricula.ver_todas'],
     ['etiqueta' => 'Mis secciones', 'ruta' => 'matricula.nominas.index', 'permiso' => 'matricula.ver_nomina_propia'],
-    ['etiqueta' => 'Mis alumnos', 'ruta' => 'matricula.propios.index', 'permiso' => 'matricula.ver_propia'],
+    // El texto depende del permiso de vínculo, no del rol (SC-005): el apoderado ve a sus estudiantes; el alumno, su ficha.
+    ['etiqueta' => 'Estudiantes a mi cargo', 'ruta' => 'matricula.propios.index', 'permiso' => 'matricula.ser_apoderado'],
+    ['etiqueta' => 'Mi ficha', 'ruta' => 'matricula.propios.index', 'permiso' => 'matricula.ser_alumno'],
     ['etiqueta' => 'Tomar asistencia', 'ruta' => 'asistencia.tomar.index', 'permiso' => 'asistencia.gestionar'],
     ['etiqueta' => 'Asistencia de mis secciones', 'ruta' => 'asistencia.tomar.index', 'permiso' => 'asistencia.registrar_propia'],
     ['etiqueta' => 'Reportes de asistencia', 'ruta' => 'asistencia.reportes.index', 'permiso' => 'asistencia.ver_todas'],
