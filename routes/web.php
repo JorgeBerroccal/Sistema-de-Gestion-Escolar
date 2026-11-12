@@ -8,6 +8,7 @@ use App\Livewire\Admin\Permisos;
 use App\Livewire\Admin\Roles;
 use App\Livewire\Admin\Usuarios;
 use App\Livewire\Asistencia;
+use App\Livewire\Asistente;
 use App\Livewire\Evaluacion;
 use App\Livewire\Matricula;
 use Illuminate\Support\Facades\Route;
@@ -61,6 +62,9 @@ Route::middleware(['auth', 'activo'])->group(function () {
     Route::livewire('/asistencia/mia', Asistencia\Propia\Index::class)->name('asistencia.propia.index');
     Route::livewire('/asistencia/reportes', Asistencia\Reportes\Index::class)->name('asistencia.reportes.index');
     Route::livewire('/asistencia/reportes/{seccion}/alumnos/{alumno}', Asistencia\Reportes\Alumno::class)->name('asistencia.reportes.alumno');
+
+    // Módulo 6 — Asistente Virtual. El permiso `asistente.usar` se comprueba en `mount()` y en cada envío.
+    Route::livewire('/asistente', Asistente\Chat\Index::class)->name('asistente.index');
 
     // Módulo 5 — Evaluación y Boletas. Cada historia registra aquí sus rutas junto a su componente; el permiso (doble)
     // y la pertenencia se comprueban en `mount()` o en el controlador.

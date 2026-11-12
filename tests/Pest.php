@@ -1,5 +1,6 @@
 <?php
 
+use App\Asistente\Proveedores\ProveedorIA;
 use App\Evaluacion\EvaluacionService;
 use App\Models\Alumno;
 use App\Models\AnioEscolar;
@@ -18,6 +19,7 @@ use App\Models\Seccion;
 use App\Models\Usuario;
 use Carbon\CarbonImmutable;
 use Database\Factories\AsignacionDocenteFactory;
+use Database\Factories\AsistenciaFactory;
 use Database\Seeders\EscalasCalificacionSeeder;
 use Database\Seeders\EstadosAsistenciaSeeder;
 use Database\Seeders\RolesYPermisosSeeder;
@@ -245,4 +247,39 @@ function escenarioBoleta(bool $cerrar = true, string $escala = 'vigesimal'): arr
     $cerrar && CierrePeriodo::factory()->create(['seccion_id' => $e['seccion']->id, 'periodo_id' => $e['periodo']->id]);
 
     return $e + ['ana' => $ana, 'beto' => $beto, 'criterios' => $criterios];
+}
+
+/**
+ * Escenario del asistente: boleta con notas 15/10 de Ana (promedio 13) y periodo publicado (o no), asistencia de Ana
+ * (1 presente y 1 falta), un Padre de Familia con dos hijos (Ana y Beto) y un Alumno con cuenta propia (Ana).
+ * Los datos personales de Ana tienen valores reconocibles para buscarlos en lo enviado al proveedor.
+ *
+ * @return array<string, mixed>
+ */
+function escenarioAsistente(bool $cerrar = true): array
+{
+    $e = escenarioBoleta($cerrar);
+    (new EstadosAsistenciaSeeder)->run();
+
+    $e['ana']->update([
+        'numero_documento' => '47851236', 'fecha_nacimiento' => '2011-03-17', 'nombres' => 'Ana', 'apellidos' => 'Alfa',
+    ]);
+    $e['beto']->update(['nombres' => 'Beto', 'apellidos' => 'Beta', 'numero_documento' => '39284756']);
+
+    $permisos = ['asistente.usar', 'notas.ver_propia', 'asistencia.ver_propia', 'matricula.ver_propia'];
+    $padre = usuarioConPermisos($permisos, ['email' => 'padre.reconocible@ejemplo.test']);
+    $e['ana']->apoderados()->attach($padre->id, ['parentesco' => 'padre']);
+    $e['beto']->apoderados()->attach($padre->id, ['parentesco' => 'padre']);
+
+    $alumno = usuarioConPermisos($permisos, ['email' => 'ana.reconocible@ejemplo.test']);
+    $e['ana']->update(['usuario_id' => $alumno->id]);
+
+    foreach (['presente', 'falta'] as $i => $codigo) {
+        AsistenciaFactory::new()->create([
+            'seccion_id' => $e['seccion']->id, 'alumno_id' => $e['ana']->id, 'fecha' => now()->startOfMonth()->addDays($i)->toDateString(),
+            'estado_id' => AsistenciaFactory::new()->catalogo($codigo)->id,
+        ]);
+    }
+
+    return $e + ['padre' => $padre, 'alumno_usuario' => $alumno, 'permisos' => $permisos, 'falso' => app(ProveedorIA::class)];
 }

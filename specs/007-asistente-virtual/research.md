@@ -57,7 +57,7 @@ Decisiones técnicas tomadas para resolver las incógnitas del plan. Formato: de
 ## R-07 — Contexto mínimo
 
 - **Decisión**: `ConstructorContexto` arma texto plano, y cada bloque se incluye solo si el usuario tiene el
-  permiso de su pantalla (`matricula.ser_alumno`/`matricula.ser_apoderado` para matrícula y sección,
+  permiso de su pantalla (`matricula.ver_propia` para matrícula y sección,
   `notas.ver_propia` para notas, `asistencia.ver_propia` para asistencia), porque `ResumenAsistencia` no filtra
   por permiso. El texto contiene: nombre y apellidos del alumno, año, grado, nivel,
   sección y estado de matrícula; por cada periodo **cerrado y publicado** (`ConsultaNotas::periodosPublicados`),
