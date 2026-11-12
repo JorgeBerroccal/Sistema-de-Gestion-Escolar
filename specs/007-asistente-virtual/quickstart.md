@@ -30,10 +30,15 @@ Prerrequisitos: VM de staging en `v0.7.0`, `OPENROUTER_API_KEY` y `ASISTENTE_PRO
 del servidor, modelo gratuito y lista de respaldo configurados (ver `docs/despliegue/`). El permiso `asistente.usar` lo crea `sge:sincronizar-base` en el despliegue
 (conteo de staging 32 = 31 del seeder + `reportes.ver` manual).
 
-1. Padre de Familia: preguntar por el promedio de un curso y por las faltas; comparar con «Mis notas» y «Mi asistencia».
-2. Padre con varios hijos: preguntar sin nombrar hijo ⇒ pide aclaración.
-3. Pedir las notas de un alumno ajeno ⇒ rechazo neutro y sin datos del alumno (el tono lo decide el modelo; es la verificación manual de R-13).
-4. Comprobar el aviso de IA y que las respuestas estén en español.
+**Datos**: no se ejecuta `EvaluacionDemoSeeder` en staging; se usan los existentes. Antes de empezar, el responsable
+(1) vuelve a cerrar el **I Bimestre de Primaria · 1.° grado A** con las notas de **Luna Demo 1** y
+(2) vincula a **María Torres Gómez** también con Luna, de modo que tenga al menos dos hijos (el caso de varios hijos).
+Se necesita además un Alumno (la propia Luna Demo 1 o su cuenta) y un rol sin el permiso (Docente, Director o Administrador).
+
+1. Padre de Familia (María Torres Gómez) nombrando a **Luna Demo 1**: preguntar por el promedio de un curso del I Bimestre y por las faltas; comparar con «Mis notas»/«Estudiantes a mi cargo» y «Mi asistencia».
+2. María Torres Gómez con varios hijos: preguntar «¿cómo van las notas?» sin nombrar hijo ⇒ pide aclaración.
+3. Pedir las notas de un alumno ajeno (uno que no sea hijo de María) ⇒ rechazo neutro y sin datos del alumno (el tono lo decide el modelo; es la verificación manual de R-13).
+4. Alumno (Luna Demo 1): preguntar «¿cómo voy?» ⇒ responde solo con sus propios datos. Comprobar el aviso de IA y que todas las respuestas estén en español.
 5. Superar el límite por usuario ⇒ aviso con el tiempo de espera.
 6. Docente/Director/Administrador: no ven «Asistente virtual».
 
