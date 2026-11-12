@@ -36,7 +36,7 @@ it('el Padre ve a su hijo con detalle y promedios, y a ningún otro alumno', fun
     Livewire::actingAs($s['padre'])->test(Index::class)
         ->assertOk()->assertSee('Hijo, Propio')->assertDontSee('Reservado')
         ->assertSee($s['curso']->nombre)->assertSee('Práctica')->assertSee('Examen')
-        ->assertSee('13.00'); // 15×0,6 + 10×0,4
+        ->assertSee('13,00'); // 15×0,6 + 10×0,4
 });
 
 it('el Padre con dos hijos elige entre ambos y no ve alumnos ajenos', function () {
@@ -132,7 +132,7 @@ it('el promedio anual aparece al elegir «Anual» y los periodos sin notas no cu
     $s = escenarioNotasPropias();
 
     Livewire::actingAs($s['padre'])->test(Index::class)->set('periodo', 'anual')
-        ->assertSee('Promedio anual')->assertSee('13.00');
+        ->assertSee('Promedio anual')->assertSee('13,00');
 });
 
 it('la página responde 200 por HTTP para el Padre y muestra el menú «Mis notas»', function () {

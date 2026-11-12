@@ -3,6 +3,7 @@
 namespace App\Evaluacion;
 
 use App\Models\EscalaCalificacion;
+use App\Support\Formato;
 
 /**
  * Cálculo de notas y promedios (research R-04), puro: sin base de datos y sin nombrar escalas concretas.
@@ -125,7 +126,7 @@ class CalculoPromedios
             return null;
         }
 
-        return $this->esLiteral() ? $this->letraDe($numerico) : number_format($numerico, 2, '.', '');
+        return $this->esLiteral() ? $this->letraDe($numerico) : Formato::decimal($numerico, 2);
     }
 
     /** Aprobado según el umbral de la escala; en literal se compara la letra mostrada. `null` si no hay promedio ni umbral. */

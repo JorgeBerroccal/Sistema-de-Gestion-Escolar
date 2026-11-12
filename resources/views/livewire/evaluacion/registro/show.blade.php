@@ -52,7 +52,7 @@
                         @endunless
                     </div>
                 @endforeach
-                <p class="mb-2 text-sm {{ abs($total - 100) < 0.005 ? 'text-green-700' : 'text-red-700' }}">Total de pesos: {{ rtrim(rtrim(number_format($total, 2, '.', ''), '0'), '.') ?: '0' }} % (debe sumar 100 %)</p>
+                <p class="mb-2 text-sm {{ abs($total - 100) < 0.005 ? 'text-green-700' : 'text-red-700' }}">Total de pesos: {{ \App\Support\Formato::recortado(number_format($total, 2, '.', '')) }} % (debe sumar 100 %)</p>
                 @unless ($soloLectura)
                     <button type="button" wire:click="agregarCriterio" class="mr-3 rounded border border-gray-400 px-3 py-1">Agregar criterio</button>
                     <button type="submit" class="rounded bg-blue-600 px-4 py-1 text-white">Guardar criterios</button>
