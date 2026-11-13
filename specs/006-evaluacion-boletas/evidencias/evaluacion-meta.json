@@ -1,0 +1,13 @@
+{
+  "url": "https://sge-peru.chilecentral.cloudapp.azure.com",
+  "version_declarada": "v0.6.0",
+  "version_informada_por_up": "v0.6.0",
+  "tamano_vm_declarado": "Standard_B2als_v2",
+  "modalidad": "rampa completa (hasta 1000 VUs)",
+  "script": "evaluacion.js",
+  "umbrales_cumplidos": "failure",
+  "commit": "7e45764e646535852b8d48e3d2df2bc9c19d42fa",
+  "run_id": "43444464308",
+  "fecha_utc": "2026-11-13T14:51:57Z",
+  "nota": "CPU/memoria del servidor y regreso a B2ats_v2: ver metrics.sh y cierre-carga.json en el servidor; créditos de CPU (serie B): deploy/creditos-cpu.sh en el PC"
+}

@@ -46,3 +46,6 @@ docker-compose.override.yml
 .DS_Store
 Thumbs.db
 *.log
+
+# Marcas de Windows al copiar desde el Explorador
+*:Zone.Identifier
