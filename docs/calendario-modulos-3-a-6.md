@@ -1,6 +1,6 @@
 # Calendario de los Módulos 3 a 6 (hasta el 27/11/2026)
 
-Aprobado el 2026-11-04; actualizado el 2026-11-12 (carga k6 adelantada al 13/11 y Módulo 6 iniciado el 12/11). Reglas: constitución 2.2.0 (prueba de humo de ~10 min por módulo, sin criterios
+Aprobado el 2026-11-04; actualizado el 2026-11-14 (carga k6 adelantada al 13/11, Módulo 6 iniciado el 12/11, `v0.7.0` desplegada y con humo hecho el 14/11, y fase de retoques hasta el 18/11). Reglas: constitución 2.2.0 (prueba de humo de ~10 min por módulo, sin criterios
 cronometrados, una sola sesión de carga k6 en el Módulo 5).
 
 | Fechas | Módulo | Cierre |
@@ -9,8 +9,10 @@ cronometrados, una sola sesión de carga k6 en el Módulo 5).
 | Mar 10 – Jue 12 | 4. Asistencia | `v0.5.0` + prueba de humo |
 | Dom 15 | Revisión de costos (T083 de la feature 002): *Cost analysis* al 15/11 contra la estimación; proyectado al 31/12 ≤ 80 % del crédito (DC-007); decidir si se detiene la VM hasta la sustentación | Registrada en `specs/002-despliegue-ci-staging/` |
 | Vie 13 | 5. Evaluación y Boletas (cierre) | Sesión única de carga k6 el 13 (login, registro de notas, boletas; perfil `carga`, luego `diario`) sobre `v0.6.0` ya desplegada y con humo hecho (adelantada del 17–18) |
-| Jue 12 – Sáb 21 | 6. Asistente Virtual (chatbot IA, obligatorio por el curso) | `v0.7.0` + prueba de humo |
-| Dom 22 | Congelamiento: suite completa, `pint`, `/speckit-analyze` final, `v1.0.0` | Staging estable |
+| Jue 12 – Sáb 14 | 6. Asistente Virtual (chatbot IA, obligatorio por el curso) | `v0.7.0` desplegada en staging y prueba de humo hecha el 14/11 (T031); 3 hallazgos en `docs/retoques.md` |
+| Dom 15 – Mié 18 | Revisión del sistema y recolección de retoques (el responsable los anota en `docs/retoques.md`); el 15/11 también la revisión de costos (T083), a cargo del responsable | Lista de retoques cerrada el miércoles 18 |
+| Jue 19 – Vie 20 | Implementación de los retoques (`v0.7.1`), con pruebas, suite completa y Pint | `v0.7.1` + prueba de humo corta en staging |
+| Sáb 21 – Dom 22 | Congelamiento: suite completa, `pint`, `/speckit-analyze` final, `v1.0.0` (el 21 o el 22) | Staging estable |
 | Lun 23 – Vie 27 | Informe y sustentación (ensayo el miércoles; margen el jueves) | Entrega el viernes 27 |
 
 ## Riesgo externo resuelto: créditos de la API de Anthropic (Módulo 6)
