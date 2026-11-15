@@ -25,10 +25,20 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  */
 class EvaluacionService
 {
-    /** Escala de calificación configurada en la institución. */
+    private ?Institucion $institucion = null;
+
+    private ?EscalaCalificacion $escala = null;
+
+    /** Ficha de la institución, leída una sola vez por solicitud (el servicio es `scoped`). */
+    public function institucion(): Institucion
+    {
+        return $this->institucion ??= Institucion::actual();
+    }
+
+    /** Escala de calificación configurada en la institución, leída una sola vez por solicitud. */
     public function escala(): EscalaCalificacion
     {
-        return Institucion::actual()->escala
+        return $this->escala ??= $this->institucion()->escala
             ?? throw new EvaluacionIncumplida('La institución no tiene una escala de calificación configurada.');
     }
 

@@ -60,10 +60,18 @@ class MatriculaRegla implements ReglaPertenencia
         return DB::table('asignaciones_docentes')->select('seccion_id')->where('usuario_id', $usuario->id);
     }
 
-    /** Alumno vinculado al usuario más los alumnos de los que es apoderado. */
-    public static function alumnosPropios(Usuario $usuario): \Illuminate\Database\Query\Builder
+    /**
+     * Ids del alumno vinculado al usuario más los de los alumnos de los que es apoderado. Son dos búsquedas puntuales
+     * por índice (`alumnos.usuario_id` único y `alumno_apoderado.usuario_id`), sin UNION dentro de una subconsulta
+     * (que obliga a materializarla). Vacío = ninguno, y `whereIn` con lista vacía no devuelve filas (fail-closed).
+     *
+     * @return list<int>
+     */
+    public static function alumnosPropios(Usuario $usuario): array
     {
-        return DB::table('alumnos')->select('id')->where('usuario_id', $usuario->id)
-            ->union(DB::table('alumno_apoderado')->select('alumno_id')->where('usuario_id', $usuario->id));
+        $propio = DB::table('alumnos')->where('usuario_id', $usuario->id)->pluck('id');
+        $hijos = DB::table('alumno_apoderado')->where('usuario_id', $usuario->id)->pluck('alumno_id');
+
+        return $propio->merge($hijos)->map(fn ($id) => (int) $id)->unique()->values()->all();
     }
 }
