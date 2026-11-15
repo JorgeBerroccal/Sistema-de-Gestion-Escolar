@@ -371,9 +371,13 @@ tiene regla registrada es rechazado con acceso denegado (403).
   1,5 s, y la tasa de solicitudes fallidas es menor al 1%. Los umbrales del login son mayores que
   los de las consultas porque el hash bcrypt (costo 12, ~250 ms de CPU por intento) es deliberadamente
   costoso y es el recurso limitante con 2 vCPU; por eso las rampas escalonan los inicios de sesión.
-  **Estado: CUMPLIDO (2026-10-25)** en staging (Standard_B2als_v2, v0.2.2) con dos rampas completas de 1000 VUs con
-  evidencia completa: login p95 1,88 s y 1,35 s, consultas p95 387 ms y 243 ms, 0 solicitudes fallidas de 90 928 y de
-  91 100, sin agotar los créditos de CPU. Evidencia: `evidencias/k6-sesion-2026-10-24.md` y `evidencias/k6-sesion-2026-10-25.md`.
+  **Estado real (actualizado el 2026-11-14): NO CUMPLIDO en p95 con 1000 usuarios en 2 vCPU.** Las sesiones del 24 y 25/10 (v0.2.2)
+  daban login p95 1,88 s y 1,35 s, pero su fila de «consultas» (387 y 243 ms) medía la página de login redirigida, no consultas reales
+  (hallazgo A2: `carga.js` perdía las cookies entre iteraciones); solo el login de esas sesiones es válido. La remedición del 2026-11-13 con el
+  `carga.js` corregido (T049, run 43523920261, staging B2als_v2, v0.6.0) dio login p95 5,52 s (umbral 3,5 s) y consultas p95 3,39 s (umbral 1,5 s), con medianas de
+  0,38 s y 0,35 s y 0 solicitudes fallidas de 45 000; la CPU de `app` saturó los 2 vCPU y la memoria sobró. El criterio de tasa de fallos (< 1 %) sí se cumple.
+  Límite práctico estimado: unos 500 usuarios simultáneos; para 1000 haría falta 4 vCPU (estimaciones, no medidas). No se cambian umbrales ni se repite la sesión
+  (Constitución 2.2.0). Evidencia: `specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-13.md` y R-23 de `specs/006-evaluacion-boletas/research.md`.
 - **SC-007**: El Administrador puede crear una cuenta nueva y asignarle un rol en menos de 1 minuto.
 - **SC-008**: Una instalación nueva queda operativa (5 roles, permisos base y Administrador inicial
   capaz de iniciar sesión) ejecutando únicamente la carga inicial documentada.
