@@ -10,6 +10,7 @@ use App\Support\ZonaHoraria;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -33,7 +34,7 @@ class Index extends Component
             throw new AccessDeniedHttpException('No tienes acceso a esta asistencia.');
         }
 
-        $propios = $this->propios()->pluck('id')->all();
+        $propios = $this->propios->pluck('id')->all();
 
         if ($this->alumnoId !== '' && ! in_array((int) $this->alumnoId, $propios, true)) {
             throw new AccessDeniedHttpException('No tienes acceso a la asistencia de este alumno.');
@@ -49,15 +50,17 @@ class Index extends Component
         $this->mount();
     }
 
-    private function propios()
+    /** Memoizada en la solicitud: mount y render la comparten. */
+    #[Computed]
+    public function propios()
     {
         return Alumno::query()->whereIn('alumnos.id', MatriculaRegla::alumnosPropios(Auth::user()))
-            ->orderBy('apellidos')->orderBy('nombres')->limit(50);
+            ->orderBy('apellidos')->orderBy('nombres')->limit(50)->get();
     }
 
     public function render(ResumenAsistencia $resumen): View
     {
-        $alumnos = $this->propios()->get();
+        $alumnos = $this->propios;
         $elegido = $this->alumnoId !== '' ? $alumnos->firstWhere('id', (int) $this->alumnoId) : $alumnos->first();
 
         $vigente = AnioEscolar::query()->where('vigente', 1)->first();

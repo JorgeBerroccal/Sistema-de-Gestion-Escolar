@@ -1,5 +1,7 @@
 # Prueba de carga de 1000 usuarios virtuales (SC-006 del Módulo 1)
 
+> **Estado real (14/11/2026):** con B2als_v2 (2 vCPU) el p95 **no se cumple** con 1000 usuarios (Módulos 1 y 5). Sin errores, con memoria de sobra y la CPU de `app` como cuello de botella; límite práctico estimado de ~500 usuarios simultáneos y 4 vCPU para 1000 (estimaciones, no medidas). No se repite la sesión (Constitución 2.2.0) ni se cambian umbrales. Ver R-23 en `specs/006-evaluacion-boletas/research.md`.
+
 La rampa 100 → 300 → 600 → 1000 usuarios virtuales (`tests/Load/carga.js`, ~15 min) se lanza **desde
 GitHub Actions** (workflow `carga`) contra la URL de staging. GitHub no tiene acceso al servidor, así que
 CPU, memoria y tamaño de la máquina los registra `deploy/metrics.sh` **en el servidor**, los **créditos de

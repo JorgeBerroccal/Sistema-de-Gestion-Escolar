@@ -9,6 +9,7 @@ use App\Models\Alumno;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -32,7 +33,7 @@ class Index extends Component
             throw new AccessDeniedHttpException('No tienes acceso a las notas.');
         }
 
-        $hijos = $this->hijos();
+        $hijos = $this->hijos;
 
         if ($this->hijo !== null) {
             $this->exigirPropio($this->hijo);
@@ -49,13 +50,14 @@ class Index extends Component
 
     private function exigirPropio(int $alumnoId): void
     {
-        if (! $this->hijos()->contains('id', $alumnoId)) {
+        if (! $this->hijos->contains('id', $alumnoId)) {
             throw new AccessDeniedHttpException('No tienes acceso a las notas de este alumno.');
         }
     }
 
-    /** @return Collection<int, Alumno> */
-    private function hijos()
+    /** @return Collection<int, Alumno> Memoizada en la solicitud: mount, la validación y render la comparten. */
+    #[Computed]
+    public function hijos()
     {
         return Alumno::query()->whereIn('alumnos.id', MatriculaRegla::alumnosPropios(Auth::user()))
             ->orderBy('apellidos')->orderBy('nombres')->orderBy('alumnos.id')->limit(50)->get();
@@ -64,7 +66,7 @@ class Index extends Component
     public function render(ConsultaNotas $consulta): View
     {
         $usuario = Auth::user();
-        $hijos = $this->hijos();
+        $hijos = $this->hijos;
         $alumno = $hijos->firstWhere('id', $this->hijo);
         $periodos = $alumno ? $consulta->periodosPublicados($alumno) : collect();
         $aviso = null;

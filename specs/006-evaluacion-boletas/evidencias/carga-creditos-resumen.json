@@ -1,0 +1,19 @@
+{
+  "vm": "sge-staging",
+  "desde_utc": "2026-11-12T23:24:47Z",
+  "hasta_utc": "2026-11-13T23:27:50Z",
+  "inicio_rampa_utc": "2026-11-13T23:01:27Z",
+  "muestras_de_1_min": 1440,
+  "creditos_al_inicio_de_la_observacion": 60.93,
+  "creditos_al_iniciar_la_rampa": 833.96,
+  "creditos_minimos_durante_la_prueba": 824.44,
+  "minimo_alcanzado_utc": "2026-11-13T23:16:00Z",
+  "creditos_al_final": 829.63,
+  "umbral_de_agotamiento": 0.5,
+  "creditos_agotados": false,
+  "primer_minuto_agotado_utc": null,
+  "minutos_desde_el_inicio_de_la_rampa": null,
+  "minutos_con_cpu_limitada": 0,
+  "duracion_de_la_prueba_min": 26,
+  "csv": "/tmp/claude-1000/-home-jorge-proyectos-sge/0980fd55-5012-4dfd-b8af-527650de9f53/scratchpad/cred/creditos-cpu-20261113-2338.csv"
+}

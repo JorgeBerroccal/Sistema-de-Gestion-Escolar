@@ -30,6 +30,12 @@ Administrador y el Director descargan la **boleta en PDF** (un solo formato, con
 descarga la propia. El Docente no accede a la boleta completa. Los promedios no se guardan: se calculan al leer. La escala
 (literal o vigesimal), sus **equivalentes numéricos y el umbral de aprobación son configuración de la institución, no una regla
 del Currículo Nacional**; con escala literal la boleta muestra el calificativo literal. Detalle en [`docs/evaluacion.md`](docs/evaluacion.md).
+El **Módulo 6: Asistente Virtual** es un chat en español para Padre de Familia y Alumno (permiso `asistente.usar`) que responde sobre las notas
+publicadas, la asistencia, la matrícula y la sección propias, sin historial guardado y con aviso de contenido generado por IA. La seguridad no
+depende del modelo: el proveedor solo recibe un contexto con datos permitidos (nunca documento, fecha de nacimiento ni correo, ni datos de otros
+alumnos). El proveedor es intercambiable (adaptador falso para pruebas y OpenRouter con modelo y respaldo por entorno; **con modelos gratuitos no
+admite datos reales y falla cerrado en producción**) y hay un límite de solicitudes por usuario que protege el cupo gratuito. Detalle en
+[`docs/asistente.md`](docs/asistente.md) y configuración de staging en [`docs/despliegue/asistente-virtual.md`](docs/despliegue/asistente-virtual.md).
 
 ## Stack
 

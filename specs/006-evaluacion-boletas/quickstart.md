@@ -40,7 +40,7 @@ denegaciones (SC-003) y la boleta en PDF (SC-006).
 Registrar la evidencia en `specs/006-evaluacion-boletas/evidencias/staging.md` (versión `v0.6.0`, 7 permisos nuevos →
 30 en total).
 
-## 3. Sesión única de carga k6 (17–18/11, sobre `v0.6.0` ya desplegada y con humo hecho)
+## 3. Sesión única de carga k6 (13/11, sobre `v0.6.0` ya desplegada y con humo hecho)
 
 Ver [contracts/prueba-de-carga.md](contracts/prueba-de-carga.md) y `docs/despliegue/prueba-de-carga.md`.
 

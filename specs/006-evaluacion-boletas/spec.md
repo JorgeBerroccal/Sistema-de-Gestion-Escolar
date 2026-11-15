@@ -223,7 +223,12 @@ coinciden con los registros.
   muestra de prueba, incluyendo casos de notas vacías y escala literal.
 - **SC-005**: Bajo la sesión de carga única, login, registro de notas y consulta de boletas mantienen una tasa
   de error inferior al 1 % con el perfil de carga definido en el plan, y los resultados quedan documentados.
+  **Estado real (2026-11-14): tasa de error CUMPLIDA (0 de 22 139 solicitudes, 1020 VUs) y resultados documentados; los umbrales de latencia p95 del
+  contrato de carga NO se cumplen con B2als_v2 (2 vCPU)**: login 15,34 s, consulta 13,89 s, notas 14,43 s, boleta PDF 16,40 s, con la CPU de `app` saturada.
+  Límite práctico estimado de unos 500 usuarios simultáneos; para 1000 haría falta 4 vCPU (estimaciones, no medidas). Sin cambiar umbrales ni repetir la
+  sesión (Constitución 2.2.0). Ver R-23 de `research.md` y `evidencias/k6-sesion-2026-11-13.md`.
 - **SC-006**: La boleta de un alumno se genera y descarga en menos de 5 segundos en condiciones normales.
+  **Estado real (2026-11-14): sin medir en «condiciones normales»**; bajo la rampa de 1000 usuarios en 2 vCPU la mediana de la boleta PDF fue 8,91 s y el p95 16,40 s (no es una condición normal: CPU saturada).
 
 ## Assumptions
 

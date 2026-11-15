@@ -48,6 +48,7 @@ it('cambiar los equivalentes o el umbral de la escala cambia el cálculo sin toc
     // La institución redefine los equivalentes (p. ej. a una escala de 20) y el umbral: es configuración, no regla fija.
     EscalaCalificacion::where('codigo', 'literal')->update(['equivalentes' => ['AD' => 20, 'A' => 17, 'B' => 14, 'C' => 8], 'umbral_aprobacion' => 'A']);
     Nota::query()->update(['valor_numerico' => 14]); // lo guardado antes con otros equivalentes se reescribe al volver a guardar
+    app()->forgetScopedInstances(); // la escala se lee una vez por solicitud: aquí empieza una solicitud nueva
 
     expect($promedio())->toBe(14.0)
         ->and($e['institucion']->fresh()->escala->umbral_aprobacion)->toBe('A')

@@ -19,6 +19,7 @@ colegio. La prueba de carga completa solo se ejecuta aquí, nunca en producción
 | Respaldar y restaurar la base de datos | [respaldo-y-restauracion.md](respaldo-y-restauracion.md) |
 | Ver el costo, cambiar el tamaño de la VM, configurar alertas, detener la VM | [costo-y-tamano.md](costo-y-tamano.md) |
 | Ejecutar la prueba de carga de 1000 usuarios (lista de verificación que termina en B2ats_v2) | [prueba-de-carga.md](prueba-de-carga.md) |
+| Configurar el asistente virtual (clave de OpenRouter, modelo y respaldo) | [asistente-virtual.md](asistente-virtual.md) |
 
 Diseño y decisiones: [`specs/002-despliegue-ci-staging/`](../../specs/002-despliegue-ci-staging/).
 Evidencias: `specs/001-auth-roles-rbac/evidencias/` (Módulo 1) y `specs/002-despliegue-ci-staging/evidencias/`.

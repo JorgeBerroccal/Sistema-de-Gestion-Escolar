@@ -4,7 +4,6 @@ namespace App\Evaluacion;
 
 use App\Asistencia\ResumenAsistencia;
 use App\Models\Alumno;
-use App\Models\Institucion;
 use App\Models\Matricula;
 use App\Models\PeriodoEvaluacion;
 use App\Models\Seccion;
@@ -77,7 +76,7 @@ class BoletaService
         $seccion = $this->seccionVigente($alumno, $anio);
 
         return [
-            'institucion' => Institucion::actual(),
+            'institucion' => $this->evaluacion->institucion(),
             'escala' => $this->evaluacion->escala(),
             'literal' => $calculo->esLiteral(),
             'estudiante' => $alumno,

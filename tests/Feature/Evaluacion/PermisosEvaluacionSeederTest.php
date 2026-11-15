@@ -32,7 +32,7 @@ it('agrega siete permisos y deja treinta en total', function () {
 
     expect(Permiso::where('identificador', 'like', 'notas.%')->count())->toBe(5)
         ->and(Permiso::where('identificador', 'like', 'boletas.%')->count())->toBe(2)
-        ->and(Permiso::count())->toBe(30);
+        ->and(Permiso::count())->toBe(31);
 });
 
 it('es idempotente y no pisa los cambios del Administrador', function () {
@@ -41,6 +41,6 @@ it('es idempotente y no pisa los cambios del Administrador', function () {
 
     $this->seed(RolesYPermisosSeeder::class);
 
-    expect(Permiso::count())->toBe(30)
+    expect(Permiso::count())->toBe(31)
         ->and(permisosEvaluacionDe('Director'))->toBe(['boletas.ver_todas']);
 });
