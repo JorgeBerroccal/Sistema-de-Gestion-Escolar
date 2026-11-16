@@ -50,7 +50,7 @@ La columna **Estado real** indica qué se construyó y dónde está respaldado (
 | Alumno | HU14 | Implementada |
 | Todos los usuarios | HU01 | Implementada |
 
-Total: 11 implementadas, 2 modificadas y 5 parciales; ninguna sin implementar por completo.
+Total: 12 implementadas, 2 modificadas y 4 parciales; ninguna sin implementar por completo.
 
 ## Capacidades construidas que el análisis original no listó como historia
 
