@@ -466,7 +466,7 @@
    "id": "interfaz",
    "type": "frontend",
    "label": "Interfaz web",
-   "sublabel": "Blade + Livewire · controladores · middleware Auth/RBAC",
+   "sublabel": "Blade + Livewire · controladores · middleware de sesión y permiso",
    "pos": [
     40,
     140
@@ -477,26 +477,12 @@
    ]
   },
   {
-   "id": "auditoria",
-   "type": "backend",
-   "label": "Auditoría",
-   "sublabel": "transversal",
-   "pos": [
-    40,
-    300
-   ],
-   "size": [
-    116,
-    64
-   ]
-  },
-  {
    "id": "auth",
    "type": "security",
    "label": "Auth y Roles",
-   "sublabel": "M1 · RBAC",
+   "sublabel": "M1 · permisos",
    "pos": [
-    185,
+    112,
     300
    ],
    "size": [
@@ -507,10 +493,10 @@
   {
    "id": "academica",
    "type": "backend",
-   "label": "Académica",
+   "label": "Gestión Académica",
    "sublabel": "M2 · estructura",
    "pos": [
-    330,
+    837,
     300
    ],
    "size": [
@@ -524,7 +510,7 @@
    "label": "Matrícula",
    "sublabel": "M3",
    "pos": [
-    475,
+    257,
     300
    ],
    "size": [
@@ -536,9 +522,9 @@
    "id": "asistencia",
    "type": "backend",
    "label": "Asistencia",
-   "sublabel": "M4",
+   "sublabel": "M4 · reporte propio",
    "pos": [
-    620,
+    402,
     300
    ],
    "size": [
@@ -549,10 +535,10 @@
   {
    "id": "ia",
    "type": "backend",
-   "label": "Asistente IA",
+   "label": "Asistente virtual",
    "sublabel": "M6 · chatbot",
    "pos": [
-    765,
+    547,
     300
    ],
    "size": [
@@ -566,21 +552,7 @@
    "label": "Evaluación",
    "sublabel": "M5 · boletas",
    "pos": [
-    910,
-    300
-   ],
-   "size": [
-    116,
-    64
-   ]
-  },
-  {
-   "id": "reportes",
-   "type": "backend",
-   "label": "Reportes",
-   "sublabel": "transversal",
-   "pos": [
-    1055,
+    692,
     300
    ],
    "size": [
@@ -591,10 +563,10 @@
   {
    "id": "claude",
    "type": "external",
-   "label": "API de Claude",
-   "sublabel": "Anthropic",
+   "label": "OpenRouter",
+   "sublabel": "proveedor de IA",
    "pos": [
-    765,
+    547,
     450
    ],
    "size": [
@@ -606,7 +578,7 @@
   {
    "id": "mysql",
    "type": "database",
-   "label": "Base de datos MySQL 8",
+   "label": "Base de datos MySQL 8.0",
    "sublabel": "acceso mediante Eloquent ORM",
    "pos": [
     405,
@@ -616,6 +588,20 @@
     400,
     60
    ]
+  },
+  {
+   "id": "pertenencia",
+   "type": "security",
+   "label": "Pertenencia",
+   "sublabel": "fail-closed",
+   "pos": [
+    982,
+    300
+   ],
+   "size": [
+    116,
+    64
+   ]
   }
  ],
  "boundaries": [
@@ -624,14 +610,13 @@
    "label": "Aplicación web SGE (contenedor Laravel)",
    "wraps": [
     "interfaz",
-    "auditoria",
     "auth",
     "academica",
     "matricula",
     "asistencia",
     "ia",
     "evaluacion",
-    "reportes"
+    "pertenencia"
    ],
    "pad": 12
   }
@@ -655,7 +640,7 @@
      252
     ],
     [
-     243,
+     170,
      252
     ]
    ]
@@ -672,7 +657,7 @@
      252
     ],
     [
-     388,
+     895,
      252
     ]
    ]
@@ -689,7 +674,7 @@
      252
     ],
     [
-     533,
+     315,
      252
     ]
    ]
@@ -706,7 +691,7 @@
      252
     ],
     [
-     678,
+     460,
      252
     ]
    ]
@@ -723,7 +708,7 @@
      252
     ],
     [
-     823,
+     605,
      252
     ]
    ]
@@ -740,33 +725,10 @@
      252
     ],
     [
-     968,
+     750,
      252
     ]
    ]
-  },
-  {
-   "id": "interfaz-reportes",
-   "from": "interfaz",
-   "to": "reportes",
-   "fromSide": "bottom",
-   "toSide": "top",
-   "via": [
-    [
-     605,
-     252
-    ],
-    [
-     1113,
-     252
-    ]
-   ]
-  },
-  {
-   "id": "auth-auditoria",
-   "from": "auth",
-   "to": "auditoria",
-   "variant": "dashed"
   },
   {
    "id": "ia-asistencia",
@@ -788,23 +750,6 @@
    "variant": "dashed"
   },
   {
-   "id": "auditoria-mysql",
-   "from": "auditoria",
-   "to": "mysql",
-   "fromSide": "bottom",
-   "toSide": "top",
-   "via": [
-    [
-     98,
-     560
-    ],
-    [
-     605,
-     560
-    ]
-   ]
-  },
-  {
    "id": "auth-mysql",
    "from": "auth",
    "to": "mysql",
@@ -812,7 +757,7 @@
    "toSide": "top",
    "via": [
     [
-     243,
+     170,
      560
     ],
     [
@@ -829,7 +774,7 @@
    "toSide": "top",
    "via": [
     [
-     388,
+     895,
      560
     ],
     [
@@ -846,7 +791,7 @@
    "toSide": "top",
    "via": [
     [
-     533,
+     315,
      560
     ],
     [
@@ -863,7 +808,7 @@
    "toSide": "top",
    "via": [
     [
-     678,
+     460,
      560
     ],
     [
@@ -880,7 +825,7 @@
    "toSide": "top",
    "via": [
     [
-     968,
+     750,
      560
     ],
     [
@@ -890,46 +835,52 @@
    ]
   },
   {
-   "id": "reportes-mysql",
-   "from": "reportes",
+   "id": "pertenencia-mysql",
+   "from": "pertenencia",
    "to": "mysql",
    "fromSide": "bottom",
    "toSide": "top",
    "via": [
     [
-     1113,
+     1040,
      560
     ],
     [
      605,
      560
     ]
-   ]
+   ],
+   "variant": "security"
+  },
+  {
+   "id": "evaluacion-academica",
+   "from": "evaluacion",
+   "to": "academica",
+   "variant": "dashed"
   }
  ],
  "cards": [
   {
    "dot": "violet",
-   "title": "Asistente IA (DA02)",
+   "title": "Asistente virtual (DA02)",
    "items": [
-    "Pide datos solo a Asistencia y Evaluación (líneas rojas), filtrados por RBAC",
-    "No accede a la base de datos directamente"
+    "Lee notas publicadas y asistencia mediante ConsultaNotas y ResumenAsistencia (líneas rojas)",
+    "Habla con el proveedor solo a través del puerto ProveedorIA"
    ]
   },
   {
    "dot": "emerald",
    "title": "Dependencias entre módulos",
    "items": [
-    "Matrícula, Asistencia y Evaluación se apoyan en Gestión Académica (DA04)",
-    "Todos verifican permisos con Auth y Roles (DA01)",
-    "Auditoría registra los eventos de Auth y Evaluación (DA08)"
+    "Evaluación usa el año vigente, los periodos y las asignaciones de Gestión Académica (línea discontinua)",
+    "Los modelos con datos de alumnos declaran su regla de Pertenencia (ADR-011)"
    ]
   },
   {
    "dot": "amber",
-   "title": "Redis y worker",
+   "title": "Lo que no existe",
    "items": [
-    "Sesiones, caché y cola en Redis; boletas PDF en el worker (nivel 2, DA03)"
+    "No hay componente de Auditoría (solo registrado_por y cerrado_por) ni módulo de Reportes aparte; no hay worker de cola"
    ]
   }
  ]

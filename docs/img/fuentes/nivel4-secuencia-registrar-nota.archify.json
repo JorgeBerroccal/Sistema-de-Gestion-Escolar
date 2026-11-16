@@ -2,7 +2,7 @@
  "schema_version": 1,
  "diagram_type": "sequence",
  "meta": {
-  "title": "SGE — C4 Nivel 4: Secuencia «Registrar nota» (MVC)",
+  "title": "SGE — C4 Nivel 4: Secuencia «Guardar notas» (MVC con servicios)",
   "output": "docs/img/fuentes/nivel4-secuencia-registrar-nota.html",
   "quality_profile": "showcase",
   "locale": "es",
@@ -463,53 +463,47 @@
    "id": "mw",
    "type": "security",
    "label": "Middleware",
-   "sublabel": "Auth/RBAC"
+   "sublabel": "sesión · cuenta activa"
   },
   {
-   "id": "livewire",
+   "id": "ctrl",
    "type": "frontend",
-   "label": "RegistroNotas",
+   "label": "NotasController",
    "sublabel": "controlador"
   },
   {
    "id": "servicio",
    "type": "backend",
-   "label": "Calificacion",
-   "sublabel": "Service (servicio)"
+   "label": "EvaluacionService",
+   "sublabel": "servicio"
   },
   {
-   "id": "escala",
+   "id": "calculo",
    "type": "backend",
-   "label": "Escala",
-   "sublabel": "Strategy"
+   "label": "CalculoPromedios",
+   "sublabel": "clase pura"
   },
   {
    "id": "modelos",
    "type": "database",
    "label": "Modelos",
    "sublabel": "Eloquent · MySQL"
-  },
-  {
-   "id": "auditoria",
-   "type": "messagebus",
-   "label": "Auditoría",
-   "sublabel": "escucha eventos"
   }
  ],
  "segments": [
   {
    "from": 150,
    "to": 200,
-   "label": "Autorización"
+   "label": "Sesión"
   },
   {
    "from": 206,
-   "to": 396,
+   "to": 450,
    "label": "Servicio"
   },
   {
-   "from": 402,
-   "to": 458,
+   "from": 456,
+   "to": 482,
    "label": "Respuesta"
   }
  ],
@@ -519,87 +513,95 @@
    "from": "docente",
    "to": "mw",
    "y": 160,
-   "label": "envía la nota",
+   "label": "envía la tabla de notas (POST + CSRF)",
    "variant": "default"
   },
   {
-   "id": "permiso",
+   "id": "sesion",
    "from": "mw",
-   "to": "livewire",
+   "to": "ctrl",
    "y": 188,
-   "label": "permiso registrar_nota ok",
+   "label": "sesión y cuenta activa ok",
    "variant": "security"
   },
   {
-   "id": "invocar",
-   "from": "livewire",
+   "id": "puede",
+   "from": "ctrl",
    "to": "servicio",
    "y": 216,
-   "label": "registrarNota(datos)",
-   "variant": "emphasis"
+   "label": "puedeEscribir()",
+   "variant": "security"
   },
   {
-   "id": "asignado",
+   "id": "puede-ok",
    "from": "servicio",
-   "to": "modelos",
+   "to": "ctrl",
    "y": 244,
-   "label": "docente asignado al curso",
-   "variant": "default"
-  },
-  {
-   "id": "asignado-ok",
-   "from": "modelos",
-   "to": "servicio",
-   "y": 272,
-   "label": "sí",
+   "label": "sí (si no: 403)",
    "variant": "return"
   },
   {
-   "id": "valida",
+   "id": "invocar",
+   "from": "ctrl",
+   "to": "servicio",
+   "y": 272,
+   "label": "guardarNotas(datos)",
+   "variant": "emphasis"
+  },
+  {
+   "id": "reglas",
    "from": "servicio",
-   "to": "escala",
+   "to": "modelos",
    "y": 300,
-   "label": "esValida(nota)",
+   "label": "año vigente, periodo, criterios, nómina",
    "variant": "default"
   },
   {
-   "id": "valida-ok",
-   "from": "escala",
+   "id": "reglas-ok",
+   "from": "modelos",
    "to": "servicio",
    "y": 328,
-   "label": "válida",
+   "label": "datos",
+   "variant": "return"
+  },
+  {
+   "id": "normaliza",
+   "from": "servicio",
+   "to": "calculo",
+   "y": 356,
+   "label": "normalizar(valor)",
+   "variant": "default"
+  },
+  {
+   "id": "normaliza-ok",
+   "from": "calculo",
+   "to": "servicio",
+   "y": 384,
+   "label": "valor válido",
    "variant": "return"
   },
   {
    "id": "guardar",
    "from": "servicio",
    "to": "modelos",
-   "y": 356,
-   "label": "guardar calificación",
+   "y": 412,
+   "label": "upsert y borrado (transacción)",
    "variant": "emphasis"
-  },
-  {
-   "id": "evento",
-   "from": "servicio",
-   "to": "auditoria",
-   "y": 384,
-   "label": "NotaRegistrada",
-   "variant": "dashed"
   },
   {
    "id": "resultado",
    "from": "servicio",
-   "to": "livewire",
-   "y": 412,
-   "label": "nota + promedio",
+   "to": "ctrl",
+   "y": 440,
+   "label": "guardadas y borradas",
    "variant": "return"
   },
   {
-   "id": "vista",
-   "from": "livewire",
+   "id": "redirige",
+   "from": "ctrl",
    "to": "docente",
-   "y": 440,
-   "label": "vista actualizada",
+   "y": 468,
+   "label": "redirección con el recuento",
    "variant": "return"
   }
  ],
@@ -611,40 +613,34 @@
    "type": "security"
   },
   {
-   "participant": "livewire",
+   "participant": "ctrl",
    "from": 183,
-   "to": 446,
+   "to": 474,
    "type": "frontend"
   },
   {
    "participant": "servicio",
    "from": 211,
-   "to": 418,
+   "to": 446,
    "type": "backend"
   },
   {
    "participant": "modelos",
-   "from": 239,
-   "to": 276,
-   "type": "database"
-  },
-  {
-   "participant": "escala",
    "from": 295,
-   "to": 332,
+   "to": 322,
+   "type": "database"
+  },
+  {
+   "participant": "calculo",
+   "from": 351,
+   "to": 390,
    "type": "backend"
   },
   {
    "participant": "modelos",
-   "from": 351,
-   "to": 360,
+   "from": 405,
+   "to": 418,
    "type": "database"
-  },
-  {
-   "participant": "auditoria",
-   "from": 379,
-   "to": 390,
-   "type": "messagebus"
   }
  ],
  "cards": [
@@ -652,21 +648,21 @@
    "dot": "rose",
    "title": "Seguridad (DA01)",
    "items": [
-    "El middleware valida el permiso; el servicio valida que el docente tenga el curso asignado"
+    "El controlador comprueba puedeEscribir antes de tocar datos; el servicio lo repite en exigirEscritura"
    ]
   },
   {
    "dot": "emerald",
-   "title": "Reglas en el servicio",
+   "title": "Todo o nada",
    "items": [
-    "CalificacionService valida la nota con la Escala de la institución y recalcula el promedio (RF15, RF16)"
+    "Un valor fuera de la escala cancela el guardado completo (EvaluacionIncumplida)"
    ]
   },
   {
    "dot": "orange",
-   "title": "Auditoría (DA08)",
+   "title": "Sin auditoría ni eventos",
    "items": [
-    "El evento NotaRegistrada se registra sin que Evaluación conozca a Auditoría"
+    "Solo queda registrado_por en cada nota; los promedios se calculan al consultar"
    ]
   }
  ]

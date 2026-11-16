@@ -481,7 +481,7 @@
    "id": "app",
    "type": "backend",
    "label": "Aplicación web SGE",
-   "sublabel": "Laravel 11 · Blade + Livewire · PHP-FPM",
+   "sublabel": "Laravel 13 · Blade + Livewire 4 · PHP 8.3-FPM",
    "pos": [
     260,
     300
@@ -494,8 +494,8 @@
   {
    "id": "claude",
    "type": "external",
-   "label": "API de Claude",
-   "sublabel": "Anthropic",
+   "label": "OpenRouter",
+   "sublabel": "proveedor de IA",
    "pos": [
     960,
     305
@@ -510,7 +510,7 @@
    "id": "mysql",
    "type": "database",
    "label": "Base de datos",
-   "sublabel": "MySQL 8",
+   "sublabel": "MySQL 8.0",
    "pos": [
     260,
     480
@@ -523,25 +523,11 @@
   {
    "id": "redis",
    "type": "database",
-   "label": "Caché y cola",
-   "sublabel": "Redis",
+   "label": "Sesiones y caché",
+   "sublabel": "Redis 7",
    "pos": [
     480,
     480
-   ],
-   "size": [
-    180,
-    60
-   ]
-  },
-  {
-   "id": "worker",
-   "type": "messagebus",
-   "label": "Worker de cola",
-   "sublabel": "Laravel · queue:work",
-   "pos": [
-    370,
-    650
    ],
    "size": [
     180,
@@ -552,13 +538,12 @@
  "boundaries": [
   {
    "kind": "region",
-   "label": "VPS 2 vCPU / 4 GB · Docker Compose",
+   "label": "VM Azure · Docker Compose",
    "wraps": [
     "nginx",
     "app",
     "mysql",
-    "redis",
-    "worker"
+    "redis"
    ],
    "pad": 12
   }
@@ -594,20 +579,7 @@
    "id": "app-redis",
    "from": "app",
    "to": "redis",
-   "label": "sesiones · caché · encola"
-  },
-  {
-   "id": "worker-redis",
-   "from": "worker",
-   "to": "redis",
-   "label": "toma trabajos",
-   "variant": "dashed"
-  },
-  {
-   "id": "worker-mysql",
-   "from": "worker",
-   "to": "mysql",
-   "label": "lee notas"
+   "label": "sesiones · caché · limitadores"
   }
  ],
  "cards": [
@@ -616,7 +588,7 @@
    "title": "Contenedor C4 ≠ contenedor Docker",
    "items": [
     "Un contenedor C4 es algo que se ejecuta o guarda datos por separado",
-    "La aplicación y el worker usan la misma imagen Laravel"
+    "Nginx (sge-web) y la aplicación (sge-app) son dos imágenes publicadas en GHCR"
    ]
   },
   {
@@ -628,10 +600,10 @@
   },
   {
    "dot": "rose",
-   "title": "Prueba de carga (DA03)",
+   "title": "Sin worker de cola",
    "items": [
-    "Redis evita consultas repetidas a MySQL",
-    "El worker genera las boletas PDF fuera de la solicitud"
+    "QUEUE_CONNECTION=sync: la boleta PDF se genera en la misma solicitud",
+    "Redis guarda sesiones, caché y limitadores (DA03, ADR-006)"
    ]
   }
  ]

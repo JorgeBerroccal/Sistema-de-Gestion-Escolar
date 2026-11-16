@@ -118,6 +118,21 @@ GitHub Actions; cada push y pull request ejecuta Pest y Pint. Guía completa en
 - **Evidencias:** despliegue en [`specs/002-despliegue-ci-staging/evidencias/`](specs/002-despliegue-ci-staging/evidencias/)
   y verificación del Módulo 1 en [`specs/001-auth-roles-rbac/evidencias/`](specs/001-auth-roles-rbac/evidencias/).
 
+## Documentación
+
+La documentación de arquitectura describe el sistema **tal como se construyó** (estado en v0.7.0); cada hecho cita su fuente en el repositorio.
+
+| Carpeta | Contenido |
+|---|---|
+| [`docs/01-analisis-de-sistema/`](docs/01-analisis-de-sistema/) | Necesidad, actores, historias (HU), requisitos (RF), atributos de calidad (AC), restricciones (RC), drivers (DA), decisiones (ADR) y escenarios (EQ), cada uno con su estado real |
+| [`docs/02-arquitectura-software/`](docs/02-arquitectura-software/) | [Arquitectura inicial](docs/02-arquitectura-software/arquitectura-inicial.md) (conservada) con sus cambios, estilo, patrón y componentes arquitectónicos |
+| [`docs/03-diseno-de-software/diseno-interno/`](docs/03-diseno-de-software/diseno-interno/) | Diseño interno de módulos, patrones y principios de diseño |
+| [`docs/04-modelo-c4/`](docs/04-modelo-c4/) | Modelo C4: [contexto](docs/04-modelo-c4/Nivel1-DiagramadeContextodelSistema.md), [contenedores](docs/04-modelo-c4/Nivel2-DiagramadeContenedores.md), [componentes](docs/04-modelo-c4/Nivel3-Diagrama-de-Componentes.md) y [código](docs/04-modelo-c4/Nivel4-DiagramadeCodigo.md) |
+| [`docs/despliegue/`](docs/despliegue/README.md) | Despliegue, CI, certificado, respaldo, costo y prueba de carga |
+| [`docs/asistente.md`](docs/asistente.md), [`docs/evaluacion.md`](docs/evaluacion.md) | Asistente virtual y evaluación (enlazados, no duplicados) |
+
+Los diagramas se editan en `docs/img/fuentes/*.archify.json` y se regeneran con Archify; cada uno tiene su versión interactiva en `docs/img/fuentes/*.html`.
+
 ## Regla de autorización
 
 **Los permisos se verifican por identificador (p. ej. `usuarios.ver`), nunca por nombre de rol.**

@@ -467,7 +467,7 @@
    "id": "director",
    "type": "external",
    "label": "Director",
-   "sublabel": "supervisión académica",
+   "sublabel": "supervisión · solo consulta",
    "pos": [
     250,
     20
@@ -540,8 +540,8 @@
   {
    "id": "claude",
    "type": "external",
-   "label": "API de Claude",
-   "sublabel": "Anthropic · sistema externo",
+   "label": "OpenRouter",
+   "sublabel": "proveedor de IA · sistema externo",
    "pos": [
     425,
     470
@@ -606,8 +606,8 @@
    "dot": "violet",
    "title": "Sistema externo",
    "items": [
-    "La API de Claude es el único sistema externo (RC07)",
-    "Solo recibe el contexto autorizado para el usuario (DA02)"
+    "OpenRouter es el único sistema externo en ejecución (RC07, ADR-004 modificada)",
+    "Solo recibe el contexto autorizado para el usuario (DA02); en pruebas se usa ProveedorFalso"
    ]
   },
   {

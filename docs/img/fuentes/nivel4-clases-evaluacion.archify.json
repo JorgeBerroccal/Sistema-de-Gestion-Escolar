@@ -449,10 +449,10 @@
  },
  "components": [
   {
-   "id": "registro",
+   "id": "ctrl",
    "type": "frontend",
-   "label": "RegistroNotas",
-   "sublabel": "controlador · Livewire",
+   "label": "NotasController",
+   "sublabel": "controlador · guardar()",
    "pos": [
     40,
     44
@@ -463,10 +463,24 @@
    ]
   },
   {
+   "id": "show",
+   "type": "frontend",
+   "label": "Registro\\Show",
+   "sublabel": "Livewire · criterios",
+   "pos": [
+    420,
+    44
+   ],
+   "size": [
+    240,
+    60
+   ]
+  },
+  {
    "id": "servicio",
    "type": "backend",
-   "label": "CalificacionService",
-   "sublabel": "servicio · registrarNota()",
+   "label": "EvaluacionService",
+   "sublabel": "servicio · guardarNotas()",
    "pos": [
     40,
     194
@@ -477,51 +491,23 @@
    ]
   },
   {
-   "id": "escala",
+   "id": "calculo",
    "type": "backend",
-   "label": "Escala",
-   "sublabel": "«interfaz» · Strategy",
+   "label": "CalculoPromedios",
+   "sublabel": "clase pura · normalizar()",
    "pos": [
-    370,
+    780,
     194
    ],
    "size": [
-    220,
+    240,
     60
    ]
   },
   {
-   "id": "literal",
-   "type": "backend",
-   "label": "EscalaLiteral",
-   "sublabel": "AD · A · B · C",
-   "pos": [
-    290,
-    334
-   ],
-   "size": [
-    170,
-    60
-   ]
-  },
-  {
-   "id": "vigesimal",
-   "type": "backend",
-   "label": "EscalaVigesimal",
-   "sublabel": "0 a 20",
-   "pos": [
-    490,
-    334
-   ],
-   "size": [
-    170,
-    60
-   ]
-  },
-  {
-   "id": "calif",
+   "id": "asignacion",
    "type": "database",
-   "label": "Calificacion",
+   "label": "AsignacionDocente",
    "sublabel": "modelo Eloquent",
    "pos": [
     40,
@@ -534,32 +520,49 @@
    "icon": "backend"
   },
   {
-   "id": "evento",
-   "type": "messagebus",
-   "label": "NotaRegistrada",
-   "sublabel": "evento",
+   "id": "criterio",
+   "type": "database",
+   "label": "CriterioEvaluacion",
+   "sublabel": "modelo Eloquent",
    "pos": [
-    400,
+    300,
+    494
+   ],
+   "size": [
+    220,
+    60
+   ],
+   "icon": "backend"
+  },
+  {
+   "id": "nota",
+   "type": "database",
+   "label": "Nota",
+   "sublabel": "modelo Eloquent",
+   "pos": [
+    560,
     494
    ],
    "size": [
     200,
     60
-   ]
+   ],
+   "icon": "backend"
   },
   {
-   "id": "listener",
-   "type": "messagebus",
-   "label": "RegistrarEnBitacora",
-   "sublabel": "listener · Auditoría",
+   "id": "escala",
+   "type": "database",
+   "label": "EscalaCalificacion",
+   "sublabel": "modelo Eloquent",
    "pos": [
-    740,
+    800,
     494
    ],
    "size": [
-    240,
+    220,
     60
-   ]
+   ],
+   "icon": "backend"
   }
  ],
  "boundaries": [
@@ -567,7 +570,8 @@
    "kind": "region",
    "label": "Controlador",
    "wraps": [
-    "registro"
+    "ctrl",
+    "show"
    ],
    "pad": 12
   },
@@ -576,9 +580,7 @@
    "label": "Servicios",
    "wraps": [
     "servicio",
-    "escala",
-    "literal",
-    "vigesimal"
+    "calculo"
    ],
    "pad": 12
   },
@@ -586,81 +588,80 @@
    "kind": "region",
    "label": "Modelo",
    "wraps": [
-    "calif"
-   ],
-   "pad": 12
-  },
-  {
-   "kind": "region",
-   "label": "Eventos",
-   "wraps": [
-    "evento",
-    "listener"
+    "asignacion",
+    "criterio",
+    "nota",
+    "escala"
    ],
    "pad": 12
   }
  ],
  "connections": [
   {
-   "id": "registro-servicio",
-   "from": "registro",
+   "id": "ctrl-servicio",
+   "from": "ctrl",
    "to": "servicio",
-   "label": "registrarNota(datos)"
+   "label": "guardarNotas(datos)"
   },
   {
-   "id": "servicio-escala",
+   "id": "show-servicio",
+   "from": "show",
+   "to": "servicio",
+   "label": "guardarEsquema()"
+  },
+  {
+   "id": "servicio-calculo",
    "from": "servicio",
-   "to": "escala",
-   "label": "valida con"
+   "to": "calculo",
+   "label": "normalizar(valor)"
   },
   {
-   "id": "literal-escala",
-   "from": "literal",
+   "id": "calculo-escala",
+   "from": "calculo",
    "to": "escala",
-   "label": "implementa",
+   "label": "se crea con deEscala()",
    "variant": "dashed"
   },
   {
-   "id": "vigesimal-escala",
-   "from": "vigesimal",
-   "to": "escala",
-   "label": "implementa",
-   "variant": "dashed"
-  },
-  {
-   "id": "servicio-calif",
+   "id": "servicio-asignacion",
    "from": "servicio",
-   "to": "calif",
-   "label": "crea y guarda"
+   "to": "asignacion",
+   "label": "puedeEscribir()"
   },
   {
-   "id": "servicio-evento",
+   "id": "servicio-criterio",
    "from": "servicio",
-   "to": "evento",
-   "label": "emite",
-   "variant": "dashed"
+   "to": "criterio",
+   "label": "criteriosDelPar()"
   },
   {
-   "id": "evento-listener",
-   "from": "evento",
-   "to": "listener",
-   "label": "lo escucha"
+   "id": "servicio-nota",
+   "from": "servicio",
+   "to": "nota",
+   "label": "upsert / delete"
   }
  ],
  "cards": [
   {
    "dot": "emerald",
-   "title": "Patrones",
+   "title": "Escala como dato",
    "items": [
-    "Strategy: la escala se elige según la institución (DA04)",
-    "Observer: Auditoría escucha NotaRegistrada sin que Evaluación la conozca (DA08)"
+    "No hay interfaz Strategy: la escala se guarda en EscalaCalificacion y CalculoPromedios la interpreta"
    ]
   },
   {
    "dot": "cyan",
    "title": "Notación",
    "items": [
-    "Línea continua: invoca, usa o crea · línea discontinua: implementa o emite"
+    "Línea continua: invoca, usa o crea · línea discontinua: se construye a partir de"
+   ]
+  },
+  {
+   "dot": "violet",
+   "title": "Fuera del flujo",
+   "items": [
+    "La pertenencia (NotaRegla) filtra solo las lecturas de ConsultaNotas, no el guardado",
+    "No hay eventos ni listeners"
    ]
   }
  ]

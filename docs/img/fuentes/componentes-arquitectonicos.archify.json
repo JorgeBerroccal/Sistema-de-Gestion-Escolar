@@ -466,8 +466,8 @@
   {
    "id": "mw",
    "type": "security",
-   "label": "Middleware Auth/RBAC",
-   "sublabel": "sesión y permisos",
+   "label": "Middleware",
+   "sublabel": "sesión · cuenta activa · permiso",
    "pos": [
     40,
     160
@@ -481,7 +481,7 @@
    "id": "ctrl",
    "type": "frontend",
    "label": "Controladores + Livewire",
-   "sublabel": "Controlador: atiende la solicitud",
+   "sublabel": "invocan al servicio",
    "pos": [
     420,
     160
@@ -495,7 +495,7 @@
    "id": "vista",
    "type": "frontend",
    "label": "Vistas Blade",
-   "sublabel": "Vista: muestra los datos",
+   "sublabel": "muestran los datos",
    "pos": [
     800,
     160
@@ -507,9 +507,9 @@
   },
   {
    "id": "jobs",
-   "type": "messagebus",
-   "label": "Trabajos y eventos",
-   "sublabel": "boletas PDF · auditoría",
+   "type": "security",
+   "label": "Pertenencia fail-closed",
+   "sublabel": "filtra lo que el usuario ve",
    "pos": [
     40,
     340
@@ -523,7 +523,7 @@
    "id": "servicios",
    "type": "backend",
    "label": "Servicios por módulo",
-   "sublabel": "reglas de negocio · Escala (Strategy)",
+   "sublabel": "reglas de negocio · AsistenteService",
    "pos": [
     420,
     340
@@ -536,8 +536,8 @@
   {
    "id": "adaptador",
    "type": "external",
-   "label": "Adaptador de IA",
-   "sublabel": "ServicioAsistente → AsistenteClaude",
+   "label": "Puerto ProveedorIA",
+   "sublabel": "OpenRouter · ProveedorFalso",
    "pos": [
     800,
     340
@@ -552,7 +552,7 @@
    "id": "redis",
    "type": "database",
    "label": "Redis",
-   "sublabel": "sesiones · caché · cola",
+   "sublabel": "sesiones · caché · limitadores",
    "pos": [
     40,
     520
@@ -566,7 +566,7 @@
    "id": "modelos",
    "type": "database",
    "label": "Modelos Eloquent",
-   "sublabel": "Modelo: datos y relaciones",
+   "sublabel": "datos y relaciones",
    "pos": [
     420,
     520
@@ -580,8 +580,8 @@
   {
    "id": "claude",
    "type": "external",
-   "label": "API de Claude",
-   "sublabel": "Anthropic · Haiku",
+   "label": "OpenRouter",
+   "sublabel": "proveedor de IA",
    "pos": [
     800,
     520
@@ -595,7 +595,7 @@
   {
    "id": "mysql",
    "type": "database",
-   "label": "MySQL 8",
+   "label": "MySQL 8.0",
    "sublabel": "datos del negocio",
    "pos": [
     420,
@@ -667,14 +667,14 @@
    "id": "servicios-jobs",
    "from": "servicios",
    "to": "jobs",
-   "label": "encola · eventos",
-   "variant": "dashed"
+   "label": "consulta filtrada",
+   "variant": "security"
   },
   {
    "id": "servicios-adaptador",
    "from": "servicios",
    "to": "adaptador",
-   "label": "interfaz",
+   "label": "usa el puerto",
    "variant": "dashed"
   },
   {
@@ -684,10 +684,11 @@
    "label": "lee y guarda"
   },
   {
-   "id": "jobs-redis",
-   "from": "jobs",
+   "id": "servicios-redis",
+   "from": "servicios",
    "to": "redis",
-   "label": "cola"
+   "label": "sesiones · limitadores",
+   "variant": "dashed"
   },
   {
    "id": "adaptador-claude",
@@ -707,25 +708,24 @@
    "dot": "emerald",
    "title": "Reglas del patrón",
    "items": [
-    "Controladores y Livewire no tienen reglas de negocio: invocan a un servicio",
+    "Controladores y Livewire invocan al servicio y no contienen reglas de negocio",
     "Las vistas no consultan la base de datos",
-    "Las reglas de negocio viven en los servicios"
+    "Los catálogos simples de Gestión Académica se guardan desde Livewire (ADR-002)"
    ]
   },
   {
    "dot": "cyan",
-   "title": "Un solo patrón (ADR-002)",
+   "title": "Boleta PDF",
    "items": [
-    "Se aplica igual en los seis módulos del MVP",
-    "Se verifica con pruebas de arquitectura de Pest (EQ-05)"
+    "BoletaService genera el PDF con DomPDF en la misma solicitud: no hay cola ni worker"
    ]
   },
   {
    "dot": "violet",
    "title": "Trazabilidad",
    "items": [
-    "Middleware RBAC (DA01) · Adaptador de IA sustituible por AsistenteSimulado (DA02, RC18)",
-    "Cola para boletas PDF (DA03) · eventos para la auditoría (DA08)"
+    "Permisos por rol (DA01) · pertenencia fail-closed (ADR-011)",
+    "Proveedor de IA sustituible: ProveedorFalso en pruebas (DA02, RC07)"
    ]
   }
  ]

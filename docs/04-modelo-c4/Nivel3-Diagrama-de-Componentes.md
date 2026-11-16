@@ -17,7 +17,7 @@ Descomponer el contenedor **app** en sus módulos y mostrar de quién depende ca
 | Componente | Módulo | Responsabilidad | Código |
 |---|---|---|---|
 | **Interfaz web** | Transversal | Middleware, controladores, componentes Livewire y vistas Blade | `app/Http/`, `app/Livewire/`, `resources/views/` |
-| **Autenticación y Roles** | M1 | Login, cuenta activa, usuarios, roles y permisos | `app/Http/Controllers/Auth/`, `app/Livewire/Admin/`, `app/Autorizacion/ProteccionAdministracion.php` |
+| **Auth y Roles** | M1 | Login, cuenta activa, usuarios, roles y permisos | `app/Http/Controllers/Auth/`, `app/Livewire/Admin/`, `app/Autorizacion/ProteccionAdministracion.php` |
 | **Pertenencia** | Transversal | Reglas fail-closed que limitan cada consulta a lo que el usuario puede ver | `app/Autorizacion/Pertenencia/` |
 | **Gestión Académica** | M2 | Institución, año vigente, niveles, grados, secciones, cursos y asignaciones | `app/Academico/`, `app/Livewire/Academico/` |
 | **Matrícula** | M3 | Alumnos, apoderados, matrícula y nóminas | `app/Matricula/`, `app/Livewire/Matricula/` |
@@ -33,9 +33,9 @@ Descomponer el contenedor **app** en sus módulos y mostrar de quién depende ca
 | Origen | Destino | Motivo |
 |---|---|---|
 | Interfaz web | Todos los módulos | Cada pantalla invoca al servicio de su módulo |
-| Módulos con datos | Pertenencia | Los modelos usan `RequierePertenencia` |
-| Evaluación | Académica | Año vigente, periodos y asignaciones |
-| Asistente | Evaluación (`ConsultaNotas`) y Asistencia (`ResumenAsistencia`) | Armar el contexto autorizado |
+| Pertenencia | MySQL | Añade el filtro de pertenencia a las consultas de los modelos que usan `RequierePertenencia` (línea roja) |
+| Evaluación | Gestión Académica | Año vigente, periodos y asignaciones (línea discontinua) |
+| Asistente virtual | Evaluación (`ConsultaNotas`) y Asistencia (`ResumenAsistencia`) | Armar el contexto autorizado (líneas rojas) |
 | Asistente | OpenRouter | Mediante `ProveedorIA` |
 | Todos | MySQL | Eloquent |
 
