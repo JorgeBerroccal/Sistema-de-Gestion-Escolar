@@ -750,6 +750,90 @@
    "variant": "dashed"
   },
   {
+   "id": "evaluacion-academica",
+   "from": "evaluacion",
+   "to": "academica",
+   "variant": "dashed"
+  },
+  {
+   "id": "academica-pertenencia",
+   "from": "academica",
+   "to": "pertenencia",
+   "variant": "security"
+  },
+  {
+   "id": "matricula-pertenencia",
+   "from": "matricula",
+   "to": "pertenencia",
+   "fromSide": "bottom",
+   "toSide": "bottom",
+   "via": [
+    [
+     315,
+     540
+    ],
+    [
+     1040,
+     540
+    ]
+   ],
+   "variant": "security"
+  },
+  {
+   "id": "asistencia-pertenencia",
+   "from": "asistencia",
+   "to": "pertenencia",
+   "fromSide": "bottom",
+   "toSide": "bottom",
+   "via": [
+    [
+     460,
+     540
+    ],
+    [
+     1040,
+     540
+    ]
+   ],
+   "variant": "security"
+  },
+  {
+   "id": "evaluacion-pertenencia",
+   "from": "evaluacion",
+   "to": "pertenencia",
+   "fromSide": "bottom",
+   "toSide": "bottom",
+   "via": [
+    [
+     750,
+     540
+    ],
+    [
+     1040,
+     540
+    ]
+   ],
+   "variant": "security"
+  },
+  {
+   "id": "pertenencia-mysql",
+   "from": "pertenencia",
+   "to": "mysql",
+   "fromSide": "right",
+   "toSide": "right",
+   "via": [
+    [
+     1215,
+     332
+    ],
+    [
+     1215,
+     630
+    ]
+   ],
+   "label": "consultas filtradas"
+  },
+  {
    "id": "auth-mysql",
    "from": "auth",
    "to": "mysql",
@@ -765,98 +849,6 @@
      560
     ]
    ]
-  },
-  {
-   "id": "academica-mysql",
-   "from": "academica",
-   "to": "mysql",
-   "fromSide": "bottom",
-   "toSide": "top",
-   "via": [
-    [
-     895,
-     560
-    ],
-    [
-     605,
-     560
-    ]
-   ]
-  },
-  {
-   "id": "matricula-mysql",
-   "from": "matricula",
-   "to": "mysql",
-   "fromSide": "bottom",
-   "toSide": "top",
-   "via": [
-    [
-     315,
-     560
-    ],
-    [
-     605,
-     560
-    ]
-   ]
-  },
-  {
-   "id": "asistencia-mysql",
-   "from": "asistencia",
-   "to": "mysql",
-   "fromSide": "bottom",
-   "toSide": "top",
-   "via": [
-    [
-     460,
-     560
-    ],
-    [
-     605,
-     560
-    ]
-   ]
-  },
-  {
-   "id": "evaluacion-mysql",
-   "from": "evaluacion",
-   "to": "mysql",
-   "fromSide": "bottom",
-   "toSide": "top",
-   "via": [
-    [
-     750,
-     560
-    ],
-    [
-     605,
-     560
-    ]
-   ]
-  },
-  {
-   "id": "pertenencia-mysql",
-   "from": "pertenencia",
-   "to": "mysql",
-   "fromSide": "bottom",
-   "toSide": "top",
-   "via": [
-    [
-     1040,
-     560
-    ],
-    [
-     605,
-     560
-    ]
-   ],
-   "variant": "security"
-  },
-  {
-   "id": "evaluacion-academica",
-   "from": "evaluacion",
-   "to": "academica",
-   "variant": "dashed"
   }
  ],
  "cards": [
@@ -873,7 +865,7 @@
    "title": "Dependencias entre módulos",
    "items": [
     "Evaluación usa el año vigente, los periodos y las asignaciones de Gestión Académica (línea discontinua)",
-    "Los modelos con datos de alumnos declaran su regla de Pertenencia (ADR-011)"
+    "Matrícula, Gestión Académica, Asistencia y Evaluación tienen modelos con RequierePertenencia: sus consultas pasan por la regla (ADR-011)"
    ]
   },
   {

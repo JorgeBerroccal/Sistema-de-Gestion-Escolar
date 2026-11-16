@@ -5203,7 +5203,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     <!-- Main Diagram -->
     <div class="diagram-container" data-detail-level="read"
          data-preset-badge-editorial-plate="ARCHIFY / LÁMINA 04">
-      <svg viewBox="0 0 1222 728" role="img" lang="es" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="classic" data-quality-profile="showcase" data-node-ui="" data-reader-fit="intrinsic-height" data-reader-min-text="7.5" data-reader-primary-text="14">
+      <svg viewBox="0 0 1306 728" role="img" lang="es" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="classic" data-quality-profile="showcase" data-node-ui="" data-reader-fit="intrinsic-height" data-reader-min-text="7.5" data-reader-primary-text="14">
         <title id="archify-diagram-title">SGE — C4 Nivel 3: Componentes de la aplicación web</title>
         <desc id="archify-diagram-description">Un diagrama de arquitectura generado por Archify.</desc>
         <!-- Definitions -->
@@ -5275,16 +5275,19 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <path data-graph-role="automatic-crossover-underlay" d="M 605 364 L 605 450" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
           <path data-edge-from="ia" data-edge-to="claude" data-edge-label="HTTPS" data-edge-key="9" data-edge-id="ia-claude" data-composition-points="605,364;605,450" data-composition-crossover="halo" data-composition-independent="true" d="M 605 364 L 605 450" class="a-dashed" data-animate="edge" style="--step:9" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
         </g>
-        <path data-edge-from="auth" data-edge-to="mysql" data-edge-key="10" data-edge-id="auth-mysql" data-composition-points="170,364;170,560;605,560;605,600" d="M 170 364 L 170 552 Q 170 560 178 560 L 597 560 Q 605 560 605 568 L 605 600" class="a-default" data-animate="edge" style="--step:10" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="academica" data-edge-to="mysql" data-edge-key="11" data-edge-id="academica-mysql" data-composition-points="895,364;895,560;605,560;605,600" d="M 895 364 L 895 552 Q 895 560 887 560 L 613 560 Q 605 560 605 568 L 605 600" class="a-default" data-animate="edge" style="--step:11" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="matricula" data-edge-to="mysql" data-edge-key="12" data-edge-id="matricula-mysql" data-composition-points="315,364;315,560;605,560;605,600" d="M 315 364 L 315 552 Q 315 560 323 560 L 597 560 Q 605 560 605 568 L 605 600" class="a-default" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="asistencia" data-edge-to="mysql" data-edge-key="13" data-edge-id="asistencia-mysql" data-composition-points="460,364;460,560;605,560;605,600" d="M 460 364 L 460 552 Q 460 560 468 560 L 597 560 Q 605 560 605 568 L 605 600" class="a-default" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="evaluacion" data-edge-to="mysql" data-edge-key="14" data-edge-id="evaluacion-mysql" data-composition-points="750,364;750,560;605,560;605,600" d="M 750 364 L 750 552 Q 750 560 742 560 L 613 560 Q 605 560 605 568 L 605 600" class="a-default" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="pertenencia" data-edge-to="mysql" data-edge-key="15" data-edge-id="pertenencia-mysql" data-composition-points="1040,364;1040,560;605,560;605,600" d="M 1040 364 L 1040 552 Q 1040 560 1032 560 L 613 560 Q 605 560 605 568 L 605 600" class="a-security" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
-        <g data-graph-role="automatic-crossover" style="--step:16">
+        <g data-graph-role="automatic-crossover" style="--step:10">
           <path data-graph-role="automatic-crossover-underlay" d="M 808 332 L 837 332" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="evaluacion" data-edge-to="academica" data-edge-key="16" data-edge-id="evaluacion-academica" data-composition-points="808,332;837,332" data-composition-crossover="halo" data-composition-independent="true" d="M 808 332 L 837 332" class="a-dashed" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+          <path data-edge-from="evaluacion" data-edge-to="academica" data-edge-key="10" data-edge-id="evaluacion-academica" data-composition-points="808,332;837,332" data-composition-crossover="halo" data-composition-independent="true" d="M 808 332 L 837 332" class="a-dashed" data-animate="edge" style="--step:10" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
         </g>
+        <g data-graph-role="automatic-crossover" style="--step:11">
+          <path data-graph-role="automatic-crossover-underlay" d="M 953 332 L 982 332" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="academica" data-edge-to="pertenencia" data-edge-key="11" data-edge-id="academica-pertenencia" data-composition-points="953,332;982,332" data-composition-crossover="halo" data-composition-independent="true" d="M 953 332 L 982 332" class="a-security" data-animate="edge" style="--step:11" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
+        </g>
+        <path data-edge-from="matricula" data-edge-to="pertenencia" data-edge-key="12" data-edge-id="matricula-pertenencia" data-composition-points="315,364;315,540;1040,540;1040,364" d="M 315 364 L 315 532 Q 315 540 323 540 L 1032 540 Q 1040 540 1040 532 L 1040 364" class="a-security" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
+        <path data-edge-from="asistencia" data-edge-to="pertenencia" data-edge-key="13" data-edge-id="asistencia-pertenencia" data-composition-points="460,364;460,540;1040,540;1040,364" d="M 460 364 L 460 532 Q 460 540 468 540 L 1032 540 Q 1040 540 1040 532 L 1040 364" class="a-security" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
+        <path data-edge-from="evaluacion" data-edge-to="pertenencia" data-edge-key="14" data-edge-id="evaluacion-pertenencia" data-composition-points="750,364;750,540;1040,540;1040,364" d="M 750 364 L 750 532 Q 750 540 758 540 L 1032 540 Q 1040 540 1040 532 L 1040 364" class="a-security" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
+        <path data-edge-from="pertenencia" data-edge-to="mysql" data-edge-label="consultas filtradas" data-edge-key="15" data-edge-id="pertenencia-mysql" data-composition-points="1098,332;1215,332;1215,630;805,630" d="M 1098 332 L 1207 332 Q 1215 332 1215 340 L 1215 622 Q 1215 630 1207 630 L 805 630" class="a-default" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="auth" data-edge-to="mysql" data-edge-key="16" data-edge-id="auth-mysql" data-composition-points="170,364;170,560;605,560;605,600" d="M 170 364 L 170 552 Q 170 560 178 560 L 597 560 Q 605 560 605 568 L 605 600" class="a-default" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead)"/>
 
         <!-- Components -->
         <g id="node-nginx" data-node-id="nginx" data-node-label="Servidor web" tabindex="0" role="button" aria-label="Enfocar Servidor web, Nginx (nivel 2), Componente de arquitectura" aria-pressed="false" data-node-kind="security" data-node-sublabel="Nginx (nivel 2)" data-node-context="Componente de arquitectura">
@@ -5394,7 +5397,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <g id="node-mysql" data-node-id="mysql" data-node-label="Base de datos MySQL 8.0" tabindex="0" role="button" aria-label="Enfocar Base de datos MySQL 8.0, acceso mediante Eloquent ORM, Componente de arquitectura" aria-pressed="false" data-node-kind="database" data-node-sublabel="acceso mediante Eloquent ORM" data-node-context="Componente de arquitectura">
           <title>Base de datos MySQL 8.0 · acceso mediante Eloquent ORM · Componente de arquitectura</title>
           <rect x="405" y="600" width="400" height="60" rx="8" class="c-mask"/>
-          <rect x="405" y="600" width="400" height="60" rx="8" class="c-database" data-animate="node" style="--step:11" stroke-width="1.5"/>
+          <rect x="405" y="600" width="400" height="60" rx="8" class="c-database" data-animate="node" style="--step:12" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(411 606) scale(0.6875)">
             <ellipse cx="8" cy="4" rx="5" ry="2"/>
             <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
@@ -5437,7 +5440,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
 
 
-
+        <g data-detail="context" data-edge-from="pertenencia" data-edge-to="mysql" data-edge-label="consultas filtradas" data-edge-key="15" data-edge-id="pertenencia-mysql">
+          <rect x="1164.4" y="461" width="101.2" height="14" rx="3" class="c-mask"/>
+          <text x="1215" y="471" class="t-edge-default" font-size="8" text-anchor="middle">consultas filtradas</text>
+        </g>
 
 
         <!-- Boundary labels (foreground masks keep routes out of titles) -->
@@ -5665,7 +5671,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         </div>
         <ul>
           <li>Evaluación usa el año vigente, los periodos y las asignaciones de Gestión Académica (línea discontinua)</li>
-          <li>Los modelos con datos de alumnos declaran su regla de Pertenencia (ADR-011)</li>
+          <li>Matrícula, Gestión Académica, Asistencia y Evaluación tienen modelos con RequierePertenencia: sus consultas pasan por la regla (ADR-011)</li>
         </ul>
       </div>
 
