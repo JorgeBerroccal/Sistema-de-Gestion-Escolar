@@ -40,3 +40,36 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
 - **Qué se espera**: recordar al último estudiante mencionado dentro de la misma conversación, sin persistir nada. Un nombre en el mensaje manda sobre el recordado, y el alumno recordado se vuelve a validar contra los alumnos propios en cada mensaje (R-13).
 - **Prioridad**: Baja (opcional)
 - **Estado**: pendiente
+
+## Mediciones pendientes para el congelamiento (21-22/11)
+
+Mediciones de los atributos de calidad que hoy figuran como «No medido» o «Parcial» en [`04`](01-analisis-de-sistema/04-atributos-de-calidad.md) y [`08`](01-analisis-de-sistema/08-escenarios-atributos-calidad.md). Se hacen **después** de implementar los retoques (19-20/11), sobre el código que se congela. Con cada resultado se actualizan los estados de `04` y `08` en un PR pequeño; hasta entonces esos documentos siguen diciendo «No medido» o «Parcial».
+
+### M-01 · Usabilidad en móvil (AC08 / EQ-08)
+- **Qué se mide**: (a) que no haya desplazamiento horizontal a 360 px de ancho; (b) cuántas interacciones (clics o toques) lleva llegar a la boleta desde que el padre inicia sesión.
+- **Cómo**: modo dispositivo del navegador (DevTools) con ancho de 360 px, en staging o en local. Para (a), recorrer el menú, `/notas/mias` y la boleta, y comprobar que `document.documentElement.scrollWidth` no supera el ancho de la ventana. Para (b), contar las interacciones desde el inicio de sesión hasta la descarga de la boleta, con el Padre de Familia.
+- **Cuándo**: después del retoque R-02 (menú), porque cambia la navegación.
+- **Meta de diseño**: sin scroll horizontal a 360 px; 3 interacciones hasta la boleta.
+- **Estado**: pendiente
+
+### M-02 · Cobertura de la capa de servicios (AC07 / EQ-07)
+- **Qué se mide**: porcentaje de cobertura de líneas de las clases de servicio: `app/Academico/`, `app/Matricula/`, `app/Asistencia/`, `app/Evaluacion/`, `app/Asistente/` y `app/Autorizacion/`.
+- **Qué hace falta en el contenedor**: un controlador de cobertura. La imagen `docker/php/Dockerfile` (PHP 8.3-fpm) **no trae PCOV ni Xdebug**, y el CI usa `coverage: none`. Lo más simple es PCOV, instalado de forma temporal en el contenedor sin tocar la imagen ni el repositorio (`pecl install pcov`, `docker-php-ext-enable pcov`; se pierde al recrear el contenedor). Alternativa: Xdebug en modo `coverage`.
+- **Cómo**: con PCOV activo, `docker compose exec app ./vendor/bin/pest --coverage` (el `<source>` de `phpunit.xml` ya incluye `app/`). Para quedarse con la capa de servicios, tomar del informe las carpetas listadas arriba y calcular el promedio ponderado por líneas; guardar el informe en el PR de actualización de estados.
+- **Meta de diseño**: cobertura de servicios ≥ 80 %.
+- **Estado**: pendiente
+
+### M-03 · Cambio dentro de su módulo (AC05 / EQ-05)
+- **Qué se mide**: cuántos archivos toca un cambio real **fuera** del módulo responsable.
+- **Cómo**: sobre uno de los retoques ya integrado (por ejemplo R-01 o R-03, que pertenecen al módulo Asistente), ejecutar `git diff --stat <base>...<rama>` y clasificar cada archivo. Se consideran del módulo `app/Asistente/`, `app/Livewire/Asistente/`, `resources/views/livewire/asistente/`, `config/asistente.php` y sus pruebas en `tests/Feature/Asistente/`. Registrar el retoque elegido, el rango y el recuento de archivos fuera del módulo.
+- **Meta de diseño**: 0 archivos fuera del módulo responsable. Las pruebas `arch()` de Pest que menciona el diseño no existen; esta medición no las sustituye.
+- **Estado**: pendiente
+
+### No realizada: prueba con 5 usuarios (AC08)
+La meta de diseño de AC08 incluye que el 90 % de las tareas se completen con 5 usuarios. **No se realizó** y no forma parte de la lista de mediciones anteriores.
+
+Procedimiento previsto, por si se hiciera:
+1. Elegir 5 personas que representen al Padre de Familia, sin haber usado el sistema.
+2. Darles un celular (o el modo dispositivo a 360 px) y la tarea «encontrar la nota de tu hijo y descargar su boleta», sin ayuda.
+3. Registrar por persona si completó la tarea, cuántas interacciones usó y dónde dudó.
+4. La meta se cumple si 4 de 5 (80 %) como mínimo la completan; con 5 personas no hay un 90 % exacto, así que el resultado se reporta como «x de 5».
