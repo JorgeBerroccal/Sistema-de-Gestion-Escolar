@@ -35,7 +35,7 @@ Descomponer el contenedor **app** en sus módulos y mostrar de quién depende ca
 | Interfaz web | Todos los módulos | Cada pantalla invoca al servicio de su módulo |
 | Matrícula, Gestión Académica, Asistencia y Evaluación | Pertenencia | Sus modelos (`Alumno`, `Matricula`, `AsignacionDocente`, `Asistencia`, `CriterioEvaluacion`, `Nota`) usan el trait `RequierePertenencia` (líneas rojas) |
 | Pertenencia | MySQL | Añade el filtro de pertenencia a las consultas de esos modelos («consultas filtradas») |
-| Asistente virtual | Pertenencia | Indirecta: lee mediante `ConsultaNotas` y `ResumenAsistencia`, que aplican `visiblePara` |
+| Asistente virtual | Pertenencia | Indirecta (no dibujada): `ResolverAlumno` usa `MatriculaRegla::alumnosPropios` para elegir al alumno y `ConsultaNotas` aplica `visiblePara` a criterios y notas |
 | Evaluación | Gestión Académica | Año vigente, periodos y asignaciones (línea discontinua) |
 | Asistente virtual | Evaluación (`ConsultaNotas`) y Asistencia (`ResumenAsistencia`) | Armar el contexto autorizado (líneas rojas) |
 | Asistente | OpenRouter | Mediante `ProveedorIA` |
