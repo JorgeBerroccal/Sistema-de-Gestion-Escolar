@@ -134,7 +134,7 @@ Este documento conserva las diez decisiones del diseño inicial (ADR-001 a ADR-0
 - **Contexto:** los permisos, roles, escalas, tipos de documento y estados de asistencia son datos que el código necesita en todo entorno, y cada módulo agrega los suyos. En staging no puede haber pasos manuales (specs 003, 004, 005 y 006: «los permisos nuevos deben llegar al servidor en el despliegue»).
 - **Decisión:** el comando `php artisan sge:sincronizar-base` ejecuta una lista fija de seeders idempotentes (`RolesYPermisosSeeder`, `EscalasCalificacionSeeder`, `TiposDocumentoSeeder`, `EstadosAsistenciaSeeder`). `deploy/deploy.sh` lo corre después de `migrate`. Solo crea lo que falta y **nunca crea usuarios**: el administrador inicial y los datos de ejemplo van en seeders separados, y los de ejemplo rechazan producción. Un permiso solo se asigna a sus roles la primera vez que se crea, para no deshacer cambios del Administrador.
 - **Alternativas descartadas:** `migrate:fresh --seed` en cada despliegue (borra datos); crear los permisos a mano en el servidor (se olvida y genera diferencias entre entornos).
-- **Consecuencias:** los entornos convergen sin intervención. A cambio, los permisos eliminados o renombrados en una versión futura hay que limpiarlos a mano, y en staging el conteo de permisos puede diferir del seeder si se creó alguno a mano.
+- **Consecuencias:** los entornos convergen sin intervención. A cambio, los permisos eliminados o renombrados en una versión futura hay que limpiarlos a mano.
 - **Fuentes:** `app/Console/Commands/SincronizarBase.php`, `database/seeders/`, `deploy/deploy.sh`, `tests/Feature/Console/SincronizarBaseTest.php`, README («Datos base y de ejemplo»).
 
 ### ADR-013 — Despliegue con imágenes en GHCR y `deploy.sh` (nueva)

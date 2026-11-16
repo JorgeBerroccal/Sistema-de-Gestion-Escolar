@@ -114,7 +114,7 @@ Se agregan **Verificación** (cómo se probó), **Justificación de la medida** 
 | **Respuesta** | Las reglas de negocio se prueban de forma automática; el proveedor de IA se reemplaza por `ProveedorFalso` o `Http::fake()`. |
 | **Medida (diseño)** | 100 % de las reglas críticas con al menos una prueba; cobertura de servicios ≥ 80 %; suite en menos de 2 minutos. |
 | **Verificación** | `pest --ci` y `pint --test` en `.github/workflows/ci.yml` en cada push y pull request. |
-| **Estado real** | **Parcial.** Suite con 786 llamadas `it()`/`test()` (conteo estático) en `tests/Unit` y `tests/Feature`; el CI la ejecuta y bloquea con Pint. **Cobertura no medida** (`coverage: none`) y duración de la suite no registrada como criterio. La base de pruebas es MySQL, no SQLite. |
+| **Estado real** | **Parcial.** Suite de **905 pruebas pasadas (3763 aserciones) en 64,6 s** en el CI de `main` (ejecución 43665039564, commit `1b90fa1`): la duración cumple la meta de menos de 2 minutos. El CI la ejecuta y bloquea con Pint. **Cobertura no medida** (`coverage: none`). La base de pruebas es MySQL, no SQLite. Es parcial por la cobertura, que es parte de la medida. |
 
 ## EQ-08. Usabilidad: consulta desde el celular
 
@@ -171,6 +171,8 @@ Se agregan **Verificación** (cómo se probó), **Justificación de la medida** 
 | EQ-09 | Portabilidad | Que el sistema se despliegue en cualquier servidor con Docker. | AC09 | DA06 | Parcial |
 | EQ-10 | Trazabilidad | Que toda acción crítica quede registrada. | AC10 | DA08 | No cumplido |
 
+Los estados de este resumen juzgan la **medida** de cada escenario; los de [`04`](04-atributos-de-calidad.md) juzgan el **atributo**. Difieren en tres casos, explicados en la sección «Relación con los escenarios» de ese documento: EQ-05 (atributo parcial, medida no medida), EQ-09 (atributo cumplido, medida parcial) y EQ-10 (atributo parcial, medida no cumplida).
+
 ## Cómo se verificó
 
 | Punto | Comprobación | Resultado |
@@ -180,3 +182,4 @@ Se agregan **Verificación** (cómo se probó), **Justificación de la medida** 
 | Resultados de carga (EQ-03) | Lectura de `k6-sesion-2026-11-13.md` y del bloque SC-006 de la spec 001 | Cifras copiadas de las tablas de resultados de esos documentos. |
 | Reinicio y despliegue (EQ-04, EQ-09) | Lectura de `despliegue-y-vuelta-atras.md`, `migracion-fallida.md` y `docker-compose.prod.yml` | Tiempos y política de reinicio como se citan. |
 | Cobertura y CI (EQ-07) | Lectura de `.github/workflows/ci.yml` | `pest --ci`, `pint --test` y `coverage: none`. |
+| Número de pruebas y duración (EQ-07) | Registro del job `pruebas` de la ejecución 43665039564 de `main` (`gh api …/actions/jobs/<id>/logs`) | `Tests: 905 passed (3763 assertions)`, `Duration: 64.60s`. |

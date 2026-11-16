@@ -29,14 +29,28 @@ La columna **Estado real** indica qué se construyó y dónde está respaldado (
 
 ## Resumen por actor
 
-| Actor | Historias | Estado real |
-|-------|-----------|-------------|
-| Administrador | HU02, HU03, HU04, HU05, HU06, HU07, HU08, HU18 | Siete implementadas; HU18 parcial |
-| Director | HU10, HU17 | Ambas parciales |
-| Docente | HU09, HU11, HU12 | HU12 implementada; HU09 y HU11 modificadas |
-| Padre de Familia | HU13, HU15, HU16 | HU13 y HU16 implementadas; HU15 parcial |
+| Actor | Historia | Estado real |
+|-------|----------|-------------|
+| Administrador | HU02 | Implementada |
+| Administrador | HU03 | Implementada |
+| Administrador | HU04 | Implementada (sin logo) |
+| Administrador | HU05 | Implementada |
+| Administrador | HU06 | Implementada |
+| Administrador | HU07 | Implementada |
+| Administrador | HU08 | Implementada (por estados) |
+| Administrador | HU18 | **Parcial** |
+| Director | HU10 | **Parcial** |
+| Director | HU17 | **Parcial** |
+| Docente | HU09 | **Modificada** |
+| Docente | HU11 | **Modificada** |
+| Docente | HU12 | Implementada |
+| Padre de Familia | HU13 | Implementada |
+| Padre de Familia | HU15 | **Parcial** |
+| Padre de Familia | HU16 | Implementada |
 | Alumno | HU14 | Implementada |
 | Todos los usuarios | HU01 | Implementada |
+
+Total: 11 implementadas, 2 modificadas y 5 parciales; ninguna sin implementar por completo.
 
 ## Capacidades construidas que el análisis original no listó como historia
 
