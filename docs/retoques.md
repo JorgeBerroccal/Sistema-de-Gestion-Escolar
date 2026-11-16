@@ -72,4 +72,4 @@ Procedimiento previsto, por si se hiciera:
 1. Elegir 5 personas que representen al Padre de Familia, sin haber usado el sistema.
 2. Darles un celular (o el modo dispositivo a 360 px) y la tarea «encontrar la nota de tu hijo y descargar su boleta», sin ayuda.
 3. Registrar por persona si completó la tarea, cuántas interacciones usó y dónde dudó.
-4. La meta se cumple si 4 de 5 (80 %) como mínimo la completan; con 5 personas no hay un 90 % exacto, así que el resultado se reporta como «x de 5».
+4. Reportar el resultado como «x de 5 personas completaron la tarea» y compararlo con la meta de diseño (90 % de las tareas completadas).
