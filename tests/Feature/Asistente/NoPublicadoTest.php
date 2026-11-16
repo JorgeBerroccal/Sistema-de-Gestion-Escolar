@@ -1,7 +1,14 @@
 <?php
 
 use App\Asistente\AsistenteService;
+use App\Models\AnioEscolar;
 use App\Models\CierrePeriodo;
+
+/**
+ * Los valores de las notas del escenario salen en el contexto como `Criterio (peso %): valor`. Se buscan con ese formato y no
+ * como un número suelto: el nombre del año escolar lo genera la fábrica al azar (2000–2999) y un «15» puede aparecer en él.
+ */
+const NOTA_EN_CONTEXTO = '/\):\s*(15|10)\b/';
 
 function textoParaProveedor(array $e, $usuario, string $mensaje = '¿Cuáles son mis notas?'): string
 {
@@ -16,8 +23,18 @@ it('una nota de un periodo no cerrado no llega al proveedor', function () {
     $texto = textoParaProveedor($e, $e['alumno_usuario']);
 
     expect($texto)->toContain('ningún periodo publicado')->not->toContain('Práctica')->not->toContain('Examen')
-        ->not->toContain('13,00')->not->toContain('15');
+        ->not->toContain('13,00')->not->toMatch(NOTA_EN_CONTEXTO);
 });
+
+it('la comprobación de notas no publicadas no depende del nombre del año escolar', function (string $anio) {
+    $e = escenarioAsistente(cerrar: false);
+    AnioEscolar::query()->update(['nombre' => $anio]);
+
+    $texto = textoParaProveedor($e, $e['alumno_usuario']);
+
+    expect($texto)->toContain("Matrícula {$anio}")->toContain('ningún periodo publicado')
+        ->not->toContain('Práctica')->not->toContain('Examen')->not->toContain('13,00')->not->toMatch(NOTA_EN_CONTEXTO);
+})->with(['2015', '2150', '2115', '2010']);
 
 it('un periodo reabierto después de publicado deja de estar disponible para el asistente', function () {
     $e = escenarioAsistente();
@@ -32,7 +49,8 @@ it('un periodo reabierto después de publicado deja de estar disponible para el 
 it('las notas del periodo publicado sí llegan', function () {
     $e = escenarioAsistente();
 
-    expect(textoParaProveedor($e, $e['padre'], 'notas de Ana'))->toContain('Periodo 1')->toContain('13,00')->toContain('Práctica');
+    expect(textoParaProveedor($e, $e['padre'], 'notas de Ana'))->toContain('Periodo 1')->toContain('13,00')->toContain('Práctica')
+        ->toMatch(NOTA_EN_CONTEXTO);
 });
 
 it('un usuario con permisos de ver todo y asistente.usar solo recibe lo suyo', function () {

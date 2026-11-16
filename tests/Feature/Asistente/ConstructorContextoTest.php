@@ -1,6 +1,7 @@
 <?php
 
 use App\Asistente\ConstructorContexto;
+use App\Models\AnioEscolar;
 use App\Models\Asistencia;
 
 function contextoDe(array $e, $usuario, $alumno): string
@@ -57,6 +58,18 @@ it('no contiene documento, fecha de nacimiento ni correos', function () {
 
     $texto = contextoDe($e, $e['padre'], $e['ana']);
 
-    expect($texto)->not->toContain('47851236')->not->toContain('2011')->not->toContain('17/03')
-        ->not->toContain('reconocible@ejemplo.test')->not->toContain('@');
+    // La fecha de nacimiento se busca completa y en sus formatos habituales: un «2011» suelto puede salir del nombre del año
+    // escolar, que la fábrica genera al azar (2000–2999).
+    expect($texto)->not->toContain('47851236')->not->toContain('2011-03-17')->not->toContain('17/03')->not->toContain('17-03')
+        ->not->toContain('marzo')->not->toContain('reconocible@ejemplo.test')->not->toContain('@');
+});
+
+it('la comprobación de datos personales no depende del nombre del año escolar', function () {
+    $e = escenarioAsistente();
+    AnioEscolar::query()->update(['nombre' => '2011']);
+
+    $texto = contextoDe($e, $e['padre'], $e['ana']);
+
+    expect($texto)->toContain('Matrícula 2011')->not->toContain('47851236')->not->toContain('2011-03-17')->not->toContain('17/03')
+        ->not->toContain('17-03')->not->toContain('marzo')->not->toContain('@');
 });
