@@ -61,7 +61,14 @@ Mediciones de los atributos de calidad que hoy figuran como «No medido» o «Pa
 
 ### M-03 · Cambio dentro de su módulo (AC05 / EQ-05)
 - **Qué se mide**: cuántos archivos toca un cambio real **fuera** del módulo responsable.
-- **Cómo**: sobre uno de los retoques ya integrado (por ejemplo R-01 o R-03, que pertenecen al módulo Asistente), ejecutar `git diff --stat <base>...<rama>` y clasificar cada archivo. Se consideran del módulo `app/Asistente/`, `app/Livewire/Asistente/`, `resources/views/livewire/asistente/`, `config/asistente.php` y sus pruebas en `tests/Feature/Asistente/`. Registrar el retoque elegido, el rango y el recuento de archivos fuera del módulo.
+- **Cómo**: sobre uno de los retoques ya integrado (por ejemplo R-01 o R-03, que pertenecen al módulo Asistente), ejecutar `git diff --stat <base>...<rama>` y clasificar cada archivo con la regla de abajo. Registrar el retoque elegido, el rango y el recuento de archivos fuera del módulo.
+- **Qué cuenta como «del módulo»** (regla fija para que la medición sea repetible; el ejemplo es el módulo Asistente):
+  - carpeta de dominio: `app/Asistente/`
+  - componentes Livewire: `app/Livewire/Asistente/`
+  - vistas: `resources/views/livewire/asistente/`
+  - configuración: `config/asistente.php`
+  - pruebas: `tests/Feature/Asistente/`
+  - Todo archivo que no esté en esa lista cuenta como **fuera del módulo**, aunque sea un cambio mínimo (rutas, migraciones, traducciones, `docs/`, otros módulos, pruebas de otros módulos). Se informa la lista completa de esos archivos, no solo el número.
 - **Meta de diseño**: 0 archivos fuera del módulo responsable. Las pruebas `arch()` de Pest que menciona el diseño no existen; esta medición no las sustituye.
 - **Estado**: pendiente
 
