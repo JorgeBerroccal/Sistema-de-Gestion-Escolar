@@ -69,6 +69,30 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
 - **Prioridad**: Alta
 - **Estado**: pendiente (se implementa desde el 19/11)
 
+### R-06 · Permisos por defecto del Director
+- **Pantalla**: menú del Director (Usuarios, Roles y Permisos junto a los catálogos académicos).
+- **Qué se observa**: el Director ve en el menú Usuarios, Roles y Permisos; supervisa, no administra accesos.
+- **Verificación previa** (hecha el 16/11/2026 sobre `database/seeders/RolesYPermisosSeeder.php`):
+
+  | Permiso del Director hoy | Dónde se decidió |
+  |---|---|
+  | `usuarios.ver`, `roles.ver` | spec 001, tabla «Permisos base del módulo» (Ver usuarios y Ver roles y permisos: Administrador y Director) |
+  | `academico.ver`, `asignaciones.ver_todas` | spec 003, FR-021 y FR-023 (el Director solo consulta todo) |
+  | `matricula.ver_todas` | spec 004, FR-024 y la asignación por defecto de los permisos del módulo |
+  | `asistencia.ver_todas` | spec 005, research R-06 y FR-012 (el Director solo consulta) |
+  | `notas.ver_todas`, `boletas.ver_todas` | spec 006, research R-06 y FR-012 y FR-013 (el Director solo consulta) |
+
+  No hay otras: el Director no tiene permisos de gestión, de «propias» ni `asistente.usar` (spec 007).
+- **Solo lectura confirmada** (por lectura de código; no se ejecutó una prueba nueva): en Usuarios, Roles y Permisos el Director solo tiene `usuarios.ver` y `roles.ver`. Las rutas de crear y editar usuarios exigen `usuarios.crear` y `usuarios.editar`; desactivar exige `usuarios.desactivar`; crear o editar permisos exige `permisos.gestionar`; asignar permisos exige `roles.asignar_permisos`. Las vistas ocultan o deshabilitan esos controles y los componentes Livewire repiten `authorize()`. Ninguno de esos permisos se asigna al Director. Ninguna spec exige que el Director vea usuarios: la spec 001 lo incluye en la tabla de permisos base, y lo usa solo como ejemplo en la prueba independiente de la historia 4 (quitarle «ver usuarios»).
+- **Propuesta a evaluar**: quitar por defecto al Director `usuarios.ver` y `roles.ver` (que abren Usuarios, Roles y Permisos). Mantener `academico.ver`, `asignaciones.ver_todas`, `matricula.ver_todas` (alumnos y nóminas), `asistencia.ver_todas` y `notas.ver_todas`, y también `boletas.ver_todas` (consulta de boletas, parte de la supervisión; confirmar). No se crean permisos nuevos más finos.
+- **Al implementar**:
+  - Cambiar solo el seeder (`RolesYPermisosSeeder::PERMISOS` y la descripción del rol, hoy «Consulta usuarios y roles.»), que rige las instalaciones nuevas.
+  - Ajustar las pruebas que fijan los permisos del Director: `tests/Unit/Seeders/RolesYPermisosDefinicionTest.php` y `tests/Feature/Seeders/RolesYPermisosSeederTest.php` (esta usa `usuarios.ver` del Director como ejemplo de no deshacer cambios del Administrador; cambiar el permiso del ejemplo). Añadir una prueba de los permisos por defecto del Director.
+  - Documentar que en instalaciones existentes, como staging, el ajuste lo hace el Administrador desde Roles, porque `sge:sincronizar-base` no quita permisos ya asignados (el seeder solo asigna un permiso a sus roles la primera vez que lo crea).
+  - Actualizar las referencias a lo que ve el Director en `docs/`.
+- **Prioridad**: Media
+- **Estado**: pendiente (se implementa desde el 19/11)
+
 ## Mediciones pendientes para el congelamiento (21-22/11)
 
 Mediciones de los atributos de calidad que hoy figuran como «No medido» o «Parcial» en [`04`](01-analisis-de-sistema/04-atributos-de-calidad.md) y [`08`](01-analisis-de-sistema/08-escenarios-atributos-calidad.md). Se hacen **después** de implementar los retoques (19-20/11), sobre el código que se congela. Con cada resultado se actualizan los estados de `04` y `08` en un PR pequeño; hasta entonces esos documentos siguen diciendo «No medido» o «Parcial».
