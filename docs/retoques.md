@@ -32,7 +32,7 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
 - **Qué se observa**: con la ventana angosta el menú se desborda y los ítems quedan blancos sobre fondo claro.
 - **Qué se espera**: ítems agrupados en secciones desplegables según los permisos del usuario, adaptable a pantallas pequeñas y sin nombres de rol en el código (SC-003 y SC-005). Revisar las pruebas de menú de los Módulos 1 y 2.
 - **Prioridad**: Media
-- **Estado**: pendiente
+- **Estado**: absorbido por R-04 (el menú lateral agrupado y colapsable cubre este retoque)
 
 ### R-03 · Pregunta de seguimiento sin nombre vuelve a pedir aclaración (H3)
 - **Pantalla**: `/asistente` (apoderado con varios hijos)
@@ -41,6 +41,22 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
 - **Prioridad**: Baja (opcional)
 - **Estado**: pendiente
 
+### R-04 · Rediseño visual (layout, menú, Inicio y login)
+- **Pantalla**: layout general, Inicio, login y, a través de componentes, el resto de pantallas. Absorbe R-02 (menú).
+- **Qué se observa**: el menú es una fila de enlaces de texto que se desborda; el Inicio está casi vacío; el login es básico.
+- **Qué se espera**: solo con el stack actual (Tailwind 4, Alpine con Livewire, Blade), sin dependencias nuevas.
+  1. **Menú lateral** agrupado por secciones (Administración, Gestión académica, Matrícula, Asistencia, Evaluación, Asistente), con íconos y colapsable en pantallas angostas. Grupos e ítems según permisos, sin nombres de rol en el código.
+  2. **Inicio con tarjetas** agrupadas (ícono, nombre, descripción corta), generadas desde `config/menu.php` y filtradas por los mismos permisos que el menú, de modo que cada rol vea su propio Inicio. Una prueba verifica que las tarjetas del Inicio coinciden con los ítems del menú para cada rol.
+  3. **Login**: botón para mostrar u ocultar la contraseña (Alpine), ícono genérico y nombre de la institución tomado de la base de datos. Sin «Recordarme».
+  4. **Encabezado** con nombre del usuario, rol y año escolar vigente.
+  5. **Indicadores en el Inicio** solo si son datos reales y respetan permisos (por ejemplo, alumnos matriculados en el año vigente, secciones, docentes). Ningún indicador inventado.
+  6. **Íconos**: SVG de Heroicons (licencia MIT) copiados como componentes Blade, con la licencia indicada en el repositorio.
+  7. **Componentes Blade reutilizables** (tarjeta, botón, tabla, alerta, etiqueta). Las demás pantallas heredan el estilo a través de ellos; no se rediseñan una por una.
+- **Criterio**: sin desplazamiento horizontal a 360 px (relacionado con [M-01](#m-01--usabilidad-en-móvil-ac08--eq-08)).
+- **Orden de trabajo**: primero layout, menú, Inicio y login, con capturas en escritorio y en 360 px para revisión del responsable; después el resto de pantallas.
+- **Prioridad**: Alta
+- **Estado**: pendiente (se implementa desde el 19/11)
+
 ## Mediciones pendientes para el congelamiento (21-22/11)
 
 Mediciones de los atributos de calidad que hoy figuran como «No medido» o «Parcial» en [`04`](01-analisis-de-sistema/04-atributos-de-calidad.md) y [`08`](01-analisis-de-sistema/08-escenarios-atributos-calidad.md). Se hacen **después** de implementar los retoques (19-20/11), sobre el código que se congela. Con cada resultado se actualizan los estados de `04` y `08` en un PR pequeño; hasta entonces esos documentos siguen diciendo «No medido» o «Parcial».
@@ -48,7 +64,7 @@ Mediciones de los atributos de calidad que hoy figuran como «No medido» o «Pa
 ### M-01 · Usabilidad en móvil (AC08 / EQ-08)
 - **Qué se mide**: (a) que no haya desplazamiento horizontal a 360 px de ancho; (b) cuántas interacciones (clics o toques) lleva llegar a la boleta desde que el padre inicia sesión.
 - **Cómo**: modo dispositivo del navegador (DevTools) con ancho de 360 px, en staging o en local. Para (a), recorrer el menú, `/notas/mias` y la boleta, y comprobar que `document.documentElement.scrollWidth` no supera el ancho de la ventana. Para (b), contar las interacciones desde el inicio de sesión hasta la descarga de la boleta, con el Padre de Familia.
-- **Cuándo**: después del retoque R-02 (menú), porque cambia la navegación.
+- **Cuándo**: después del retoque R-04 (que absorbe R-02, menú), porque cambia la navegación.
 - **Meta de diseño**: sin scroll horizontal a 360 px; 3 interacciones hasta la boleta.
 - **Estado**: pendiente
 
