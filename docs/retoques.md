@@ -57,6 +57,18 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
 - **Prioridad**: Alta
 - **Estado**: pendiente (se implementa desde el 19/11)
 
+### R-05 · Cambio de contraseña
+- **Pantalla**: opción «Mi cuenta» en el encabezado (se integra al rediseño de R-04), para todo usuario autenticado, y bloqueo de acceso mientras haya un cambio pendiente.
+- **Qué se observa**: el usuario no puede cambiar su contraseña; solo el Administrador la restablece, y la contraseña inicial sigue vigente.
+- **Qué se espera**:
+  1. **Cambio voluntario**: en «Mi cuenta», pedir la contraseña actual, la nueva y su confirmación, con las mismas reglas de longitud del Módulo 1. Al cambiarla, cerrar las demás sesiones del usuario.
+  2. **Cambio obligatorio en el primer ingreso**: cuando el Administrador crea una cuenta o restablece su contraseña, el usuario debe definir una nueva antes de acceder a cualquier otra pantalla.
+  3. **Datos oficiales**: no se permite editar nombres, apellidos ni documento (están a cargo del Administrador).
+  4. **Sin recuperación por correo**: el Administrador restablece la contraseña y se vuelve a exigir el cambio.
+  5. **Pruebas**: incluyen que la contraseña actual incorrecta se rechaza y que un usuario con cambio pendiente no puede entrar a otras rutas.
+- **Prioridad**: Alta
+- **Estado**: pendiente (se implementa desde el 19/11)
+
 ## Mediciones pendientes para el congelamiento (21-22/11)
 
 Mediciones de los atributos de calidad que hoy figuran como «No medido» o «Parcial» en [`04`](01-analisis-de-sistema/04-atributos-de-calidad.md) y [`08`](01-analisis-de-sistema/08-escenarios-atributos-calidad.md). Se hacen **después** de implementar los retoques (19-20/11), sobre el código que se congela. Con cada resultado se actualizan los estados de `04` y `08` en un PR pequeño; hasta entonces esos documentos siguen diciendo «No medido» o «Parcial».
@@ -96,3 +108,15 @@ Procedimiento previsto, por si se hiciera:
 2. Darles un celular (o el modo dispositivo a 360 px) y la tarea «encontrar la nota de tu hijo y descargar su boleta», sin ayuda.
 3. Registrar por persona si completó la tarea, cuántas interacciones usó y dónde dudó.
 4. Reportar el resultado como «x de 5 personas completaron la tarea» y compararlo con la meta de diseño (90 % de las tareas completadas).
+
+## Trabajo futuro (no se implementa)
+
+### F-01 · Importación masiva de alumnos, apoderados y cuentas
+- **Limitación conocida**: hoy alumnos, apoderados y cuentas se crean uno por uno. La importación masiva desde un archivo quedó **fuera de alcance** en la [spec 003](../specs/003-gestion-academica-base/spec.md) (importación masiva desde Excel) y **no se implementa** antes del congelamiento.
+- **Diseño mínimo previsto**, para incluirlo en la documentación durante el congelamiento:
+  1. **Carga de archivo** por parte del Administrador.
+  2. **Validación** de cada fila antes de crear nada.
+  3. **Vista previa con errores**: se muestran las filas válidas y las que fallan, con el motivo de cada error.
+  4. **Creación todo o nada**: si alguna fila falla, no se crea ninguna.
+  5. **Contraseñas iniciales con cambio obligatorio**, apoyándose en el cambio obligatorio de R-05.
+- **Estado**: no implementado (trabajo futuro)
