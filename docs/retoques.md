@@ -96,6 +96,21 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
 - **Prioridad**: Media
 - **Estado**: pendiente (se implementa desde el 19/11)
 
+### R-07 · Identidad del asistente virtual
+- **Pantalla**: `/asistente` (cualquier rol con `asistente.usar`). Se implementa junto con R-04.
+- **Qué se observa**: el asistente no tiene nombre ni identidad visual; el chat arranca vacío.
+- **Qué se espera**:
+  1. **Nombre configurable** con la variable de entorno `ASISTENTE_NOMBRE`, con «Yachay» (quechua: saber, aprender) como valor por defecto. Se agrega a `config/asistente.php` y a la lista explícita de variables de `docker-compose.prod.yml`, para que la cubra `tests/Unit/Config/VariablesEnComposeTest.php`.
+  2. **Avatar propio y simple**: SVG original, no un personaje conocido, junto a los mensajes del asistente; el encabezado del chat muestra el nombre.
+  3. **Saludo inicial** con el nombre y lo que puede responder (notas, asistencia, matrícula y sección).
+  4. **Preguntas sugeridas** como botones bajo el saludo; al hacer clic envían la pregunta.
+  5. **Indicador «<nombre> está escribiendo…»** mientras llega la respuesta.
+  6. **Instrucciones del modelo**: usan el nombre configurado para presentarse.
+  7. **Sin cambios**: se mantiene el aviso de que las respuestas las genera una IA, y el asistente no debe presentarse como una persona.
+- **Pruebas**: el nombre configurado aparece en el chat y en las instrucciones del modelo, y el valor por defecto es «Yachay».
+- **Prioridad**: Media
+- **Estado**: pendiente (se implementa desde el 19/11, junto con R-04)
+
 ## Mediciones pendientes para el congelamiento (21-22/11)
 
 Mediciones de los atributos de calidad que hoy figuran como «No medido» o «Parcial» en [`04`](01-analisis-de-sistema/04-atributos-de-calidad.md) y [`08`](01-analisis-de-sistema/08-escenarios-atributos-calidad.md). Se hacen **después** de implementar los retoques (19-20/11), sobre el código que se congela. Con cada resultado se actualizan los estados de `04` y `08` en un PR pequeño; hasta entonces esos documentos siguen diciendo «No medido» o «Parcial».
