@@ -94,7 +94,8 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
     - Comprobación previa (16/11, por búsqueda en el código): `usuarios.ver` y `roles.ver` solo se usan en las rutas y componentes de `/admin/usuarios`, `/admin/roles` y `/admin/permisos`, y en sus ítems de `config/menu.php`. Ninguna pantalla de asignaciones, matrícula, asistencia, notas o boletas los consulta. Falta la prueba en ejecución.
     - `database/seeders/LoadTestSeeder.php` usa `usuarios.ver` para un rol propio de la prueba de carga, sin relación con el Director.
 - **Prioridad**: Media
-- **Estado**: implementado el 19/11 en la rama `retoques` (seeder, pruebas y documentación). En instalaciones existentes, como staging, el Administrador debe quitar `usuarios.ver` y `roles.ver` al Director desde Roles, porque `sge:sincronizar-base` no quita permisos ya asignados.
+- **Estado**: implementado el 19/11 en la rama `retoques` (seeder, pruebas y documentación). En instalaciones existentes (local y staging) el ajuste se hace desde Roles, porque `sge:sincronizar-base` no quita permisos ya asignados: el Administrador quita `usuarios.ver` y `roles.ver` al Director.
+  - **Evidencia (19/11, responsable)**: en la base local, anterior a R-06, el Director seguía con Usuarios, Roles y Permisos. Se los quitó como Administrador desde Roles, volvió a entrar como `director.demo` y la sección Administración desapareció del Inicio y del menú; el resto de sus pantallas funciona bien.
 
 ### R-07 · Identidad del asistente virtual
 - **Pantalla**: `/asistente` (cualquier rol con `asistente.usar`). Se implementa junto con R-04.
