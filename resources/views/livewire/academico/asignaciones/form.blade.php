@@ -3,11 +3,11 @@
 
     <form wire:submit="guardar" class="max-w-2xl space-y-4 rounded bg-white p-6 shadow">
         @error('general')
-            <p class="rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+            <x-alerta tipo="error">{{ $message }}</x-alerta>
         @enderror
 
         @if ($vigente === null)
-            <p class="rounded bg-yellow-100 p-3 text-sm text-yellow-800">No hay un año escolar vigente; márcalo en «Años escolares» antes de asignar docentes.</p>
+            <x-alerta tipo="aviso">No hay un año escolar vigente; márcalo en «Años escolares» antes de asignar docentes.</x-alerta>
         @elseif ($asignacion)
             <p class="text-sm">Curso <strong>{{ $asignacion->curso->nombre }}</strong> en {{ $asignacion->seccion->grado->nombre }} {{ $asignacion->seccion->identificador }};
                 docente actual: {{ $asignacion->usuario->nombre_completo }}.</p>
@@ -56,7 +56,7 @@
             </div>
 
             <div class="flex gap-3">
-                <button type="submit" class="rounded bg-gray-800 px-4 py-2 text-white">{{ $reasignando ? 'Reasignar' : 'Asignar' }}</button>
+                <x-boton type="submit">{{ $reasignando ? 'Reasignar' : 'Asignar' }}</x-boton>
                 <a href="{{ route('academico.asignaciones.index') }}" class="px-4 py-2 underline">Cancelar</a>
             </div>
         @endif

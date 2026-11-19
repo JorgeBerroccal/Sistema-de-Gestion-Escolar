@@ -2,16 +2,16 @@
     <div class="mb-4 flex items-center justify-between gap-4">
         <h1 class="text-2xl font-semibold">Años escolares</h1>
         @can('academico.gestionar')
-            <a href="{{ route('academico.anios.create') }}" class="rounded bg-gray-800 px-3 py-2 text-white">Crear año escolar</a>
+            <x-boton href="{{ route('academico.anios.create') }}">Crear año escolar</x-boton>
         @endcan
     </div>
 
     @error('general')
-        <p class="mb-4 rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+        <x-alerta tipo="error" class="mb-4">{{ $message }}</x-alerta>
     @enderror
 
-    <table class="w-full bg-white text-left shadow">
-        <thead class="bg-gray-200 text-sm">
+    <x-tabla>
+        <thead class="bg-slate-100 text-xs uppercase text-slate-600">
             <tr>
                 <th class="p-2">Año</th>
                 <th class="p-2">Inicio</th>
@@ -56,7 +56,7 @@
                 <tr><td colspan="6" class="p-4 text-center text-gray-500">Aún no hay años escolares.</td></tr>
             @endforelse
         </tbody>
-    </table>
+    </x-tabla>
 
     <div class="mt-4">{{ $anios->links() }}</div>
 </div>

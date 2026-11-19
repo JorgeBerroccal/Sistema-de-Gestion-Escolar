@@ -2,12 +2,12 @@
     <div class="mb-4 flex items-center justify-between gap-4">
         <h1 class="text-2xl font-semibold">{{ $veTodas ? 'Asignaciones' : 'Mis asignaciones' }}</h1>
         @can('asignaciones.gestionar')
-            <a href="{{ route('academico.asignaciones.create') }}" class="rounded bg-gray-800 px-3 py-2 text-white">Asignar docente</a>
+            <x-boton href="{{ route('academico.asignaciones.create') }}">Asignar docente</x-boton>
         @endcan
     </div>
 
     @error('general')
-        <p class="mb-4 rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+        <x-alerta tipo="error" class="mb-4">{{ $message }}</x-alerta>
     @enderror
 
     <div class="mb-3 flex flex-wrap gap-3">
@@ -45,8 +45,8 @@
         @endif
     </div>
 
-    <table class="w-full bg-white text-left shadow">
-        <thead class="bg-gray-200 text-sm">
+    <x-tabla>
+        <thead class="bg-slate-100 text-xs uppercase text-slate-600">
             <tr>
                 <th class="p-2">Año</th><th class="p-2">Nivel</th><th class="p-2">Grado y sección</th>
                 <th class="p-2">Curso</th><th class="p-2">Docente</th><th class="p-2">Acciones</th>
@@ -62,7 +62,7 @@
                     <td class="p-2">
                         {{ $asignacion->usuario->nombre_completo }}
                         @if ($asignacion->pendiente_reasignar)
-                            <span class="ml-1 rounded bg-yellow-100 px-2 py-0.5 text-xs text-yellow-800">Pendiente de reasignar</span>
+                            <x-etiqueta tipo="aviso" class="ml-1">Pendiente de reasignar</x-etiqueta>
                         @endif
                     </td>
                     <td class="flex gap-3 p-2">
@@ -77,7 +77,7 @@
                 <tr><td colspan="6" class="p-4 text-center text-gray-500">No hay asignaciones para mostrar.</td></tr>
             @endforelse
         </tbody>
-    </table>
+    </x-tabla>
 
     <div class="mt-4">{{ $asignaciones->links() }}</div>
 </div>
