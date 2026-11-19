@@ -105,7 +105,7 @@ it('un usuario sin vínculos ve una lista vacía, nunca datos de otros', functio
     $sinVinculos = usuarioConRolDeSeeder('Padre de Familia');
 
     Livewire::actingAs($sinVinculos)->test(MisAlumnos::class)
-        ->assertSee('No tienes alumnos vinculados')->assertDontSee('Hijo Visible')->assertDontSee('Otro Oculto');
+        ->assertSee('Tu cuenta todavía no tiene estudiantes vinculados')->assertDontSee('Hijo Visible')->assertDontSee('Otro Oculto');
 });
 
 it('el menú muestra a cada rol solo sus ítems de matrícula', function () {

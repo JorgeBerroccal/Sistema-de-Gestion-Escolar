@@ -5,6 +5,9 @@ namespace App\Livewire\Asistente\Chat;
 use App\Asistente\AsistenteService;
 use App\Asistente\Disponibilidad;
 use App\Asistente\ResultadoAsistente;
+use App\Autorizacion\Pertenencia\Reglas\MatriculaRegla;
+use App\Matricula\VistaPropia;
+use App\Models\Alumno;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\View\View;
@@ -55,7 +58,13 @@ class Index extends Component
 
     public function render(Disponibilidad $disponibilidad): View
     {
-        return view('livewire.asistente.chat.index', ['noDisponible' => $disponibilidad->verificar()]);
+        $usuario = Auth::user();
+
+        return view('livewire.asistente.chat.index', [
+            'noDisponible' => $disponibilidad->verificar(),
+            'avisoSinVinculo' => $usuario && ! Alumno::query()->whereIn('alumnos.id', MatriculaRegla::alumnosPropios($usuario))->exists()
+                ? VistaPropia::avisoSinVinculo($usuario) : null,
+        ]);
     }
 
     private function autorizar(): void

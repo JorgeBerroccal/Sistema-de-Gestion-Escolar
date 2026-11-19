@@ -5,6 +5,7 @@ namespace App\Livewire\Evaluacion\Propia;
 use App\Autorizacion\Pertenencia\Reglas\MatriculaRegla;
 use App\Evaluacion\ConsultaNotas;
 use App\Evaluacion\EvaluacionIncumplida;
+use App\Matricula\VistaPropia;
 use App\Models\Alumno;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
@@ -89,6 +90,7 @@ class Index extends Component
 
         return view('livewire.evaluacion.propia.index', [
             'hijos' => $hijos,
+            'avisoSinVinculo' => $hijos->isEmpty() ? VistaPropia::avisoSinVinculo($usuario) : null,
             'alumnoActual' => $alumno,
             'periodos' => $periodos,
             'datos' => $datos,

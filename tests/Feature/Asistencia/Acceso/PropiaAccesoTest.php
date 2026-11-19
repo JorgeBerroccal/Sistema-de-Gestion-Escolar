@@ -45,7 +45,7 @@ it('un alumno ajeno por la dirección da 403', function () {
 it('un usuario sin vínculos ve la lista vacía y sin controles de edición', function () {
     $sinVinculos = usuarioConPermisos(['asistencia.ver_propia']);
 
-    Livewire::actingAs($sinVinculos)->test(Index::class)->assertSee('No tienes alumnos vinculados')
+    Livewire::actingAs($sinVinculos)->test(Index::class)->assertSee('Tu cuenta todavía no tiene fichas ni estudiantes vinculados')
         ->assertDontSee('Guardar asistencia')->assertDontSee('Justificar');
 });
 

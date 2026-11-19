@@ -6,7 +6,7 @@
     @endif
 
     @if ($hijos->isEmpty())
-        <p class="rounded bg-white p-4 text-gray-500 shadow">No tienes alumnos vinculados.</p>
+        <x-alerta tipo="aviso" data-sin-vinculo>{{ $avisoSinVinculo }}</x-alerta>
     @else
         <div class="mb-4 flex flex-wrap items-center gap-4">
             @if ($hijos->count() > 1)

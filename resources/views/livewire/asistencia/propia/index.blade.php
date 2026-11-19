@@ -2,7 +2,7 @@
     <h1 class="mb-4 text-2xl font-semibold">Mi asistencia</h1>
 
     @if ($alumnos->isEmpty())
-        <p class="rounded bg-white p-4 text-center text-gray-500 shadow">No tienes alumnos vinculados.</p>
+        <x-alerta tipo="aviso" data-sin-vinculo>{{ $avisoSinVinculo }}</x-alerta>
     @else
         <div class="mb-4 flex flex-wrap gap-4">
             <div>
