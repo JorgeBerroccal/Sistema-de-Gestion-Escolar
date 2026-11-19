@@ -111,6 +111,24 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
 - **Prioridad**: Media
 - **Estado**: pendiente (se implementa desde el 19/11, junto con R-04)
 
+### R-08 · Vistas propias del alumno
+- **Pantalla**: «Mi ficha» (`/matricula/mis-alumnos`), «Mi asistencia», «Mis notas» y `/asistente`, con una cuenta con `matricula.ser_alumno` o `matricula.ser_apoderado`. Va con R-04.
+- **Qué se observa** (revisado por lectura de código el 19/11/2026):
+  - «Mi ficha» usa para el alumno la misma tabla del apoderado, con columna Acciones («Ver ficha e historial»). Sin ficha vinculada muestra «No tienes alumnos vinculados.», redactado para apoderados.
+  - «Mi asistencia» y «Mis notas» repiten ese mismo mensaje.
+  - El asistente responde «No tienes estudiantes vinculados a tu cuenta, así que no tengo información para consultar.» (`ResolverAlumno`), también en plural.
+  - Solo el título de «Mi ficha» depende del permiso; el resto de los textos no.
+- **Qué se espera**:
+  1. **Textos según el permiso, sin nombres de rol**: con `matricula.ser_alumno` se habla en primera persona de la propia ficha; con `matricula.ser_apoderado`, de los estudiantes a cargo. Si la cuenta tiene ambos permisos, se usa el texto neutro actual («Mis alumnos»).
+  2. **«Mi ficha» del alumno** es una tarjeta con sus datos (nombre, documento) y su matrícula vigente, sin tabla ni columna Acciones. El apoderado conserva su lista.
+  3. **Sin ficha vinculada**, aviso claro en todas sus pantallas (Mi ficha, Mi asistencia, Mis notas y asistente):
+     - Alumno: «Tu cuenta todavía no está vinculada a tu ficha de alumno. Comunícate con la administración del colegio.»
+     - Apoderado sin estudiantes: aviso equivalente, con su propio texto (por ejemplo, «Tu cuenta todavía no tiene estudiantes vinculados. Comunícate con la administración del colegio.»).
+     - El aviso va en un componente Blade de alerta de R-04, reutilizado por las cuatro pantallas.
+  4. **Pruebas** para ambos casos: alumno con y sin ficha, y apoderado con y sin estudiantes, en las cuatro pantallas. Se verifica el texto y que el alumno con ficha no ve la columna Acciones.
+- **Prioridad**: Alta
+- **Estado**: pendiente (se implementa desde el 19/11, junto con R-04)
+
 ## Mediciones pendientes para el congelamiento (21-22/11)
 
 Mediciones de los atributos de calidad que hoy figuran como «No medido» o «Parcial» en [`04`](01-analisis-de-sistema/04-atributos-de-calidad.md) y [`08`](01-analisis-de-sistema/08-escenarios-atributos-calidad.md). Se hacen **después** de implementar los retoques (19-20/11), sobre el código que se congela. Con cada resultado se actualizan los estados de `04` y `08` en un PR pequeño; hasta entonces esos documentos siguen diciendo «No medido» o «Parcial».
