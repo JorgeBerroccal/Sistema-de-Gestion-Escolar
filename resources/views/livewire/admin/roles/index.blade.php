@@ -1,8 +1,8 @@
 <div>
     <h1 class="mb-4 text-2xl font-semibold">Roles</h1>
 
-    <table class="w-full bg-white text-left shadow">
-        <thead class="bg-gray-200 text-sm">
+    <x-tabla>
+        <thead class="bg-slate-100 text-xs uppercase text-slate-600">
             <tr>
                 <th class="p-2">Rol</th>
                 <th class="p-2">Descripción</th>
@@ -22,5 +22,5 @@
                 </tr>
             @endforeach
         </tbody>
-    </table>
+    </x-tabla>
 </div>

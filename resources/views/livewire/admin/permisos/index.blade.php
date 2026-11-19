@@ -19,12 +19,12 @@
                 <input id="descripcion" type="text" wire:model="descripcion" class="mt-1 w-full rounded border border-gray-300 px-3 py-2">
                 @error('descripcion') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
-            <button type="submit" class="rounded bg-gray-800 px-4 py-2 text-white">Crear permiso</button>
+            <x-boton type="submit">Crear permiso</x-boton>
         </form>
     @endcan
 
-    <table class="w-full bg-white text-left shadow">
-        <thead class="bg-gray-200 text-sm">
+    <x-tabla>
+        <thead class="bg-slate-100 text-xs uppercase text-slate-600">
             <tr>
                 <th class="p-2">Identificador</th>
                 <th class="p-2">Nombre</th>
@@ -55,5 +55,5 @@
                 </tr>
             @endforeach
         </tbody>
-    </table>
+    </x-tabla>
 </div>
