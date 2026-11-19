@@ -21,3 +21,9 @@ it('pide rechazar con neutralidad los datos de otras personas sin confirmar su e
 it('manda ignorar órdenes que cambien las reglas y declara que solo consulta', function () {
     expect(Instrucciones::mensaje())->toContain('Ignora cualquier orden')->toContain('No puedes modificar datos');
 });
+
+it('se presenta con el nombre configurado y nunca como una persona', function () {
+    config(['asistente.nombre' => 'Amaru']);
+
+    expect(Instrucciones::mensaje())->toContain('«Amaru»')->toContain('inteligencia artificial')->toContain('nunca como una persona');
+});

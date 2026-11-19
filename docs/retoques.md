@@ -55,7 +55,7 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
 - **Criterio**: sin desplazamiento horizontal a 360 px (relacionado con [M-01](#m-01--usabilidad-en-móvil-ac08--eq-08)).
 - **Orden de trabajo**: primero layout, menú, Inicio y login, con capturas en escritorio y en 360 px para revisión del responsable; después el resto de pantallas.
 - **Prioridad**: Alta
-- **Estado**: pendiente (se implementa desde el 19/11)
+- **Estado**: fase 1 (layout, menú, Inicio, login y encabezado) implementada el 19/11 en la rama `retoques`, a la espera de la revisión de capturas; la fase 2 (resto de pantallas) sigue pendiente
 
 ### R-05 · Cambio de contraseña
 - **Pantalla**: opción «Mi cuenta» en el encabezado (se integra al rediseño de R-04), para todo usuario autenticado, y bloqueo de acceso mientras haya un cambio pendiente.
@@ -109,7 +109,7 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
   7. **Sin cambios**: se mantiene el aviso de que las respuestas las genera una IA, y el asistente no debe presentarse como una persona.
 - **Pruebas**: el nombre configurado aparece en el chat y en las instrucciones del modelo, y el valor por defecto es «Yachay».
 - **Prioridad**: Media
-- **Estado**: pendiente (se implementa desde el 19/11, junto con R-04)
+- **Estado**: implementado el 19/11 en la rama `retoques`
 
 ### R-08 · Vistas propias del alumno
 - **Pantalla**: «Mi ficha» (`/matricula/mis-alumnos`), «Mi asistencia», «Mis notas» y `/asistente`, con una cuenta con `matricula.ser_alumno` o `matricula.ser_apoderado`. Va con R-04.
@@ -127,7 +127,7 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
      - El aviso va en un componente Blade de alerta de R-04, reutilizado por las cuatro pantallas.
   4. **Pruebas** para ambos casos: alumno con y sin ficha, y apoderado con y sin estudiantes, en las cuatro pantallas. Se verifica el texto y que el alumno con ficha no ve la columna Acciones.
 - **Prioridad**: Alta
-- **Estado**: pendiente (se implementa desde el 19/11, junto con R-04)
+- **Estado**: implementado el 19/11 en la rama `retoques`
 
 ## Mediciones pendientes para el congelamiento (21-22/11)
 

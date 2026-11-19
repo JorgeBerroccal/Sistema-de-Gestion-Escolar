@@ -21,6 +21,11 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  */
 class Index extends Component
 {
+    /** Preguntas sugeridas: fijas en el servidor, así el clic nunca envía un texto arbitrario. */
+    private const SUGERENCIAS_PROPIAS = ['¿Cómo voy en mis cursos?', '¿Cuántas faltas tengo?', '¿En qué sección estoy matriculado?'];
+
+    private const SUGERENCIAS_A_CARGO = ['¿Cómo van las notas?', '¿Cuántas faltas tiene?', '¿En qué sección está matriculado?'];
+
     public string $mensaje = '';
 
     /** @var list<array{rol: string, texto: string, tipo: string}> */
@@ -56,12 +61,34 @@ class Index extends Component
         $this->mensaje = '';
     }
 
+    /** Envía una de las preguntas sugeridas (por índice, no por texto). */
+    public function sugerida(int $indice, AsistenteService $servicio): void
+    {
+        $this->autorizar();
+
+        $sugerencias = $this->sugerencias();
+        if (! isset($sugerencias[$indice])) {
+            return;
+        }
+
+        $this->mensaje = $sugerencias[$indice];
+        $this->enviar($servicio);
+    }
+
+    /** @return list<string> */
+    private function sugerencias(): array
+    {
+        return VistaPropia::esAlumno(Auth::user()) ? self::SUGERENCIAS_PROPIAS : self::SUGERENCIAS_A_CARGO;
+    }
+
     public function render(Disponibilidad $disponibilidad): View
     {
         $usuario = Auth::user();
 
         return view('livewire.asistente.chat.index', [
             'noDisponible' => $disponibilidad->verificar(),
+            'nombre' => config('asistente.nombre'),
+            'sugerencias' => $usuario ? $this->sugerencias() : [],
             'avisoSinVinculo' => $usuario && ! Alumno::query()->whereIn('alumnos.id', MatriculaRegla::alumnosPropios($usuario))->exists()
                 ? VistaPropia::avisoSinVinculo($usuario) : null,
         ]);
