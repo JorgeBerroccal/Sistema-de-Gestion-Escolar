@@ -5,10 +5,10 @@
     </div>
 
     @if ($mensaje !== '')
-        <p class="mb-4 rounded bg-green-100 p-3 text-sm text-green-800" role="status">{{ $mensaje }}</p>
+        <x-alerta tipo="exito" class="mb-4">{{ $mensaje }}</x-alerta>
     @endif
     @error('general')
-        <p class="mb-4 rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+        <x-alerta tipo="error" class="mb-4">{{ $message }}</x-alerta>
     @enderror
 
     <div class="mb-3 flex flex-wrap gap-3">
@@ -25,8 +25,8 @@
         </div>
     </div>
 
-    <table class="w-full bg-white text-left shadow">
-        <thead class="bg-gray-200 text-sm">
+    <x-tabla>
+        <thead class="bg-slate-100 text-xs uppercase text-slate-600">
             <tr><th class="p-2">Apellidos y nombres</th><th class="p-2">Documento</th><th class="p-2">Estado</th><th class="p-2">Matrícula</th>@if ($puedeVerFicha)<th class="p-2">Acciones</th>@endif</tr>
         </thead>
         <tbody>
@@ -44,7 +44,7 @@
                 <tr><td colspan="5" class="p-4 text-center text-gray-500">No hay alumnos que coincidan.</td></tr>
             @endforelse
         </tbody>
-    </table>
+    </x-tabla>
 
     <div class="mt-4">{{ $matriculas->links() }}</div>
 
@@ -68,7 +68,7 @@
                     <li class="text-sm text-gray-500">No hay alumnos activos sin matrícula en el año vigente.</li>
                 @endforelse
             </ul>
-            <button type="button" wire:click="matricularSeleccionados" class="rounded bg-gray-800 px-4 py-2 text-white">Matricular seleccionados</button>
+            <x-boton type="button" wire:click="matricularSeleccionados">Matricular seleccionados</x-boton>
         </section>
     @endif
 </div>
