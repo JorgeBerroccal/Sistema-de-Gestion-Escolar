@@ -2,7 +2,7 @@
     <h1 class="mb-4 text-2xl font-semibold">Mis notas</h1>
 
     @if ($aviso)
-        <p class="mb-4 rounded bg-yellow-100 p-3 text-sm text-yellow-800" role="alert">{{ $aviso }}</p>
+        <x-alerta tipo="aviso" class="mb-4">{{ $aviso }}</x-alerta>
     @endif
 
     @if ($hijos->isEmpty())
@@ -34,15 +34,15 @@
         @if ($periodos->isEmpty())
             <p class="rounded bg-white p-4 text-gray-500 shadow">Aún no hay periodos publicados para este alumno.</p>
         @elseif ($anual)
-            <table class="w-full bg-white text-left shadow">
-                <thead class="bg-gray-200 text-sm"><tr><th class="p-2">Curso</th><th class="p-2">Promedio anual</th></tr></thead>
+            <x-tabla>
+                <thead class="bg-slate-100 text-xs uppercase text-slate-600"><tr><th class="p-2">Curso</th><th class="p-2">Promedio anual</th></tr></thead>
                 <tbody>
                     @foreach ($anual['cursos'] as $fila)
                         <tr class="border-t"><td class="p-2">{{ $fila['curso']->nombre }}</td><td class="p-2">{{ $fila['etiqueta'] ?? 'sin notas' }}</td></tr>
                     @endforeach
                     <tr class="border-t bg-gray-50 font-medium"><td class="p-2">Promedio general</td><td class="p-2">{{ $anual['etiqueta'] ?? 'sin notas' }}</td></tr>
                 </tbody>
-            </table>
+            </x-tabla>
             @if ($hayBoleta)
                 <p class="mt-4"><a href="{{ route('boletas.descargar', [$alumnoActual->id, 'anual']) }}" class="underline">Descargar boleta anual</a></p>
             @endif

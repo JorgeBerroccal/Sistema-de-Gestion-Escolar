@@ -5,17 +5,17 @@
     </div>
 
     @if (session('estado'))
-        <p class="mb-4 rounded bg-green-100 p-3 text-sm text-green-800" role="status">{{ session('estado') }}</p>
+        <x-alerta tipo="exito" class="mb-4">{{ session('estado') }}</x-alerta>
     @endif
     @if ($errors->has('notas'))
-        <div class="mb-4 rounded bg-red-100 p-3 text-sm text-red-700" role="alert">
+        <x-alerta tipo="error" class="mb-4">
             <ul class="list-disc pl-5">
                 @foreach ($errors->get('notas') as $error) <li>{{ $error }}</li> @endforeach
             </ul>
-        </div>
+        </x-alerta>
     @endif
     @error('criterios')
-        <p class="mb-4 rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+        <x-alerta tipo="error" class="mb-4">{{ $message }}</x-alerta>
     @enderror
 
     @if ($periodos->isNotEmpty())
@@ -32,7 +32,7 @@
     @endif
 
     @if ($aviso)
-        <p class="mb-4 rounded bg-yellow-100 p-3 text-sm text-yellow-800" role="alert">{{ $aviso }}</p>
+        <x-alerta tipo="aviso" class="mb-4">{{ $aviso }}</x-alerta>
     @endif
 
     @if ($periodoActual)
@@ -55,7 +55,7 @@
                 <p class="mb-2 text-sm {{ abs($total - 100) < 0.005 ? 'text-green-700' : 'text-red-700' }}">Total de pesos: {{ \App\Support\Formato::recortado(number_format($total, 2, '.', '')) }} % (debe sumar 100 %)</p>
                 @unless ($soloLectura)
                     <button type="button" wire:click="agregarCriterio" class="mr-3 rounded border border-gray-400 px-3 py-1">Agregar criterio</button>
-                    <button type="submit" class="rounded bg-blue-600 px-4 py-1 text-white">Guardar criterios</button>
+                    <x-boton type="submit">Guardar criterios</x-boton>
                 @endunless
             </form>
         </section>
@@ -77,8 +77,8 @@
                 <form method="POST" action="{{ route('notas.registro.guardar', ['seccion' => $seccion, 'curso' => $curso]) }}">
                     @csrf
                     <input type="hidden" name="periodo" value="{{ $periodoActual->id }}">
-                    <table class="w-full bg-white text-left shadow">
-                        <thead class="bg-gray-200 text-sm">
+                    <x-tabla>
+                        <thead class="bg-slate-100 text-xs uppercase text-slate-600">
                             <tr>
                                 <th class="p-2">Apellidos y nombres</th>
                                 @foreach ($guardados as $c)
@@ -109,10 +109,10 @@
                                 <tr><td colspan="{{ $guardados->count() + 3 }}" class="p-4 text-center text-gray-500">La sección no tiene alumnos matriculados.</td></tr>
                             @endforelse
                         </tbody>
-                    </table>
+                    </x-tabla>
 
                     @if (! $soloLectura && $alumnos->isNotEmpty())
-                        <button type="submit" class="mt-4 rounded bg-blue-600 px-4 py-2 text-white">Guardar notas</button>
+                        <x-boton type="submit" class="mt-4">Guardar notas</x-boton>
                     @endif
                 </form>
             @endif

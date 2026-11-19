@@ -2,20 +2,20 @@
     <h1 class="mb-4 text-2xl font-semibold">Cierres de periodo</h1>
 
     @if ($mensaje !== '')
-        <p class="mb-4 rounded bg-green-100 p-3 text-sm text-green-800" role="status">{{ $mensaje }}</p>
+        <x-alerta tipo="exito" class="mb-4">{{ $mensaje }}</x-alerta>
     @endif
     @error('general')
-        <p class="mb-4 rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+        <x-alerta tipo="error" class="mb-4">{{ $message }}</x-alerta>
     @enderror
 
     @unless ($vigente)
-        <p class="mb-4 rounded bg-yellow-100 p-3 text-sm text-yellow-800">No hay un año escolar vigente.</p>
+        <x-alerta tipo="aviso" class="mb-4">No hay un año escolar vigente.</x-alerta>
     @endunless
 
     <p class="mb-3 text-sm text-gray-600">Cerrar un periodo impide que los Docentes modifiquen sus notas y publica notas y boleta para Alumnos y Padres de Familia.</p>
 
-    <table class="w-full bg-white text-left shadow">
-        <thead class="bg-gray-200 text-sm">
+    <x-tabla>
+        <thead class="bg-slate-100 text-xs uppercase text-slate-600">
             <tr>
                 <th class="p-2">Grado y sección</th>
                 @foreach ($periodos as $p) <th class="p-2">{{ $p->nombre }}</th> @endforeach
@@ -34,7 +34,7 @@
                                     wire:confirm="Los Docentes podrán editar y las familias dejarán de ver este periodo. ¿Reabrir?"
                                     class="text-sm underline">Reabrir</button>
                             @else
-                                <span class="mr-2 rounded bg-green-100 px-2 py-1 text-xs">Abierto</span>
+                                <x-etiqueta tipo="exito" class="mr-2">Abierto</x-etiqueta>
                                 <button type="button" wire:click="cerrar({{ $seccion->id }}, {{ $p->id }})"
                                     wire:confirm="Se bloqueará la edición de los Docentes y se publicarán las notas. ¿Cerrar?"
                                     class="text-sm underline">Cerrar</button>
@@ -46,7 +46,7 @@
                 <tr><td colspan="{{ $periodos->count() + 1 }}" class="p-4 text-center text-gray-500">No hay secciones para mostrar.</td></tr>
             @endforelse
         </tbody>
-    </table>
+    </x-tabla>
 
     <div class="mt-4">{{ $secciones->links() }}</div>
 </div>

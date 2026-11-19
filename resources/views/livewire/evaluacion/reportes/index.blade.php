@@ -22,11 +22,11 @@
     @if (! $reporte)
         <p class="rounded bg-gray-100 p-3 text-sm text-gray-600">Elige una sección y un periodo para ver el reporte.</p>
     @elseif ($reporte['sin_datos'])
-        <p class="rounded bg-yellow-100 p-3 text-sm text-yellow-800">Sin datos: la sección no tiene notas en este periodo.</p>
+        <x-alerta tipo="aviso">Sin datos: la sección no tiene notas en este periodo.</x-alerta>
     @else
         <h2 class="mb-2 text-lg font-semibold">Por curso</h2>
-        <table class="mb-6 w-full bg-white text-left shadow">
-            <thead class="bg-gray-200 text-sm"><tr><th class="p-2">Curso</th><th class="p-2">Promedio</th><th class="p-2">Desaprobados</th></tr></thead>
+        <x-tabla class="mb-6">
+            <thead class="bg-slate-100 text-xs uppercase text-slate-600"><tr><th class="p-2">Curso</th><th class="p-2">Promedio</th><th class="p-2">Desaprobados</th></tr></thead>
             <tbody>
                 @foreach ($reporte['cursos'] as $fila)
                     <tr wire:key="curso-{{ $fila['curso']->id }}" class="border-t">
@@ -36,15 +36,15 @@
                     </tr>
                 @endforeach
             </tbody>
-        </table>
+        </x-tabla>
 
         <h2 class="mb-2 text-lg font-semibold">Orden de mérito</h2>
         <p class="mb-2 text-sm text-gray-600">
             Se ordena por el promedio general@if ($reporte['literal']) numérico (equivalentes de la escala literal), que se muestra en la última columna@endif.
             Los empates se resuelven por apellidos y nombres; quienes no tienen notas quedan sin puesto.
         </p>
-        <table class="w-full bg-white text-left shadow">
-            <thead class="bg-gray-200 text-sm">
+        <x-tabla>
+            <thead class="bg-slate-100 text-xs uppercase text-slate-600">
                 <tr>
                     <th class="p-2">Puesto</th><th class="p-2">Alumno</th>
                     @foreach ($reporte['cursos'] as $fila) <th class="p-2">{{ $fila['curso']->nombre }}</th> @endforeach
@@ -64,7 +64,7 @@
                     </tr>
                 @endforeach
             </tbody>
-        </table>
+        </x-tabla>
         <div class="mt-4">{{ $reporte['alumnos']->links() }}</div>
     @endif
 </div>
