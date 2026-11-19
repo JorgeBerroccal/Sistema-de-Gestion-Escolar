@@ -5,10 +5,10 @@
     </div>
 
     @if ($mensaje !== '')
-        <p class="mb-4 rounded bg-green-100 p-3 text-sm text-green-800" role="status">{{ $mensaje }}</p>
+        <x-alerta tipo="exito" class="mb-4">{{ $mensaje }}</x-alerta>
     @endif
     @error('general')
-        <p class="mb-4 rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+        <x-alerta tipo="error" class="mb-4">{{ $message }}</x-alerta>
     @enderror
 
     <div class="mb-3">
@@ -17,12 +17,12 @@
     </div>
 
     @if ($aviso)
-        <p class="mb-4 rounded bg-yellow-100 p-3 text-sm text-yellow-800" role="alert">{{ $aviso }}</p>
+        <x-alerta tipo="aviso" class="mb-4">{{ $aviso }}</x-alerta>
     @endif
 
     <form wire:submit="guardar">
-        <table class="w-full bg-white text-left shadow">
-            <thead class="bg-gray-200 text-sm">
+        <x-tabla>
+            <thead class="bg-slate-100 text-xs uppercase text-slate-600">
                 <tr><th class="p-2">Apellidos y nombres</th><th class="p-2">Estado</th><th class="p-2">Observación</th><th class="p-2">Justificación</th></tr>
             </thead>
             <tbody>
@@ -51,10 +51,10 @@
                     <tr><td colspan="4" class="p-4 text-center text-gray-500">La sección no tiene alumnos matriculados en esa fecha.</td></tr>
                 @endforelse
             </tbody>
-        </table>
+        </x-tabla>
 
         @if (! $aviso && $alumnos->isNotEmpty())
-            <button type="submit" class="mt-4 rounded bg-blue-600 px-4 py-2 text-white">Guardar asistencia</button>
+            <x-boton type="submit" class="mt-4">Guardar asistencia</x-boton>
         @endif
     </form>
 
@@ -62,7 +62,7 @@
         <form wire:submit="justificar" class="mt-4 rounded bg-white p-4 shadow">
             <label for="motivo" class="mr-2 text-sm font-medium">Motivo de la justificación</label>
             <input id="motivo" type="text" maxlength="255" wire:model="motivo" class="w-96 rounded border border-gray-300 px-3 py-2">
-            <button type="submit" class="ml-2 rounded bg-blue-600 px-4 py-2 text-white">Justificar falta</button>
+            <x-boton type="submit" class="ml-2">Justificar falta</x-boton>
             <button type="button" wire:click="cancelarJustificacion" class="ml-2 underline">Cancelar</button>
         </form>
     @endif

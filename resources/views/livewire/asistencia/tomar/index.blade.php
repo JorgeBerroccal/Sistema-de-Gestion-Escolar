@@ -2,11 +2,11 @@
     <h1 class="mb-4 text-2xl font-semibold">Tomar asistencia</h1>
 
     @unless ($vigente)
-        <p class="mb-4 rounded bg-yellow-100 p-3 text-sm text-yellow-800">No hay un año escolar vigente: no se puede registrar asistencia.</p>
+        <x-alerta tipo="aviso" class="mb-4">No hay un año escolar vigente: no se puede registrar asistencia.</x-alerta>
     @endunless
 
-    <table class="w-full bg-white text-left shadow">
-        <thead class="bg-gray-200 text-sm">
+    <x-tabla>
+        <thead class="bg-slate-100 text-xs uppercase text-slate-600">
             <tr><th class="p-2">Año</th><th class="p-2">Nivel</th><th class="p-2">Grado y sección</th><th class="p-2">Acciones</th></tr>
         </thead>
         <tbody>
@@ -21,7 +21,7 @@
                 <tr><td colspan="4" class="p-4 text-center text-gray-500">No hay secciones para mostrar.</td></tr>
             @endforelse
         </tbody>
-    </table>
+    </x-tabla>
 
     <div class="mt-4">{{ $secciones->links() }}</div>
 </div>
