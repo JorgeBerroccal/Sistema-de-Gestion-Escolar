@@ -41,8 +41,14 @@
                 @if ($turno['rol'] !== 'usuario')
                     <x-asistente-avatar />
                 @endif
-                <p class="max-w-xl whitespace-pre-line rounded-lg px-3 py-2 text-left text-sm
-                    {{ $turno['rol'] === 'usuario' ? 'bg-indigo-100' : ($turno['tipo'] === 'respuesta' ? 'bg-slate-100' : 'bg-amber-50 text-amber-900') }}">{{ $turno['texto'] }}</p>
+                <div class="max-w-xl rounded-lg px-3 py-2 text-left text-sm [&_a]:underline [&_ol]:ml-5 [&_ol]:list-decimal [&_p+p]:mt-2 [&_p+ul]:mt-2 [&_p+ol]:mt-2 [&_ul]:ml-5 [&_ul]:list-disc [&_h1]:font-semibold [&_h2]:font-semibold [&_h3]:font-semibold
+                    {{ $turno['rol'] === 'usuario' ? 'bg-indigo-100' : ($turno['tipo'] === 'respuesta' ? 'bg-slate-100' : 'bg-amber-50 text-amber-900') }}">
+                    @if ($turno['rol'] === 'usuario')
+                        <p class="whitespace-pre-line">{{ $turno['texto'] }}</p>
+                    @else
+                        {{ \App\Support\MarkdownSeguro::html($turno['texto']) }}
+                    @endif
+                </div>
             </div>
         @endforeach
 
