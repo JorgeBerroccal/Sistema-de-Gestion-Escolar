@@ -181,3 +181,11 @@ Procedimiento previsto, por si se hiciera:
   4. **Creación todo o nada**: si alguna fila falla, no se crea ninguna.
   5. **Contraseñas iniciales con cambio obligatorio**, apoyándose en el cambio obligatorio de R-05.
 - **Estado**: no implementado (trabajo futuro)
+
+### F-02 · Foto de perfil subida por el usuario
+- **Limitación conocida**: el encabezado muestra un avatar con las iniciales del usuario (derivado del nombre, sin subir ni guardar nada). Que cada usuario suba su propia foto **no se implementa** antes del congelamiento.
+- **Condiciones previstas** para hacerlo más adelante:
+  1. **Datos personales de menores**: la foto de un alumno es un dato personal de un menor de edad. Aplica la Ley 29733 (Protección de Datos Personales) y exige el **consentimiento de los padres o apoderados**, con la finalidad y el plazo de conservación definidos.
+  2. **Validación del archivo**: tipo permitido (JPEG, PNG o WebP, comprobando el contenido y no solo la extensión) y tamaño máximo; se recomienda reprocesar la imagen para quitar metadatos (por ejemplo, la ubicación).
+  3. **Respaldo de archivos**: `deploy/backup.sh` hoy respalda solo la base de datos. Habría que respaldar también el almacenamiento de las fotos y probar su restauración (ver [respaldo y restauración](despliegue/respaldo-y-restauracion.md)).
+- **Estado**: no implementado (trabajo futuro)
