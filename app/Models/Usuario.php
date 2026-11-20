@@ -33,7 +33,7 @@ class Usuario extends Authenticatable
         return preg_match(self::REGEX_USERNAME, $sugerido) === 1 ? $sugerido : '';
     }
 
-    protected $fillable = ['nombres', 'apellidos', 'username', 'email', 'password', 'rol_id', 'activo'];
+    protected $fillable = ['nombres', 'apellidos', 'username', 'email', 'password', 'rol_id', 'activo', 'debe_cambiar_password'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -42,6 +42,7 @@ class Usuario extends Authenticatable
         return [
             'password' => 'hashed',
             'activo' => 'boolean',
+            'debe_cambiar_password' => 'boolean',
         ];
     }
 

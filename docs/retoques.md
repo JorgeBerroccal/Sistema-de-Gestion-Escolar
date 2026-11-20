@@ -67,7 +67,7 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
   4. **Sin recuperación por correo**: el Administrador restablece la contraseña y se vuelve a exigir el cambio.
   5. **Pruebas**: incluyen que la contraseña actual incorrecta se rechaza y que un usuario con cambio pendiente no puede entrar a otras rutas.
 - **Prioridad**: Alta
-- **Estado**: pendiente (se implementa desde el 19/11)
+- **Estado**: implementado el 20/11 en la rama `retoques`. Columna `usuarios.debe_cambiar_password` (las cuentas existentes quedan en falso); el middleware `cambio-password` solo deja pasar `cuenta.*` y `logout` (también corta las peticiones de Livewire); «Mi cuenta» en `/mi-cuenta/password` (controlador y Blade, sin Livewire, para no quedar fuera del bloqueo); al cambiar se cierran las demás sesiones con `auth.session` + `logoutOtherDevices`. `tests/TestCase.php` olvida el hash de sesión al cambiar de usuario con `actingAs`. Pruebas en `tests/Feature/Auth/CambioDePasswordTest.php`; suite completa 943 en verde. Pendiente: visto bueno del responsable en pantalla
 
 ### R-06 · Permisos por defecto del Director
 - **Pantalla**: menú del Director (Usuarios, Roles y Permisos junto a los catálogos académicos).

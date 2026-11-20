@@ -32,6 +32,9 @@
             @endauth
 
             <main class="mx-auto max-w-6xl p-4 md:p-6">
+                @if (session('exito'))
+                    <x-alerta tipo="exito" class="mb-4">{{ session('exito') }}</x-alerta>
+                @endif
                 @yield('content')
                 {{ $slot ?? '' }}
             </main>
