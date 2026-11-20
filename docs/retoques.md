@@ -25,7 +25,7 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
 - **Qué se observa**: las respuestas muestran el Markdown tal cual (asteriscos sueltos, p. ej. `**Tecnología**`).
 - **Qué se espera**: texto legible. Renderizarlo de forma segura, escapando el HTML y sin enlaces peligrosos, o pedir al modelo texto sin formato. Con pruebas de que `<script>` y `javascript:` salen escapados.
 - **Prioridad**: Media
-- **Estado**: implementado el 20/11 en la rama `retoques`. `App\Support\MarkdownSeguro` (commonmark con `html_input = escape` y `allow_unsafe_links = false`) se aplica a las respuestas del asistente; el mensaje del usuario sigue como texto plano. Pruebas en `tests/Unit/Support/MarkdownSeguroTest.php` y `ChatTest` (`<script>`, `javascript:`, `data:` y `vbscript:` salen escapados o sin enlace). Suite completa 948 en verde; ver la nota sobre memoria en la sección de mediciones del cierre
+- **Estado**: implementado el 20/11 en la rama `retoques`. `App\Support\MarkdownSeguro` (commonmark con `html_input = escape` y `allow_unsafe_links = false`) se aplica a las respuestas del asistente; el mensaje del usuario sigue como texto plano. Pruebas en `tests/Unit/Support/MarkdownSeguroTest.php` y `ChatTest` (`<script>`, `javascript:`, `data:` y `vbscript:` salen escapados o sin enlace). Suite completa 948 en verde. Con las pruebas nuevas la suite superó los 128 MB de memoria (fallo en una prueba de boletas con dompdf), por lo que `phpunit.xml` fija `memory_limit` en 512M
 
 ### R-02 · Menú del Administrador desbordado en ventana angosta (H2)
 - **Pantalla**: menú principal (Administrador, más de doce ítems)
