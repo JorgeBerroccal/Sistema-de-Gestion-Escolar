@@ -18,7 +18,7 @@
     @if ($noDisponible)
         <x-alerta tipo="error" data-asistente-no-disponible>{{ $noDisponible }}</x-alerta>
     @else
-    <section class="mb-4 space-y-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm" aria-label="Conversación" aria-live="polite">
+    <x-tarjeta class="mb-4 space-y-3" role="region" aria-label="Conversación" aria-live="polite">
         <div class="flex items-start gap-2" data-saludo>
             <x-asistente-avatar />
             <p class="max-w-xl rounded-lg bg-slate-100 px-3 py-2 text-sm">
@@ -55,7 +55,7 @@
         <div wire:loading.flex wire:target="enviar,sugerida" class="items-center gap-2 text-sm text-slate-500" data-escribiendo>
             <x-asistente-avatar class="size-7" /><span>{{ $nombre }} está escribiendo…</span>
         </div>
-    </section>
+    </x-tarjeta>
 
     <form wire:submit="enviar" class="flex gap-2">
         <label for="mensaje" class="sr-only">Tu pregunta</label>
