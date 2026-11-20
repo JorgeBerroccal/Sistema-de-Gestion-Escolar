@@ -52,6 +52,7 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
   5. **Indicadores en el Inicio** solo si son datos reales y respetan permisos (por ejemplo, alumnos matriculados en el año vigente, secciones, docentes). Ningún indicador inventado.
   6. **Íconos**: SVG de Heroicons (licencia MIT) copiados como componentes Blade, con la licencia indicada en el repositorio.
   7. **Componentes Blade reutilizables** (tarjeta, botón, tabla, alerta, etiqueta). Las demás pantallas heredan el estilo a través de ellos; no se rediseñan una por una.
+  8. **Avatar con iniciales** (detalle menor, añadido el 20/11): círculo en el encabezado con las iniciales del usuario (p. ej. «JB») y un color derivado de su nombre, entre fondos 700-800 con texto blanco (contraste de 5:1 o más). No sube archivos ni guarda datos; la foto subida queda como [F-02](#f-02--foto-de-perfil-subida-por-el-usuario).
 - **Criterio**: sin desplazamiento horizontal a 360 px (relacionado con [M-01](#m-01--usabilidad-en-móvil-ac08--eq-08)).
 - **Orden de trabajo**: primero layout, menú, Inicio y login, con capturas en escritorio y en 360 px para revisión del responsable; después el resto de pantallas.
 - **Prioridad**: Alta

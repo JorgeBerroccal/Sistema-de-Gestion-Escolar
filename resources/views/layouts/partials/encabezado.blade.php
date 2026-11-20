@@ -6,6 +6,7 @@
     <button type="button" x-on:click="abierto = true" class="rounded-md p-1 text-slate-700 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 md:hidden" aria-label="Abrir el menú">
         <x-icono nombre="bars-3" class="size-6" />
     </button>
+    <x-avatar-usuario :usuario="$usuario" />
     <div class="min-w-0 flex-1">
         <p class="truncate text-sm font-semibold text-slate-900">{{ $usuario->nombre_completo }}</p>
         <p class="truncate text-xs text-slate-500">{{ $usuario->rol?->nombre }}@if ($anio) · Año escolar {{ $anio }}@endif</p>
