@@ -51,7 +51,7 @@ it('sin alumnos vinculados responde que no hay datos', function () {
     escenarioAsistente();
     $solo = usuarioConPermisos(['asistente.usar']);
 
-    expect(app(ResolverAlumno::class)->resolver($solo, 'hola')->sinDatos)->toContain('No tienes estudiantes');
+    expect(app(ResolverAlumno::class)->resolver($solo, 'hola')->sinDatos)->toContain('Tu cuenta todavía no tiene fichas ni estudiantes vinculados');
 });
 
 it('un usuario con permisos de ver todo sigue limitado a lo propio', function () {

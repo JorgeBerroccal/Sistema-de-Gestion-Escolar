@@ -3,6 +3,7 @@
 namespace App\Livewire\Matricula\MisAlumnos;
 
 use App\Matricula\EstadoMatricula;
+use App\Matricula\VistaPropia;
 use App\Models\Alumno;
 use App\Models\AnioEscolar;
 use Illuminate\Contracts\View\View;
@@ -44,6 +45,8 @@ class Index extends Component
         return view('livewire.matricula.mis-alumnos.index', [
             'vigente' => $vigente,
             'titulo' => $this->titulo(),
+            'esAlumno' => VistaPropia::esAlumno(Auth::user()),
+            'aviso' => VistaPropia::avisoSinVinculo(Auth::user()),
             'alumnos' => Alumno::query()->visiblePara(Auth::user())
                 ->with(['tipoDocumento', 'matriculas' => fn ($q) => $q->where('anio_id', $vigente?->id ?? 0)->where('estado', EstadoMatricula::Matriculado->value)->with('seccion.grado.nivel')])
                 ->orderBy('apellidos')->orderBy('nombres')->orderBy('alumnos.id')->paginate(15),

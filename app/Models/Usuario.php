@@ -33,7 +33,7 @@ class Usuario extends Authenticatable
         return preg_match(self::REGEX_USERNAME, $sugerido) === 1 ? $sugerido : '';
     }
 
-    protected $fillable = ['nombres', 'apellidos', 'username', 'email', 'password', 'rol_id', 'activo'];
+    protected $fillable = ['nombres', 'apellidos', 'username', 'email', 'password', 'rol_id', 'activo', 'debe_cambiar_password'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -42,6 +42,7 @@ class Usuario extends Authenticatable
         return [
             'password' => 'hashed',
             'activo' => 'boolean',
+            'debe_cambiar_password' => 'boolean',
         ];
     }
 
@@ -62,6 +63,16 @@ class Usuario extends Authenticatable
     protected function nombreCompleto(): Attribute
     {
         return Attribute::get(fn () => trim("{$this->nombres} {$this->apellidos}"));
+    }
+
+    /** Iniciales para el avatar del encabezado: primera letra del primer nombre y del primer apellido (p. ej. «JB»). */
+    protected function iniciales(): Attribute
+    {
+        return Attribute::get(function () {
+            $letra = fn (?string $texto) => mb_strtoupper(mb_substr(trim($texto ?? ''), 0, 1));
+
+            return $letra($this->nombres).$letra($this->apellidos) ?: '?';
+        });
     }
 
     /** @var array<int, string>|null identificadores del rol, memoizados por instancia (nunca entre solicitudes) */

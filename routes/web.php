@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BoletaController;
+use App\Http\Controllers\CuentaController;
 use App\Http\Controllers\NotasController;
 use App\Livewire\Academico;
 use App\Livewire\Admin\Permisos;
@@ -18,8 +19,13 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 });
 
-Route::middleware(['auth', 'activo'])->group(function () {
+Route::middleware(['auth', 'auth.session', 'activo', 'cambio-password'])->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+
+    // R-05 — Mi cuenta: cambio de contraseña (voluntario u obligatorio). Es lo único accesible con un cambio pendiente.
+    Route::get('/mi-cuenta/password', [CuentaController::class, 'mostrar'])->name('cuenta.password');
+    Route::put('/mi-cuenta/password', [CuentaController::class, 'actualizar'])->name('cuenta.password.actualizar');
+
     Route::redirect('/', '/inicio');
     Route::view('/inicio', 'inicio')->name('inicio');
 

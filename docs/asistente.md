@@ -47,6 +47,8 @@ El asistente usa una **interfaz de proveedor con adaptadores intercambiables** (
 | `falso` (por defecto) | Desarrollo y pruebas; determinista; **nunca sale a la red**. La suite usa solo este (o `Http::fake()`). |
 | `openrouter` | Staging y demo (modelo gratuito) y uso real con presupuesto (por ejemplo Claude Haiku a través de OpenRouter). |
 
+**Identidad (R-07)**: el asistente se presenta con el nombre de `ASISTENTE_NOMBRE` («Yachay» por defecto; quechua: saber, aprender). El nombre aparece en el chat y en las instrucciones al modelo, que además le piden no presentarse como una persona.
+
 Variables de OpenRouter (todas en el `.env` del entorno; ver `.env.example`):
 
 | Variable | Significado |

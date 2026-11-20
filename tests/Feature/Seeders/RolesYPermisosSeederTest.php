@@ -16,7 +16,7 @@ it('crea los 5 roles, los 31 permisos y sus asignaciones', function () {
         ->and(Permiso::count())->toBe(31)
         ->and(identificadoresDe('Administrador'))->toHaveCount(19)
         ->and(identificadoresDe('Administrador'))->not->toContain('docencia.dictar', 'asignaciones.ver_propias')
-        ->and(identificadoresDe('Director'))->toBe(['academico.ver', 'asignaciones.ver_todas', 'asistencia.ver_todas', 'boletas.ver_todas', 'matricula.ver_todas', 'notas.ver_todas', 'roles.ver', 'usuarios.ver'])
+        ->and(identificadoresDe('Director'))->toBe(['academico.ver', 'asignaciones.ver_todas', 'asistencia.ver_todas', 'boletas.ver_todas', 'matricula.ver_todas', 'notas.ver_todas'])
         ->and(identificadoresDe('Docente'))->toBe(['asignaciones.ver_propias', 'asistencia.registrar_propia', 'docencia.dictar', 'matricula.ver_nomina_propia', 'notas.registrar_propia'])
         ->and(identificadoresDe('Padre de Familia'))->toBe(['asistencia.ver_propia', 'asistente.usar', 'boletas.ver_propia', 'matricula.ser_apoderado', 'matricula.ver_propia', 'notas.ver_propia'])
         ->and(identificadoresDe('Alumno'))->toBe(['asistencia.ver_propia', 'asistente.usar', 'boletas.ver_propia', 'matricula.ser_alumno', 'matricula.ver_propia', 'notas.ver_propia']);
@@ -33,11 +33,11 @@ it('es idempotente', function () {
 
 it('no vuelve a asignar un permiso que se quitó a un rol', function () {
     $this->seed(RolesYPermisosSeeder::class);
-    Rol::where('nombre', 'Director')->first()->permisos()->detach(Permiso::where('identificador', 'usuarios.ver')->value('id'));
+    Rol::where('nombre', 'Director')->first()->permisos()->detach(Permiso::where('identificador', 'boletas.ver_todas')->value('id'));
 
     $this->seed(RolesYPermisosSeeder::class);
 
-    expect(identificadoresDe('Director'))->not->toContain('usuarios.ver');
+    expect(identificadoresDe('Director'))->not->toContain('boletas.ver_todas');
 });
 
 it('no revierte permisos del Módulo 2 que el Administrador quitó o dio a otro rol', function () {

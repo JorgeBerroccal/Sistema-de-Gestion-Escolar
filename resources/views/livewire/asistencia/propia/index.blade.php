@@ -2,7 +2,7 @@
     <h1 class="mb-4 text-2xl font-semibold">Mi asistencia</h1>
 
     @if ($alumnos->isEmpty())
-        <p class="rounded bg-white p-4 text-center text-gray-500 shadow">No tienes alumnos vinculados.</p>
+        <x-alerta tipo="aviso" data-sin-vinculo>{{ $avisoSinVinculo }}</x-alerta>
     @else
         <div class="mb-4 flex flex-wrap gap-4">
             <div>
@@ -29,8 +29,8 @@
             @endif
         </section>
 
-        <table class="w-full bg-white text-left shadow">
-            <thead class="bg-gray-200 text-sm">
+        <x-tabla>
+            <thead class="bg-slate-100 text-xs uppercase text-slate-600">
                 <tr><th class="p-2">Fecha</th><th class="p-2">Estado</th><th class="p-2">Observación</th><th class="p-2">Motivo de justificación</th></tr>
             </thead>
             <tbody>
@@ -45,6 +45,6 @@
                     <tr><td colspan="4" class="p-4 text-center text-gray-500">Sin registros en este mes.</td></tr>
                 @endforelse
             </tbody>
-        </table>
+        </x-tabla>
     @endif
 </div>

@@ -109,7 +109,7 @@ class Form extends Component
                 return;
             }
         } else {
-            Usuario::create($datos + ['activo' => true]);
+            Usuario::create($datos + ['activo' => true, 'debe_cambiar_password' => true]);
         }
 
         return $this->redirectRoute('admin.usuarios.index');
@@ -125,9 +125,9 @@ class Form extends Component
 
         $datos = $this->validate(['password' => 'required|string|min:8|confirmed']);
 
-        $this->usuario->update(['password' => $datos['password']]);
+        $this->usuario->update(['password' => $datos['password'], 'debe_cambiar_password' => true]);
         $this->reset('password', 'password_confirmation');
-        session()->flash('exito', 'Contraseña restablecida.');
+        session()->flash('exito', 'Contraseña restablecida. El usuario deberá cambiarla al ingresar.');
     }
 
     public function render(): View

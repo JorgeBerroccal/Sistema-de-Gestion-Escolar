@@ -56,7 +56,7 @@
             </div>
 
             <div class="flex gap-3">
-                <button type="submit" class="rounded bg-gray-800 px-4 py-2 text-white">Guardar</button>
+                <x-boton type="submit">Guardar</x-boton>
                 <a href="{{ route('admin.usuarios.index') }}" class="px-4 py-2 underline">Cancelar</a>
             </div>
         </form>
@@ -66,7 +66,7 @@
         <form wire:submit="restablecerPassword" class="max-w-xl space-y-4 rounded bg-white p-6 shadow">
             <h2 class="text-lg font-semibold">Restablecer contraseña</h2>
             @if (session('exito'))
-                <p class="rounded bg-green-100 p-3 text-sm text-green-700" role="status">{{ session('exito') }}</p>
+                <x-alerta tipo="exito">{{ session('exito') }}</x-alerta>
             @endif
             <div>
                 <label for="nueva_password" class="block text-sm font-medium">Nueva contraseña</label>
@@ -79,7 +79,7 @@
                 <input id="nueva_password_confirmation" type="password" wire:model="password_confirmation" autocomplete="new-password"
                        class="mt-1 w-full rounded border border-gray-300 px-3 py-2">
             </div>
-            <button type="submit" class="rounded bg-gray-800 px-4 py-2 text-white">Restablecer contraseña</button>
+            <x-boton type="submit">Restablecer contraseña</x-boton>
         </form>
     @endif
 </div>

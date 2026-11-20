@@ -2,7 +2,7 @@
     <h1 class="mb-4 text-2xl font-semibold">Institución</h1>
 
     @if (session('exito'))
-        <p class="mb-4 rounded bg-green-100 p-3 text-sm text-green-700" role="status">{{ session('exito') }}</p>
+        <x-alerta tipo="exito" class="mb-4">{{ session('exito') }}</x-alerta>
     @endif
 
     @can('academico.gestionar')
@@ -45,7 +45,7 @@
                 <p class="mt-1 text-xs text-gray-500">Solo se guarda la configuración; este módulo no califica.</p>
                 @error('escala_calificacion_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
-            <button type="submit" class="rounded bg-gray-800 px-4 py-2 text-white">Guardar</button>
+            <x-boton type="submit">Guardar</x-boton>
         </form>
     @else
         <dl class="space-y-3 rounded bg-white p-6 shadow">

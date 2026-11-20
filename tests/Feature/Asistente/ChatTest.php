@@ -39,3 +39,13 @@ it('sin el permiso la pantalla da 403', function () {
 
     $this->actingAs($sin)->get(route('asistente.index'))->assertForbidden();
 });
+
+it('las respuestas del asistente se muestran con Markdown interpretado y el HTML escapado', function () {
+    $e = escenarioAsistente();
+
+    Livewire::actingAs($e['alumno_usuario'])->test(Index::class)
+        ->set('turnos', [['rol' => 'asistente', 'tipo' => 'respuesta', 'texto' => "**Tecnología**\n\n<script>alert(1)</script> [x](javascript:alert(1))"]])
+        ->assertSeeHtml('<strong>Tecnología</strong>')
+        ->assertDontSeeHtml('<script>alert(1)</script>')
+        ->assertDontSeeHtml('href="javascript:');
+});

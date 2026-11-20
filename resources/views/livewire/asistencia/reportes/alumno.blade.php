@@ -16,8 +16,8 @@
         @endif
     </section>
 
-    <table class="w-full bg-white text-left shadow">
-        <thead class="bg-gray-200 text-sm">
+    <x-tabla>
+        <thead class="bg-slate-100 text-xs uppercase text-slate-600">
             <tr><th class="p-2">Fecha</th><th class="p-2">Estado</th><th class="p-2">Observación</th><th class="p-2">Motivo de justificación</th></tr>
         </thead>
         <tbody>
@@ -32,7 +32,7 @@
                 <tr><td colspan="4" class="p-4 text-center text-gray-500">Sin datos de asistencia en este rango.</td></tr>
             @endforelse
         </tbody>
-    </table>
+    </x-tabla>
 
     <div class="mt-4">{{ $registros->links() }}</div>
 </div>

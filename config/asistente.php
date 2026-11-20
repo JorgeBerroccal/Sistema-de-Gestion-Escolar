@@ -12,6 +12,9 @@
 
 return [
 
+    // Nombre con que se presenta el asistente (quechua: «yachay» = saber, aprender).
+    'nombre' => trim((string) env('ASISTENTE_NOMBRE', '')) ?: 'Yachay',
+
     // `falso` (pruebas y desarrollo, no sale a la red) | `openrouter`.
     'proveedor' => env('ASISTENTE_PROVEEDOR', 'falso'),
 

@@ -102,7 +102,7 @@ it('un periodo no publicado no muestra notas a la familia', function () {
 it('un usuario sin vínculos ve una lista vacía', function () {
     escenarioNotasPropias();
 
-    Livewire::actingAs(usuarioConPermisos(['notas.ver_propia']))->test(Index::class)->assertOk()->assertSee('No tienes alumnos vinculados');
+    Livewire::actingAs(usuarioConPermisos(['notas.ver_propia']))->test(Index::class)->assertOk()->assertSee('Tu cuenta todavía no tiene fichas ni estudiantes vinculados');
 });
 
 it('Docente, Director y un usuario sin permiso reciben 403', function () {

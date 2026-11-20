@@ -3,13 +3,13 @@
     <p class="mb-4"><a href="{{ route('admin.roles.index') }}" class="underline">Volver a roles</a></p>
 
     @if (session('exito'))
-        <p class="mb-4 rounded bg-green-100 p-3 text-sm text-green-700" role="status">{{ session('exito') }}</p>
+        <x-alerta tipo="exito" class="mb-4">{{ session('exito') }}</x-alerta>
     @endif
     @error('seleccionados')
-        <p class="mb-4 rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+        <x-alerta tipo="error" class="mb-4">{{ $message }}</x-alerta>
     @enderror
     @error('seleccionados.*')
-        <p class="mb-4 rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+        <x-alerta tipo="error" class="mb-4">{{ $message }}</x-alerta>
     @enderror
 
     <form wire:submit="guardar" class="space-y-4 rounded bg-white p-6 shadow">
@@ -28,7 +28,7 @@
         </ul>
 
         @can('roles.asignar_permisos')
-            <button type="submit" class="rounded bg-gray-800 px-4 py-2 text-white">Guardar permisos</button>
+            <x-boton type="submit">Guardar permisos</x-boton>
         @endcan
     </form>
 </div>

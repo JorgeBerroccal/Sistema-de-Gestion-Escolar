@@ -11,7 +11,7 @@
             <dd>
                 {{ $asignacion->usuario->nombre_completo }}
                 @if ($asignacion->pendiente_reasignar)
-                    <span class="ml-1 rounded bg-yellow-100 px-2 py-0.5 text-xs text-yellow-800">Pendiente de reasignar</span>
+                    <x-etiqueta tipo="aviso" class="ml-1">Pendiente de reasignar</x-etiqueta>
                 @endif
             </dd>
         </div>

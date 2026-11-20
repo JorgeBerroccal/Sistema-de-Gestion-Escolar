@@ -33,7 +33,7 @@ it('asigna permisos a Administrador y Director según R-07 y el contrato del Mó
     $porRol = fn (string $rol) => collect(S::PERMISOS)->filter(fn ($p) => in_array($rol, $p[1]))->keys()->all();
 
     expect($porRol('Administrador'))->toHaveCount(19)
-        ->and($porRol('Director'))->toBe(['usuarios.ver', 'roles.ver', 'academico.ver', 'asignaciones.ver_todas', 'matricula.ver_todas', 'asistencia.ver_todas', 'notas.ver_todas', 'boletas.ver_todas'])
+        ->and($porRol('Director'))->toBe(['academico.ver', 'asignaciones.ver_todas', 'matricula.ver_todas', 'asistencia.ver_todas', 'notas.ver_todas', 'boletas.ver_todas'])
         ->and($porRol('Docente'))->toBe(['asignaciones.ver_propias', 'docencia.dictar', 'matricula.ver_nomina_propia', 'asistencia.registrar_propia', 'notas.registrar_propia'])
         ->and($porRol('Padre de Familia'))->toBe(['matricula.ver_propia', 'matricula.ser_apoderado', 'asistencia.ver_propia', 'notas.ver_propia', 'boletas.ver_propia', 'asistente.usar'])
         ->and($porRol('Alumno'))->toBe(['matricula.ver_propia', 'matricula.ser_alumno', 'asistencia.ver_propia', 'notas.ver_propia', 'boletas.ver_propia', 'asistente.usar']);

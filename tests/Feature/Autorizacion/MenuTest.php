@@ -53,7 +53,7 @@ it('cada rol sembrado ve los ítems de la tabla de visibilidad esperada', functi
     }
 })->with([
     'Administrador' => ['Administrador', ['Inicio', 'Usuarios', 'Roles', 'Permisos']],
-    'Director' => ['Director', ['Inicio', 'Usuarios', 'Roles', 'Permisos']],
+    'Director' => ['Director', ['Inicio']],
     'Docente' => ['Docente', ['Inicio']],
     'Padre de Familia' => ['Padre de Familia', ['Inicio']],
     'Alumno' => ['Alumno', ['Inicio']],

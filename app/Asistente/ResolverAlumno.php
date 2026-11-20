@@ -3,6 +3,7 @@
 namespace App\Asistente;
 
 use App\Autorizacion\Pertenencia\Reglas\MatriculaRegla;
+use App\Matricula\VistaPropia;
 use App\Models\Alumno;
 use App\Models\Usuario;
 use Illuminate\Support\Collection;
@@ -20,7 +21,7 @@ class ResolverAlumno
         $propios = $this->propios($usuario);
 
         if ($propios->isEmpty()) {
-            return Resolucion::sinDatos('No tienes estudiantes vinculados a tu cuenta, así que no tengo información para consultar.');
+            return Resolucion::sinDatos(VistaPropia::avisoSinVinculo($usuario));
         }
 
         if ($propios->count() === 1) {

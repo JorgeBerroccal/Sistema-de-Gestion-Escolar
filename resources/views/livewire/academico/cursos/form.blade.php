@@ -3,7 +3,7 @@
 
     <form wire:submit="guardar" class="max-w-2xl space-y-4 rounded bg-white p-6 shadow">
         @error('general')
-            <p class="rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+            <x-alerta tipo="error">{{ $message }}</x-alerta>
         @enderror
 
         <div>
@@ -35,7 +35,7 @@
         </fieldset>
 
         <div class="flex gap-3">
-            <button type="submit" class="rounded bg-gray-800 px-4 py-2 text-white">Guardar</button>
+            <x-boton type="submit">Guardar</x-boton>
             <a href="{{ route('academico.cursos.index') }}" class="px-4 py-2 underline">Cancelar</a>
         </div>
     </form>

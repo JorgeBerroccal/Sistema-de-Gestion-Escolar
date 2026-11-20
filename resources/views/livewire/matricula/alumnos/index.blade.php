@@ -2,12 +2,12 @@
     <div class="mb-4 flex items-center justify-between gap-4">
         <h1 class="text-2xl font-semibold">Alumnos</h1>
         @can('matricula.gestionar')
-            <a href="{{ route('matricula.alumnos.create') }}" class="rounded bg-gray-800 px-3 py-2 text-white">Registrar alumno</a>
+            <x-boton href="{{ route('matricula.alumnos.create') }}">Registrar alumno</x-boton>
         @endcan
     </div>
 
     @error('general')
-        <p class="mb-4 rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+        <x-alerta tipo="error" class="mb-4">{{ $message }}</x-alerta>
     @enderror
 
     <div class="mb-3 flex flex-wrap gap-3">
@@ -33,8 +33,8 @@
         </div>
     </div>
 
-    <table class="w-full bg-white text-left shadow">
-        <thead class="bg-gray-200 text-sm">
+    <x-tabla>
+        <thead class="bg-slate-100 text-xs uppercase text-slate-600">
             <tr><th class="p-2">Apellidos y nombres</th><th class="p-2">Documento</th><th class="p-2">Nacimiento</th><th class="p-2">Estado</th><th class="p-2">Acciones</th></tr>
         </thead>
         <tbody>
@@ -63,7 +63,7 @@
                 <tr><td colspan="5" class="p-4 text-center text-gray-500">No hay alumnos que coincidan.</td></tr>
             @endforelse
         </tbody>
-    </table>
+    </x-tabla>
 
     <div class="mt-4">{{ $alumnos->links() }}</div>
 </div>

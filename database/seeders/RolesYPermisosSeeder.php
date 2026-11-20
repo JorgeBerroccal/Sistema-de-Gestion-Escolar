@@ -14,7 +14,7 @@ class RolesYPermisosSeeder extends Seeder
 {
     public const ROLES = [
         'Administrador' => 'Gestiona usuarios, roles y permisos del sistema.',
-        'Director' => 'Consulta usuarios y roles.',
+        'Director' => 'Supervisa la parte académica: consulta asignaciones, alumnos, asistencia, notas y boletas.',
         'Docente' => 'Personal docente.',
         'Padre de Familia' => 'Padre, madre o tutor de un alumno.',
         'Alumno' => 'Estudiante.',
@@ -22,11 +22,11 @@ class RolesYPermisosSeeder extends Seeder
 
     /** identificador => [nombre visible, roles que lo reciben] */
     public const PERMISOS = [
-        'usuarios.ver' => ['Ver usuarios', ['Administrador', 'Director']],
+        'usuarios.ver' => ['Ver usuarios', ['Administrador']],
         'usuarios.crear' => ['Crear usuarios', ['Administrador']],
         'usuarios.editar' => ['Editar usuarios, cambiar rol y restablecer contraseña', ['Administrador']],
         'usuarios.desactivar' => ['Desactivar y reactivar usuarios', ['Administrador']],
-        'roles.ver' => ['Ver roles y permisos', ['Administrador', 'Director']],
+        'roles.ver' => ['Ver roles y permisos', ['Administrador']],
         'permisos.gestionar' => ['Crear y editar permisos', ['Administrador']],
         'roles.asignar_permisos' => ['Asignar permisos a roles', ['Administrador']],
         'academico.ver' => ['Ver institución, niveles, años, periodos, grados, secciones y cursos', ['Administrador', 'Director']],

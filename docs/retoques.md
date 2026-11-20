@@ -25,7 +25,7 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
 - **Qué se observa**: las respuestas muestran el Markdown tal cual (asteriscos sueltos, p. ej. `**Tecnología**`).
 - **Qué se espera**: texto legible. Renderizarlo de forma segura, escapando el HTML y sin enlaces peligrosos, o pedir al modelo texto sin formato. Con pruebas de que `<script>` y `javascript:` salen escapados.
 - **Prioridad**: Media
-- **Estado**: pendiente
+- **Estado**: implementado el 20/11 en la rama `retoques`. `App\Support\MarkdownSeguro` (commonmark con `html_input = escape` y `allow_unsafe_links = false`) se aplica a las respuestas del asistente; el mensaje del usuario sigue como texto plano. Pruebas en `tests/Unit/Support/MarkdownSeguroTest.php` y `ChatTest` (`<script>`, `javascript:`, `data:` y `vbscript:` salen escapados o sin enlace). Suite completa 948 en verde. Con las pruebas nuevas la suite superó los 128 MB de memoria (fallo en una prueba de boletas con dompdf), por lo que `phpunit.xml` fija `memory_limit` en 512M
 
 ### R-02 · Menú del Administrador desbordado en ventana angosta (H2)
 - **Pantalla**: menú principal (Administrador, más de doce ítems)
@@ -39,7 +39,7 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
 - **Qué se observa**: tras preguntar por Luna, «¿Y en Matemática?» vuelve a pedir aclaración.
 - **Qué se espera**: recordar al último estudiante mencionado dentro de la misma conversación, sin persistir nada. Un nombre en el mensaje manda sobre el recordado, y el alumno recordado se vuelve a validar contra los alumnos propios en cada mensaje (R-13).
 - **Prioridad**: Baja (opcional)
-- **Estado**: pendiente
+- **Estado**: no se implementa antes del congelamiento; pasa a trabajo futuro como [F-03](#f-03--recordar-al-último-estudiante-mencionado-en-el-asistente)
 
 ### R-04 · Rediseño visual (layout, menú, Inicio y login)
 - **Pantalla**: layout general, Inicio, login y, a través de componentes, el resto de pantallas. Absorbe R-02 (menú).
@@ -52,10 +52,11 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
   5. **Indicadores en el Inicio** solo si son datos reales y respetan permisos (por ejemplo, alumnos matriculados en el año vigente, secciones, docentes). Ningún indicador inventado.
   6. **Íconos**: SVG de Heroicons (licencia MIT) copiados como componentes Blade, con la licencia indicada en el repositorio.
   7. **Componentes Blade reutilizables** (tarjeta, botón, tabla, alerta, etiqueta). Las demás pantallas heredan el estilo a través de ellos; no se rediseñan una por una.
+  8. **Avatar con iniciales** (detalle menor, añadido el 20/11): círculo en el encabezado con las iniciales del usuario (p. ej. «JB») y un color derivado de su nombre, entre fondos 700-800 con texto blanco (contraste de 5:1 o más). No sube archivos ni guarda datos; la foto subida queda como [F-02](#f-02--foto-de-perfil-subida-por-el-usuario).
 - **Criterio**: sin desplazamiento horizontal a 360 px (relacionado con [M-01](#m-01--usabilidad-en-móvil-ac08--eq-08)).
 - **Orden de trabajo**: primero layout, menú, Inicio y login, con capturas en escritorio y en 360 px para revisión del responsable; después el resto de pantallas.
 - **Prioridad**: Alta
-- **Estado**: pendiente (se implementa desde el 19/11)
+- **Estado**: fase 1 (layout, menú, Inicio, login y encabezado) implementada el 19/11 en la rama `retoques`, a la espera de la revisión de capturas; la fase 2 (resto de pantallas) sigue pendiente
 
 ### R-05 · Cambio de contraseña
 - **Pantalla**: opción «Mi cuenta» en el encabezado (se integra al rediseño de R-04), para todo usuario autenticado, y bloqueo de acceso mientras haya un cambio pendiente.
@@ -67,7 +68,8 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
   4. **Sin recuperación por correo**: el Administrador restablece la contraseña y se vuelve a exigir el cambio.
   5. **Pruebas**: incluyen que la contraseña actual incorrecta se rechaza y que un usuario con cambio pendiente no puede entrar a otras rutas.
 - **Prioridad**: Alta
-- **Estado**: pendiente (se implementa desde el 19/11)
+- **Estado**: implementado el 20/11 en la rama `retoques`. Columna `usuarios.debe_cambiar_password` (las cuentas existentes quedan en falso); el middleware `cambio-password` solo deja pasar `cuenta.*` y `logout` (también corta las peticiones de Livewire); «Mi cuenta» en `/mi-cuenta/password` (controlador y Blade, sin Livewire, para no quedar fuera del bloqueo); al cambiar se cierran las demás sesiones con `auth.session` + `logoutOtherDevices`. `tests/TestCase.php` olvida el hash de sesión al cambiar de usuario con `actingAs`. Pruebas en `tests/Feature/Auth/CambioDePasswordTest.php`; suite completa 943 en verde. Verificado por el responsable (ver evidencia)
+  - **Evidencia (20/11, responsable)**: probado en local, los seis pasos sin observaciones. (1) Crear `prueba.cambio` desde Administración. (2) Primer ingreso: redirige a Mi cuenta; `/inicio` y `/asistente` vuelven a Mi cuenta; Cerrar sesión funciona. (3) Contraseña actual incorrecta: rechazada, sin cambios. (4) Cambio correcto y validaciones (menos de 8 caracteres, confirmación distinta, misma contraseña). (5) La otra sesión se cierra al cambiar la contraseña. (6) Restablecer desde Administración vuelve a exigir el cambio. La cuenta de prueba se desactivó después.
 
 ### R-06 · Permisos por defecto del Director
 - **Pantalla**: menú del Director (Usuarios, Roles y Permisos junto a los catálogos académicos).
@@ -94,7 +96,8 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
     - Comprobación previa (16/11, por búsqueda en el código): `usuarios.ver` y `roles.ver` solo se usan en las rutas y componentes de `/admin/usuarios`, `/admin/roles` y `/admin/permisos`, y en sus ítems de `config/menu.php`. Ninguna pantalla de asignaciones, matrícula, asistencia, notas o boletas los consulta. Falta la prueba en ejecución.
     - `database/seeders/LoadTestSeeder.php` usa `usuarios.ver` para un rol propio de la prueba de carga, sin relación con el Director.
 - **Prioridad**: Media
-- **Estado**: pendiente (se implementa desde el 19/11)
+- **Estado**: implementado el 19/11 en la rama `retoques` (seeder, pruebas y documentación). En instalaciones existentes (local y staging) el ajuste se hace desde Roles, porque `sge:sincronizar-base` no quita permisos ya asignados: el Administrador quita `usuarios.ver` y `roles.ver` al Director.
+  - **Evidencia (19/11, responsable)**: en la base local, anterior a R-06, el Director seguía con Usuarios, Roles y Permisos. Se los quitó como Administrador desde Roles, volvió a entrar como `director.demo` y la sección Administración desapareció del Inicio y del menú; el resto de sus pantallas funciona bien.
 
 ### R-07 · Identidad del asistente virtual
 - **Pantalla**: `/asistente` (cualquier rol con `asistente.usar`). Se implementa junto con R-04.
@@ -109,7 +112,7 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
   7. **Sin cambios**: se mantiene el aviso de que las respuestas las genera una IA, y el asistente no debe presentarse como una persona.
 - **Pruebas**: el nombre configurado aparece en el chat y en las instrucciones del modelo, y el valor por defecto es «Yachay».
 - **Prioridad**: Media
-- **Estado**: pendiente (se implementa desde el 19/11, junto con R-04)
+- **Estado**: implementado el 19/11 en la rama `retoques`
 
 ### R-08 · Vistas propias del alumno
 - **Pantalla**: «Mi ficha» (`/matricula/mis-alumnos`), «Mi asistencia», «Mis notas» y `/asistente`, con una cuenta con `matricula.ser_alumno` o `matricula.ser_apoderado`. Va con R-04.
@@ -127,7 +130,7 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
      - El aviso va en un componente Blade de alerta de R-04, reutilizado por las cuatro pantallas.
   4. **Pruebas** para ambos casos: alumno con y sin ficha, y apoderado con y sin estudiantes, en las cuatro pantallas. Se verifica el texto y que el alumno con ficha no ve la columna Acciones.
 - **Prioridad**: Alta
-- **Estado**: pendiente (se implementa desde el 19/11, junto con R-04)
+- **Estado**: implementado el 19/11 en la rama `retoques`
 
 ## Mediciones pendientes para el congelamiento (21-22/11)
 
@@ -179,4 +182,21 @@ Procedimiento previsto, por si se hiciera:
   3. **Vista previa con errores**: se muestran las filas válidas y las que fallan, con el motivo de cada error.
   4. **Creación todo o nada**: si alguna fila falla, no se crea ninguna.
   5. **Contraseñas iniciales con cambio obligatorio**, apoyándose en el cambio obligatorio de R-05.
+- **Estado**: no implementado (trabajo futuro)
+
+### F-02 · Foto de perfil subida por el usuario
+- **Limitación conocida**: el encabezado muestra un avatar con las iniciales del usuario (derivado del nombre, sin subir ni guardar nada). Que cada usuario suba su propia foto **no se implementa** antes del congelamiento.
+- **Condiciones previstas** para hacerlo más adelante:
+  1. **Datos personales de menores**: la foto de un alumno es un dato personal de un menor de edad. Aplica la Ley 29733 (Protección de Datos Personales) y exige el **consentimiento de los padres o apoderados**, con la finalidad y el plazo de conservación definidos.
+  2. **Validación del archivo**: tipo permitido (JPEG, PNG o WebP, comprobando el contenido y no solo la extensión) y tamaño máximo; se recomienda reprocesar la imagen para quitar metadatos (por ejemplo, la ubicación).
+  3. **Respaldo de archivos**: `deploy/backup.sh` hoy respalda solo la base de datos. Habría que respaldar también el almacenamiento de las fotos y probar su restauración (ver [respaldo y restauración](despliegue/respaldo-y-restauracion.md)).
+- **Estado**: no implementado (trabajo futuro)
+
+### F-03 · Recordar al último estudiante mencionado en el asistente
+- **Origen**: retoque R-03 (H3): tras preguntar por Luna, «¿Y en Matemática?» vuelve a pedir aclaración a un apoderado con varios hijos.
+- **Por qué no se implementa ahora**:
+  1. **Prioridad baja** (opcional desde que se registró).
+  2. **Riesgo de privacidad**: recordar a un estudiante entre mensajes obliga a conservar un dato de un menor en la conversación y a revalidarlo contra los alumnos propios del usuario en cada mensaje (R-13); un error mostraría notas o asistencia de un alumno que no corresponde.
+  3. **Plazo**: cambiaría la resolución del alumno en el asistente a un día del congelamiento (21-22/11), sin margen para probarlo bien.
+- **Condiciones previstas**: recordar solo dentro de la misma conversación y sin persistir nada; un nombre en el mensaje manda sobre el recordado; el alumno recordado se revalida contra los vínculos propios en cada mensaje; pruebas de que no se filtra entre usuarios ni entre conversaciones.
 - **Estado**: no implementado (trabajo futuro)

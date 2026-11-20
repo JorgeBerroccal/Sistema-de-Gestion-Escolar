@@ -9,10 +9,10 @@
     </div>
 
     @if ($mensaje !== '')
-        <p class="mb-4 rounded bg-green-100 p-3 text-sm text-green-800" role="status">{{ $mensaje }}</p>
+        <x-alerta tipo="exito" class="mb-4">{{ $mensaje }}</x-alerta>
     @endif
     @error('general')
-        <p class="mb-4 rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+        <x-alerta tipo="error" class="mb-4">{{ $message }}</x-alerta>
     @enderror
 
     <section class="mb-6 rounded bg-white p-6 shadow">
@@ -56,7 +56,7 @@
                                 @foreach ($usuariosAlumno as $u) <option value="{{ $u->id }}">{{ $u->nombre_completo }} ({{ $u->username }})</option> @endforeach
                             </select>
                         </div>
-                        <button type="submit" class="rounded bg-gray-800 px-4 py-2 text-white">Vincular</button>
+                        <x-boton type="submit">Vincular</x-boton>
                     </form>
                 @endif
             @endif
@@ -90,7 +90,7 @@
                             @foreach ($parentescos as $p) <option value="{{ $p->value }}">{{ $p->etiqueta() }}</option> @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="rounded bg-gray-800 px-4 py-2 text-white">Agregar apoderado</button>
+                    <x-boton type="submit">Agregar apoderado</x-boton>
                 </form>
             @endif
         </section>
@@ -98,8 +98,8 @@
 
     <section class="mb-6 rounded bg-white p-6 shadow">
         <h2 class="mb-3 text-lg font-semibold">Historial de matrículas</h2>
-        <table class="w-full text-left">
-            <thead class="bg-gray-200 text-sm">
+        <div class="overflow-x-auto"><table class="w-full text-left text-sm">
+            <thead class="bg-slate-100 text-xs uppercase text-slate-600">
                 <tr><th class="p-2">Año</th><th class="p-2">Nivel</th><th class="p-2">Grado y sección</th><th class="p-2">Matrícula</th><th class="p-2">Estado</th><th class="p-2">Fecha del estado</th><th class="p-2">Motivo</th>@if ($puedeGestionar)<th class="p-2">Acciones</th>@endif</tr>
             </thead>
             <tbody>
@@ -127,7 +127,7 @@
                     <tr><td colspan="8" class="p-4 text-center text-gray-500">Sin matrículas.</td></tr>
                 @endforelse
             </tbody>
-        </table>
+        </table></div>
 
         @if ($puedeGestionar && $cambioMatriculaId)
             <form wire:submit="confirmarCambio" class="mt-4 max-w-xl space-y-3 rounded border border-gray-300 p-4">
@@ -141,7 +141,7 @@
                     <input id="cambioMotivo" type="text" wire:model="cambioMotivo" maxlength="255" class="mt-1 w-full rounded border border-gray-300 px-3 py-2">
                 </div>
                 <div class="flex gap-3">
-                    <button type="submit" class="rounded bg-gray-800 px-4 py-2 text-white">Confirmar</button>
+                    <x-boton type="submit">Confirmar</x-boton>
                     <button type="button" wire:click="cancelarCambio" class="px-4 py-2 underline">Cancelar</button>
                 </div>
             </form>
@@ -160,7 +160,7 @@
                             @foreach ($secciones as $seccion) <option value="{{ $seccion->id }}">{{ $seccion->grado->nivel->nombre }} · {{ $seccion->grado->nombre }} {{ $seccion->identificador }}</option> @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="rounded bg-gray-800 px-4 py-2 text-white">Matricular</button>
+                    <x-boton type="submit">Matricular</x-boton>
                 </form>
             @else
                 <p class="text-sm text-gray-500">No hay un año escolar vigente.</p>

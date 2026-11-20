@@ -4,6 +4,7 @@ namespace App\Livewire\Asistencia\Propia;
 
 use App\Asistencia\ResumenAsistencia;
 use App\Autorizacion\Pertenencia\Reglas\MatriculaRegla;
+use App\Matricula\VistaPropia;
 use App\Models\Alumno;
 use App\Models\AnioEscolar;
 use App\Support\ZonaHoraria;
@@ -70,6 +71,7 @@ class Index extends Component
 
         return view('livewire.asistencia.propia.index', [
             'alumnos' => $alumnos,
+            'avisoSinVinculo' => $alumnos->isEmpty() ? VistaPropia::avisoSinVinculo(Auth::user()) : null,
             'elegido' => $elegido,
             'vigente' => $vigente,
             'resumen' => $elegido ? $resumen->delAlumno($elegido, $desde, $hasta) : null,

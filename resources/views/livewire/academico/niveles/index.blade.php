@@ -2,7 +2,7 @@
     <h1 class="mb-4 text-2xl font-semibold">Niveles</h1>
 
     @error('general')
-        <p class="mb-4 rounded bg-red-100 p-3 text-sm text-red-700" role="alert">{{ $message }}</p>
+        <x-alerta tipo="error" class="mb-4">{{ $message }}</x-alerta>
     @enderror
 
     @can('academico.gestionar')
@@ -18,7 +18,7 @@
                 @error('orden') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
             <div class="flex gap-3 pt-6">
-                <button type="submit" class="rounded bg-gray-800 px-4 py-2 text-white">{{ $editandoId ? 'Guardar cambios' : 'Crear nivel' }}</button>
+                <x-boton type="submit">{{ $editandoId ? 'Guardar cambios' : 'Crear nivel' }}</x-boton>
                 @if ($editandoId)
                     <button type="button" wire:click="cancelar" class="px-4 py-2 underline">Cancelar</button>
                 @endif
@@ -26,8 +26,8 @@
         </form>
     @endcan
 
-    <table class="w-full bg-white text-left shadow">
-        <thead class="bg-gray-200 text-sm">
+    <x-tabla>
+        <thead class="bg-slate-100 text-xs uppercase text-slate-600">
             <tr><th class="p-2">Orden</th><th class="p-2">Nombre</th><th class="p-2">Estado</th><th class="p-2">Acciones</th></tr>
         </thead>
         <tbody>
@@ -56,7 +56,7 @@
                 <tr><td colspan="4" class="p-4 text-center text-gray-500">Aún no hay niveles registrados.</td></tr>
             @endforelse
         </tbody>
-    </table>
+    </x-tabla>
 
     <div class="mt-4">{{ $niveles->links() }}</div>
 </div>

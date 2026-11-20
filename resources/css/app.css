@@ -9,3 +9,24 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* Controles de formulario de todas las pantallas: mismo borde y mismo foco que el login (R-04). */
+@layer base {
+    input:not([type='checkbox'], [type='radio'], [type='hidden'], [type='submit']),
+    select,
+    textarea {
+        border-color: var(--color-slate-300);
+        border-radius: var(--radius-md);
+    }
+
+    input:not([type='checkbox'], [type='radio'], [type='hidden'], [type='submit']):focus,
+    select:focus,
+    textarea:focus {
+        outline: 2px solid var(--color-indigo-200);
+        border-color: var(--color-indigo-500);
+    }
+}
