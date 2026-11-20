@@ -39,7 +39,7 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
 - **Qué se observa**: tras preguntar por Luna, «¿Y en Matemática?» vuelve a pedir aclaración.
 - **Qué se espera**: recordar al último estudiante mencionado dentro de la misma conversación, sin persistir nada. Un nombre en el mensaje manda sobre el recordado, y el alumno recordado se vuelve a validar contra los alumnos propios en cada mensaje (R-13).
 - **Prioridad**: Baja (opcional)
-- **Estado**: pendiente
+- **Estado**: no se implementa antes del congelamiento; pasa a trabajo futuro como [F-03](#f-03--recordar-al-último-estudiante-mencionado-en-el-asistente)
 
 ### R-04 · Rediseño visual (layout, menú, Inicio y login)
 - **Pantalla**: layout general, Inicio, login y, a través de componentes, el resto de pantallas. Absorbe R-02 (menú).
@@ -189,4 +189,13 @@ Procedimiento previsto, por si se hiciera:
   1. **Datos personales de menores**: la foto de un alumno es un dato personal de un menor de edad. Aplica la Ley 29733 (Protección de Datos Personales) y exige el **consentimiento de los padres o apoderados**, con la finalidad y el plazo de conservación definidos.
   2. **Validación del archivo**: tipo permitido (JPEG, PNG o WebP, comprobando el contenido y no solo la extensión) y tamaño máximo; se recomienda reprocesar la imagen para quitar metadatos (por ejemplo, la ubicación).
   3. **Respaldo de archivos**: `deploy/backup.sh` hoy respalda solo la base de datos. Habría que respaldar también el almacenamiento de las fotos y probar su restauración (ver [respaldo y restauración](despliegue/respaldo-y-restauracion.md)).
+- **Estado**: no implementado (trabajo futuro)
+
+### F-03 · Recordar al último estudiante mencionado en el asistente
+- **Origen**: retoque R-03 (H3): tras preguntar por Luna, «¿Y en Matemática?» vuelve a pedir aclaración a un apoderado con varios hijos.
+- **Por qué no se implementa ahora**:
+  1. **Prioridad baja** (opcional desde que se registró).
+  2. **Riesgo de privacidad**: recordar a un estudiante entre mensajes obliga a conservar un dato de un menor en la conversación y a revalidarlo contra los alumnos propios del usuario en cada mensaje (R-13); un error mostraría notas o asistencia de un alumno que no corresponde.
+  3. **Plazo**: cambiaría la resolución del alumno en el asistente a un día del congelamiento (21-22/11), sin margen para probarlo bien.
+- **Condiciones previstas**: recordar solo dentro de la misma conversación y sin persistir nada; un nombre en el mensaje manda sobre el recordado; el alumno recordado se revalida contra los vínculos propios en cada mensaje; pruebas de que no se filtra entre usuarios ni entre conversaciones.
 - **Estado**: no implementado (trabajo futuro)
