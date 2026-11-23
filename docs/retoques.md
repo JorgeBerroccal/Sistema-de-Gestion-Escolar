@@ -132,36 +132,74 @@ Copiar al final de «Pendientes» y numerar con el siguiente `R-nn`.
 - **Prioridad**: Alta
 - **Estado**: implementado el 19/11 en la rama `retoques`
 
-## Mediciones pendientes para el congelamiento (21-22/11)
+## Verificación en staging (v0.7.1, 20/11)
 
-Mediciones de los atributos de calidad que hoy figuran como «No medido» o «Parcial» en [`04`](01-analisis-de-sistema/04-atributos-de-calidad.md) y [`08`](01-analisis-de-sistema/08-escenarios-atributos-calidad.md). Se hacen **después** de implementar los retoques (19-20/11), sobre el código que se congela. Con cada resultado se actualizan los estados de `04` y `08` en un PR pequeño; hasta entonces esos documentos siguen diciendo «No medido» o «Parcial».
+Despliegue de `v0.7.1` con `deploy/deploy.sh v0.7.1` («Desplegada v0.7.1 en 60 s»; `/up` informa `version=v0.7.1`). La imagen compila los assets sola (etapa `assets` de `docker/php/Dockerfile.prod`), sin pasos manuales. Permisos en la base: 32 (`tinker`); esta versión no agrega permisos.
+
+Prueba de humo del responsable, todos los pasos correctos:
+1. Login con el nombre de la institución y el botón del ojo.
+2. `admin` entra sin cambio de contraseña obligatorio (las cuentas existentes no se ven afectadas por R-05).
+3. Inicio con tarjetas, avatar, rol y año vigente.
+4. Quitados `usuarios.ver` y `roles.ver` al Director desde Roles (R-06 no los quita en bases existentes: la sincronización solo crea permisos nuevos).
+5. El Director ya no ve Administración y ve los nombres de los docentes en Asignaciones.
+6. María Torres: Inicio, Estudiantes a mi cargo y Yachay (saludo, preguntas sugeridas y respuesta con Markdown interpretado).
+7. A 360 px: menú con ☰ y sin desplazamiento horizontal.
+8. Mi cuenta carga para `admin`.
+
+`ASISTENTE_NOMBRE` no hizo falta: `config/asistente.php` usa «Yachay» por defecto.
+
+## Mediciones para el congelamiento (21-22/11)
+
+Mediciones de los atributos de calidad que hoy figuran como «No medido» o «Parcial» en [`04`](01-analisis-de-sistema/04-atributos-de-calidad.md) y [`08`](01-analisis-de-sistema/08-escenarios-atributos-calidad.md). Se hacen **después** de implementar los retoques (19-20/11), sobre el código que se congela. Con los resultados (20/11) se actualizaron los estados de `04` y `08`: AC05/EQ-05 pasa a Parcial, AC07/EQ-07 a Cumplido y AC08/EQ-08 a Parcial.
 
 ### M-01 · Usabilidad en móvil (AC08 / EQ-08)
 - **Qué se mide**: (a) que no haya desplazamiento horizontal a 360 px de ancho; (b) cuántas interacciones (clics o toques) lleva llegar a la boleta desde que el padre inicia sesión.
 - **Cómo**: modo dispositivo del navegador (DevTools) con ancho de 360 px, en staging o en local. Para (a), recorrer el menú, `/notas/mias` y la boleta, y comprobar que `document.documentElement.scrollWidth` no supera el ancho de la ventana. Para (b), contar las interacciones desde el inicio de sesión hasta la descarga de la boleta, con el Padre de Familia.
 - **Cuándo**: después del retoque R-04 (que absorbe R-02, menú), porque cambia la navegación.
 - **Meta de diseño**: sin scroll horizontal a 360 px; 3 interacciones hasta la boleta.
-- **Estado**: pendiente
+- **Resultado (20/11, local)**: medido con Playwright (Chromium con ancho de 360 px, no un celular real) sobre la base local y la cuenta `padre.demo`, con los assets de `v0.7.1`.
+  - (a) Sin desplazamiento horizontal (`scrollWidth` = 360 = ancho de la ventana) en Inicio, Inicio con el menú abierto, `/matricula/mis-alumnos`, `/asistencia/mia`, `/notas/mias`, `/asistente` y `/mi-cuenta/password`. La boleta es un PDF descargable, no una pantalla. En staging el responsable comprobó Inicio y el menú el mismo día.
+  - (b) Interacciones desde el Inicio hasta la descarga de la boleta: **2** por las tarjetas del Inicio (Mis notas → Descargar boleta; la descarga `boleta-2-1.pdf` se confirmó) y **4** por el menú lateral (☰ → Evaluación → Mis notas → Descargar boleta), porque los grupos del menú se abren a demanda.
+  - Contra la meta (sin scroll horizontal y 3 interacciones): se cumple por las tarjetas del Inicio; por el menú lateral son 4, una más que la meta.
+- **Estado**: medido el 20/11; cumple la meta por las tarjetas del Inicio y la excede en una interacción por el menú
 
 ### M-02 · Cobertura de la capa de servicios (AC07 / EQ-07)
 - **Qué se mide**: porcentaje de cobertura de líneas de las clases de servicio: `app/Academico/`, `app/Matricula/`, `app/Asistencia/`, `app/Evaluacion/`, `app/Asistente/` y `app/Autorizacion/`.
 - **Qué hace falta en el contenedor**: un controlador de cobertura. La imagen `docker/php/Dockerfile` (PHP 8.3-fpm) **no trae PCOV ni Xdebug**, y el CI usa `coverage: none`. Lo más simple es PCOV, instalado de forma temporal en el contenedor sin tocar la imagen ni el repositorio (`pecl install pcov`, `docker-php-ext-enable pcov`; se pierde al recrear el contenedor). Alternativa: Xdebug en modo `coverage`.
 - **Cómo**: con PCOV activo, `docker compose exec app ./vendor/bin/pest --coverage` (el `<source>` de `phpunit.xml` ya incluye `app/`). Para quedarse con la capa de servicios, tomar del informe las carpetas listadas arriba y calcular el promedio ponderado por líneas; guardar el informe en el PR de actualización de estados.
 - **Meta de diseño**: cobertura de servicios ≥ 80 %.
-- **Estado**: pendiente
+- **Resultado (20/11, local)**: PCOV 1.0.12 instalado de forma temporal en el contenedor (`pecl install pcov`, cargado solo con `php -d extension=pcov.so`; no se tocó la imagen ni el repositorio). Suite completa: 951 pruebas en verde. Cobertura de líneas ejecutables (informe `clover`):
+
+  | Carpeta | Archivos | Líneas | Cubiertas | Cobertura |
+  |---|---:|---:|---:|---:|
+  | `app/Academico/` | 4 | 152 | 151 | 99,3 % |
+  | `app/Matricula/` | 7 | 174 | 157 | 90,2 % |
+  | `app/Asistencia/` | 3 | 133 | 133 | 100,0 % |
+  | `app/Evaluacion/` | 5 | 361 | 357 | 98,9 % |
+  | `app/Asistente/` | 13 | 180 | 177 | 98,3 % |
+  | `app/Autorizacion/` | 11 | 183 | 178 | 97,3 % |
+  | **Capa de servicios** | 43 | 1183 | 1153 | **97,5 %** |
+
+  Todo `app/`: 96,0 % (el informe de Pest da 95,9 % por el redondeo de su método). La meta es ≥ 80 %. Limitación: es cobertura de líneas; no mide la calidad de las aserciones.
+- **Estado**: medido el 20/11; cumple la meta (97,5 % frente a ≥ 80 %)
 
 ### M-03 · Cambio dentro de su módulo (AC05 / EQ-05)
 - **Qué se mide**: cuántos archivos toca un cambio real **fuera** del módulo responsable.
-- **Cómo**: sobre uno de los retoques ya integrado (por ejemplo R-01 o R-03, que pertenecen al módulo Asistente), ejecutar `git diff --stat <base>...<rama>` y clasificar cada archivo con la regla de abajo. Registrar el retoque elegido, el rango y el recuento de archivos fuera del módulo.
-- **Qué cuenta como «del módulo»** (regla fija para que la medición sea repetible; el ejemplo es el módulo Asistente):
-  - carpeta de dominio: `app/Asistente/`
-  - componentes Livewire: `app/Livewire/Asistente/`
-  - vistas: `resources/views/livewire/asistente/`
-  - configuración: `config/asistente.php`
-  - pruebas: `tests/Feature/Asistente/`
-  - Todo archivo que no esté en esa lista cuenta como **fuera del módulo**, aunque sea un cambio mínimo (rutas, migraciones, traducciones, `docs/`, otros módulos, pruebas de otros módulos). Se informa la lista completa de esos archivos, no solo el número.
+- **Cómo**: sobre uno de los retoques ya integrado (R-01 pertenece al módulo Asistente; R-03 pasó a [F-03](#f-03--recordar-al-último-estudiante-mencionado-en-el-asistente) y ya no es candidato), ejecutar `git diff --stat <base>..<rama>` e informar **todos** los archivos tocados, separados en tres grupos. Registrar el retoque elegido, el rango y el recuento de cada grupo.
+- **Qué cuenta como «del módulo»** (el ejemplo es el módulo Asistente): `app/Asistente/`, `app/Livewire/Asistente/`, `resources/views/livewire/asistente/`, `config/asistente.php` y `tests/Feature/Asistente/`. Esos archivos no se informan como acoplamiento. El resto se clasifica así:
+  1. **Código de otro módulo**: único grupo al que se aplica la meta de 0.
+  2. **Puntos de registro compartidos** (`routes/`, `config/menu.php`, `lang/`, `database/migrations/`): se informan, pero no cuentan como acoplamiento (una ruta o una migración nueva no es acoplamiento entre módulos).
+  3. **`docs/` y `specs/`**: no cuentan.
+  - Se informa la lista completa de archivos de cada grupo, no solo el número.
 - **Meta de diseño**: 0 archivos fuera del módulo responsable. Las pruebas `arch()` de Pest que menciona el diseño no existen; esta medición no las sustituye.
-- **Estado**: pendiente
+- **Resultado (20/11)**: retoque R-01 (Markdown seguro en el asistente), commit `a1e0114`, rango `7d4b53c..a1e0114` (5 archivos, 64 inserciones y 3 eliminaciones).
+  - **Del módulo Asistente (2)**: `resources/views/livewire/asistente/chat/index.blade.php` y `tests/Feature/Asistente/ChatTest.php`.
+  - **Grupo 1, código de otro módulo: 0.**
+  - **Grupo 2, puntos de registro compartidos: 0.**
+  - **Grupo 3, `docs/` y `specs/` (no cuentan): 1**, `docs/retoques.md`.
+  - **No previsto por la regla (2)**: `app/Support/MarkdownSeguro.php` y `tests/Unit/Support/MarkdownSeguroTest.php`. Son código compartido de soporte: no pertenecen a otro módulo, pero tampoco son un punto de registro. Se informan aparte; si se contaran en el grupo 1, el resultado sería 2 en lugar de 0. Se pudieron evitar ubicando el helper dentro de `app/Asistente/`; se dejó en `app/Support/` para que cualquier módulo lo reutilice.
+  - Una sola muestra: no permite generalizar a todos los cambios futuros.
+- **Estado**: medido el 20/11; 0 archivos de otro módulo (meta cumplida), con 2 archivos de soporte compartido sin clasificar por la regla
 
 ### No realizada: prueba con 5 usuarios (AC08)
 La meta de diseño de AC08 incluye que el 90 % de las tareas se completen con 5 usuarios. **No se realizó** y no forma parte de la lista de mediciones anteriores.

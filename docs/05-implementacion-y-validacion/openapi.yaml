@@ -1,0 +1,195 @@
+openapi: 3.0.3
+info:
+  title: SGE — endpoints HTTP que no son Livewire
+  version: v0.7.1
+  description: |
+    Solo las rutas de `routes/web.php` (y `/up`, registrada en `bootstrap/app.php`) que son formularios o
+    descargas clásicas. **No describe una API REST**: la interfaz es Blade + Livewire dentro del monolito
+    (RC04, ADR-001) y las pantallas Livewire no se documentan aquí. Ver `api-http.md`.
+
+    Autenticación: sesión de Laravel (cookie, driver Redis). Los formularios `POST`/`PUT` exigen el token
+    CSRF (`_token`, campo oculto del formulario); sin él la respuesta es 419. Las rutas protegidas usan los
+    middleware `auth`, `auth.session`, `activo` y `cambio-password`.
+servers:
+  - url: http://localhost:8080
+    description: Entorno local con Docker Compose (servicio `web`). Para staging, sustituir por su host.
+tags:
+  - { name: Sesión, description: Inicio y cierre de sesión. }
+  - { name: Evaluación, description: Guardado de notas y descarga de boletas. }
+  - { name: Cuenta, description: Cambio de la contraseña propia. }
+  - { name: Operación, description: Salud y versión desplegada. }
+paths:
+  /login:
+    get:
+      tags: [Sesión]
+      operationId: loginForm
+      summary: Formulario de inicio de sesión
+      security: []
+      description: Solo para invitados (middleware `guest`); un usuario con sesión es redirigido a `/inicio`.
+      responses:
+        '200': { description: Página HTML con el formulario. }
+        '302': { description: Ya hay sesión; redirige a `/inicio`. }
+    post:
+      tags: [Sesión]
+      operationId: login
+      summary: Iniciar sesión
+      security: []
+      description: |
+        `login` es el correo si contiene `@`; si no, el nombre de usuario. Límite: 5 intentos fallidos por
+        combinación login + IP en 60 s (`LoginRequest`); al superarlo el error de validación indica en cuántos
+        segundos reintentar. Una cuenta inactiva no inicia sesión.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [_token, login, password]
+              properties:
+                _token: { type: string, description: Token CSRF. }
+                login: { type: string, maxLength: 150 }
+                password: { type: string, format: password }
+      responses:
+        '302':
+          description: |
+            Con credenciales válidas, redirige a la URL pedida o a `/inicio`. Con error de validación
+            (credenciales, cuenta inactiva o demasiados intentos) vuelve a `/login` con el mensaje.
+        '419': { description: Falta el token CSRF o la sesión caducó. }
+  /logout:
+    post:
+      tags: [Sesión]
+      operationId: logout
+      summary: Cerrar sesión
+      security: [{ sesion: [] }]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [_token]
+              properties:
+                _token: { type: string }
+      responses:
+        '302': { description: Sesión cerrada y reiniciada; redirige a `/login`. }
+        '419': { description: Falta el token CSRF. }
+  /up:
+    get:
+      tags: [Operación]
+      operationId: salud
+      summary: Comprobación de salud con la versión desplegada
+      security: []
+      description: Pública, sin sesión ni Redis (fuera del grupo `web`). Contrato en `specs/002-despliegue-ci-staging/contracts/salud.md`.
+      responses:
+        '200':
+          description: La aplicación responde.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  version: { type: string, example: v0.7.1 }
+  /notas/registro/{seccion}/{curso}:
+    post:
+      tags: [Evaluación]
+      operationId: guardarNotas
+      summary: Guardar la tabla de notas de una sección y un curso
+      description: |
+        Formulario clásico (no Livewire) para que k6 lo pruebe de forma robusta (`NotasController`).
+        Autoriza antes de tocar datos: solo quien puede escribir ese curso y sección (`EvaluacionService::puedeEscribir`).
+        **Todo o nada**: si una celda está fuera de la escala configurada no se guarda ninguna y el error
+        indica fila y columna (`tests/Feature/Evaluacion/GuardarNotasTest.php`). Una celda vacía borra la nota.
+      security: [{ sesion: [] }]
+      parameters:
+        - { name: seccion, in: path, required: true, schema: { type: integer }, description: Id de la sección. }
+        - { name: curso, in: path, required: true, schema: { type: integer }, description: Id del curso. }
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [_token, periodo]
+              properties:
+                _token: { type: string }
+                periodo: { type: integer, description: Id de un periodo de evaluación existente. }
+                notas:
+                  type: object
+                  description: 'Notas como `notas[<alumno_id>][<criterio_id>]`; cada valor es texto de hasta 20 caracteres, o vacío.'
+                  additionalProperties:
+                    type: object
+                    additionalProperties: { type: string, maxLength: 20, nullable: true }
+      responses:
+        '302':
+          description: |
+            Siempre redirige a la pantalla de registro del periodo. Con éxito lleva el aviso «Notas guardadas
+            (n registradas, m vaciadas)»; con notas inválidas, errores y los valores escritos (nada se guardó).
+        '403': { description: El usuario no puede escribir las notas de ese curso y sección. }
+        '404': { description: La sección o el curso no existen. }
+        '419': { description: Falta el token CSRF. }
+  /boletas/{estudiante}/{periodo}:
+    get:
+      tags: [Evaluación]
+      operationId: descargarBoleta
+      summary: Descargar la boleta en PDF
+      description: |
+        El PDF se genera en la misma solicitud (ADR-007: sin cola). Autoriza antes de generar
+        (`BoletaController`): `boletas.ver_todas` (Administrador, Director) ve cualquier alumno, incluso un
+        periodo sin cierre, marcado «BORRADOR»; `boletas.ver_propia` (Padre, Alumno) solo al alumno propio o a
+        un hijo y solo periodos publicados; cualquier otro rol recibe 403.
+      security: [{ sesion: [] }]
+      parameters:
+        - { name: estudiante, in: path, required: true, schema: { type: integer }, description: Id del alumno. }
+        - name: periodo
+          in: path
+          required: true
+          schema: { type: string, pattern: '^([0-9]+|anual)$' }
+          description: Id de un periodo de evaluación o la palabra `anual`.
+      responses:
+        '200':
+          description: Boleta como descarga.
+          content:
+            application/pdf:
+              schema: { type: string, format: binary }
+        '403': { description: 'Sin permiso, alumno ajeno (exista o no) o periodo aún no publicado para la familia.' }
+        '404': { description: 'El alumno o el periodo no existen, o no hay datos para un usuario con `boletas.ver_todas`.' }
+  /mi-cuenta/password:
+    get:
+      tags: [Cuenta]
+      operationId: cuentaPasswordForm
+      summary: Pantalla de cambio de contraseña
+      security: [{ sesion: [] }]
+      responses:
+        '200': { description: Página HTML. }
+    put:
+      tags: [Cuenta]
+      operationId: cuentaPasswordActualizar
+      summary: Cambiar la contraseña propia
+      description: |
+        Desde un formulario HTML se envía como `POST` con `_method=PUT`. Es lo único accesible mientras haya un
+        cambio obligatorio pendiente. Al cambiarla se cierran las demás sesiones del usuario (`CuentaController`).
+      security: [{ sesion: [] }]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [_token, password_actual, password, password_confirmation]
+              properties:
+                _token: { type: string }
+                _method: { type: string, enum: [PUT] }
+                password_actual: { type: string, format: password }
+                password: { type: string, format: password, minLength: 8, description: Distinta de la actual. }
+                password_confirmation: { type: string, format: password }
+      responses:
+        '302': { description: 'Con éxito, redirige a `/inicio`; con error de validación vuelve a la pantalla con el mensaje.' }
+        '419': { description: Falta el token CSRF. }
+components:
+  securitySchemes:
+    sesion:
+      type: apiKey
+      in: cookie
+      name: laravel_session
+      description: Cookie de sesión de Laravel; el nombre real sale de `SESSION_COOKIE`/`APP_NAME`. Sin sesión, las rutas protegidas redirigen a `/login` (302).

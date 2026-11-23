@@ -86,7 +86,7 @@ Se agregan **Verificación** (cómo se probó), **Justificación de la medida** 
 | **Respuesta** | El cambio se concentra en el módulo responsable. |
 | **Medida (diseño)** | 0 archivos modificados fuera del módulo responsable; pruebas del módulo y de regresión en verde; 0 consultas a la base de datos desde controladores, componentes Livewire y vistas. |
 | **Verificación (diseño)** | `git diff --stat` y pruebas `arch()` de Pest. |
-| **Estado real** | **No medido.** No hay pruebas `arch()` (búsqueda en `tests/` sin resultados). Indicios: agregar una escala es agregar datos (`escalas_calificacion`); cambiar de proveedor de IA es implementar `ProveedorIA` y registrarlo en `AppServiceProvider` (spec 007, R-11). El cambio de proveedor de la enmienda 2.3.0 no exigió tocar el servicio del asistente, pero no se midió con `git diff`. |
+| **Estado real** | **Parcial.** M-03 (20/11) sobre el retoque R-01 (`7d4b53c..a1e0114`, 5 archivos): 0 archivos de código de otro módulo, 0 puntos de registro compartidos y 1 de `docs/`; 2 archivos de `app/Support` quedaron sin clasificar por la regla (serían 2 si se contaran como código de otro módulo). **Es una sola muestra.** No hay pruebas `arch()` (búsqueda en `tests/` sin resultados) y no se midieron las consultas desde controladores, componentes Livewire y vistas. Indicios: agregar una escala es agregar datos (`escalas_calificacion`); cambiar de proveedor de IA es implementar `ProveedorIA` y registrarlo en `AppServiceProvider` (spec 007, R-11). Evidencia: [`docs/retoques.md`](../retoques.md), M-03. |
 
 ## EQ-06. Adaptabilidad: configurar una nueva institución
 
@@ -114,7 +114,7 @@ Se agregan **Verificación** (cómo se probó), **Justificación de la medida** 
 | **Respuesta** | Las reglas de negocio se prueban de forma automática; el proveedor de IA se reemplaza por `ProveedorFalso` o `Http::fake()`. |
 | **Medida (diseño)** | 100 % de las reglas críticas con al menos una prueba; cobertura de servicios ≥ 80 %; suite en menos de 2 minutos. |
 | **Verificación** | `pest --ci` y `pint --test` en `.github/workflows/ci.yml` en cada push y pull request. |
-| **Estado real** | **Parcial.** Suite de **910 pruebas pasadas (3797 aserciones) en 64,9 s** en el CI de `main` (ejecución 43945958777, commit `b672143`): la duración cumple la meta de menos de 2 minutos. El CI la ejecuta y bloquea con Pint. **Cobertura no medida** (`coverage: none`). La base de pruebas es MySQL, no SQLite. Es parcial por la cobertura, que es parte de la medida. |
+| **Estado real** | **Cumplido.** M-02 (20/11, local, PCOV): **97,5 % de cobertura de líneas en la capa de servicios** (1153 de 1183 líneas; meta ≥ 80 %) y 951 pruebas en verde. La duración cumple la meta de menos de 2 minutos: el job `pruebas` del CI tardó 64,18 s con 951 pruebas ([ejecución 45248630708](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/actions/runs/45248630708)); con PCOV la misma suite tardó 95,5 s (y 128 s en una ejecución anterior), por eso la cobertura va en un job aparte. Reglas críticas, cada una con al menos una prueba: **escala** (`tests/Feature/Seeders/EscalasCalificacionSeederTest.php`; equivalentes literal y vigesimal y validación de valores en `tests/Unit/Evaluacion/CalculoPromediosTest.php`; **rechazo de una nota fuera de la escala configurada** en `tests/Feature/Evaluacion/GuardarNotasTest.php`, «es todo o nada: una celda fuera de escala no guarda ninguna…» y «con escala literal rechaza «Z» y acepta las letras de la escala»); **guardado todo o nada** (`GuardarNotasTest.php`, la prueba anterior: con una celda inválida no se guarda ninguna); **promedio** (`CalculoPromediosTest.php`: ponderado, renormalizado, nota 0, redondeo, anual); **matrícula** (`tests/Feature/Matricula/Matriculas/MatricularTest.php`: sin doble matrícula activa, incluso por concurrencia); **traslado** (`CambiarEstadoTest.php`: «traslada sin motivo», fecha, solo matrícula activa; es el estado `Trasladado` de `MatriculaService::trasladar()`); **filtro de la IA** (`tests/Feature/Asistente/AccesoAjenoTest.php` y `MinimizacionTest.php`). **La cobertura se mide en el CI** (job `cobertura`, PCOV, sin umbral, informe como artefacto): [ejecución 45248630708](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/actions/runs/45248630708), 95,98 % de líneas en todo `app/` (2481 de 2585). Limitaciones: es cobertura de líneas, no de la calidad de las aserciones; la tabla por carpeta (97,5 % en servicios) es la de M-02; la base de pruebas es MySQL, no SQLite. Evidencia: [`docs/retoques.md`](../retoques.md), M-02. |
 
 ## EQ-08. Usabilidad: consulta desde el celular
 
@@ -127,7 +127,7 @@ Se agregan **Verificación** (cómo se probó), **Justificación de la medida** 
 | **Entorno** | Navegador móvil de 360 px de ancho. |
 | **Respuesta** | Encuentra y descarga la boleta sin ayuda. |
 | **Medida (diseño)** | 90 % de tareas completadas por 5 usuarios; boleta en 3 interacciones o menos; sin desplazamiento horizontal a 360 px. |
-| **Estado real** | **No medido.** No hay prueba con usuarios ni revisión a 360 px en `specs/`. El criterio de «Inicio → Mis notas → hijo → Descargar boleta» (3 clics) está en la spec 006 (SC-002 y R-19); la prueba de humo de 10 minutos no lo cronometra (constitución 2.2.0). |
+| **Estado real** | **Parcial.** M-01 (20/11, Playwright con Chromium a 360 px, no un celular real): sin desplazamiento horizontal en Inicio, Inicio con el menú abierto, `/matricula/mis-alumnos`, `/asistencia/mia`, `/notas/mias`, `/asistente` y `/mi-cuenta/password`. La meta de **3 interacciones o menos** hasta la boleta **se cumple por las tarjetas del Inicio (2)**; el menú lateral (4) es un camino alternativo. Queda **parcial solo por la prueba con 5 usuarios**, que es parte de la medida y no se hizo. Evidencia: [`docs/retoques.md`](../retoques.md), M-01. |
 
 ## EQ-09. Portabilidad: despliegue en un servidor nuevo
 
@@ -164,22 +164,24 @@ Se agregan **Verificación** (cómo se probó), **Justificación de la medida** 
 | EQ-02 | Privacidad en IA | Que el asistente nunca reciba datos de otros estudiantes. | AC02 | DA02 | Cumplido |
 | EQ-03 | Rendimiento | Que el sistema soporte 1000 usuarios dentro de los umbrales de p95. | AC03 | DA03 | **No cumplido** en p95; 0 % de fallos |
 | EQ-04 | Disponibilidad | Que las boletas no bloqueen el sistema y que se recupere solo. | AC04 | DA03 | Parcial |
-| EQ-05 | Mantenibilidad | Que un cambio quede dentro de su módulo. | AC05 | DA09 | No medido |
+| EQ-05 | Mantenibilidad | Que un cambio quede dentro de su módulo. | AC05 | DA09 | Parcial |
 | EQ-06 | Adaptabilidad | Que un colegio nuevo se configure sin tocar el código. | AC06 | DA04 | Cumplido (tiempo no medido) |
-| EQ-07 | Testeabilidad | Que las reglas de negocio tengan pruebas automatizadas. | AC07 | DA07 | Parcial |
-| EQ-08 | Usabilidad | Que un padre use el sistema desde el celular. | AC08 | — | No medido |
+| EQ-07 | Testeabilidad | Que las reglas de negocio tengan pruebas automatizadas. | AC07 | DA07 | Cumplido |
+| EQ-08 | Usabilidad | Que un padre use el sistema desde el celular. | AC08 | — | Parcial |
 | EQ-09 | Portabilidad | Que el sistema se despliegue en cualquier servidor con Docker. | AC09 | DA06 | Parcial |
 | EQ-10 | Trazabilidad | Que toda acción crítica quede registrada. | AC10 | DA08 | No cumplido |
 
-Los estados de este resumen juzgan la **medida** de cada escenario; los de [`04`](04-atributos-de-calidad.md) juzgan el **atributo**. Difieren en tres casos, explicados en la sección «Relación con los escenarios» de ese documento: EQ-05 (atributo parcial, medida no medida), EQ-09 (atributo cumplido, medida parcial) y EQ-10 (atributo parcial, medida no cumplida).
+Los estados de este resumen juzgan la **medida** de cada escenario; los de [`04`](04-atributos-de-calidad.md) juzgan el **atributo**. Difieren en dos casos, explicados en la sección «Relación con los escenarios» de ese documento: EQ-09 (atributo cumplido, medida parcial) y EQ-10 (atributo parcial, medida no cumplida).
 
 ## Cómo se verificó
 
 | Punto | Comprobación | Resultado |
 |-------|--------------|-----------|
 | Pruebas `arch()` (EQ-05) | Búsqueda de `arch(` y expectativas de arquitectura de Pest en `tests/` | Sin coincidencias. |
+| Cambio dentro de su módulo (EQ-05) | `git diff --stat 7d4b53c..a1e0114` (retoque R-01), con archivos en tres grupos | 0 de otro módulo; 0 de registro compartido; 1 de `docs/`; 2 de `app/Support` sin clasificar. |
 | Lista de pruebas citadas (EQ-01, EQ-02, EQ-06) | Listado de `tests/Feature/` y `tests/Feature/*/Acceso` | Los archivos nombrados existen. |
 | Resultados de carga (EQ-03) | Lectura de `k6-sesion-2026-11-13.md` y del bloque SC-006 de la spec 001 | Cifras copiadas de las tablas de resultados de esos documentos. |
 | Reinicio y despliegue (EQ-04, EQ-09) | Lectura de `despliegue-y-vuelta-atras.md`, `migracion-fallida.md` y `docker-compose.prod.yml` | Tiempos y política de reinicio como se citan. |
-| Cobertura y CI (EQ-07) | Lectura de `.github/workflows/ci.yml` | `pest --ci`, `pint --test` y `coverage: none`. |
-| Número de pruebas y duración (EQ-07) | Registro del job `pruebas` de la ejecución 43945958777 de `main` (`gh api …/actions/jobs/<id>/logs`) | `Tests: 910 passed (3797 assertions)`, `Duration: 64.89s`. |
+| Cobertura y CI (EQ-07) | Job `cobertura` de `.github/workflows/ci.yml` y cobertura local con PCOV (M-02) | CI: 95,98 % de líneas en `app/` ([ejecución 45248630708](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/actions/runs/45248630708)); local: 97,5 % en servicios, 951 pruebas. |
+| Usabilidad a 360 px (EQ-08) | Playwright con Chromium a 360 px y `padre.demo` (M-01) | `scrollWidth` = 360 en siete pantallas; boleta en 2 interacciones (tarjetas) o 4 (menú). |
+| Número de pruebas y duración (EQ-07) | Registro del job `pruebas` de la ejecución 45248630708 (`gh api …/actions/jobs/<id>/logs`) | `Tests: 951 passed (3971 assertions)`, `Duration: 64.18s`. |

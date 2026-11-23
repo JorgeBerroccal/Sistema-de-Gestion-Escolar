@@ -1,12 +1,13 @@
 # Integración continua (CI)
 
 Cada **push** (a cualquier rama) y cada **pull request** ejecuta el workflow
-[`.github/workflows/ci.yml`](../../.github/workflows/ci.yml), llamado `ci`. Muestra dos estados en
+[`.github/workflows/ci.yml`](../../.github/workflows/ci.yml), llamado `ci`. Muestra varios estados en
 GitHub, junto al commit y dentro del pull request:
 
 | Estado | Qué hace |
 |---|---|
 | `ci / pruebas` | Levanta MySQL 8 y Redis 7 reales como servicios, instala dependencias, compila los assets (las vistas usan `@vite`) y ejecuta la suite **completa** de Pest (`vendor/bin/pest --ci`). |
+| `ci / cobertura` | Ejecuta la misma suite con PCOV, imprime la cobertura por clase y publica el informe (`cobertura.txt` y `cobertura-html/`) como el artefacto `cobertura` (90 días). Informa, no tiene umbral ni bloquea por porcentaje; va aparte para no alargar `ci / pruebas`. |
 | `ci / estilo` | Ejecuta Pint en modo solo comprobación (`vendor/bin/pint --test`); no modifica el repositorio. |
 
 El workflow no usa secretos y solo tiene permiso de lectura del repositorio, de modo que los pull

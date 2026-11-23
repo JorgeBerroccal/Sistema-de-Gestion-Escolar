@@ -133,6 +133,10 @@ La documentación de arquitectura describe el sistema **tal como se construyó**
 
 Los diagramas se editan en `docs/img/fuentes/*.archify.json` y se regeneran con Archify; cada uno tiene su versión interactiva en `docs/img/fuentes/*.html`.
 
+## Implementación y validación (Sprint 2)
+
+[`docs/05-implementacion-y-validacion/`](docs/05-implementacion-y-validacion/README.md) indica dónde está la evidencia de cada entregable (especificaciones SDD, pruebas en CI, k6, atributos de calidad) y la tabla de **adaptaciones** (Jest → Pest, sin API REST, k6 con 1000 usuarios). Incluye los [endpoints HTTP documentados con OpenAPI](docs/05-implementacion-y-validacion/api-http.md), la [base de datos y la caché](docs/05-implementacion-y-validacion/base-de-datos-y-cache.md) y el [resumen de cobertura](docs/05-implementacion-y-validacion/cobertura/resumen.md).
+
 ## Regla de autorización
 
 **Los permisos se verifican por identificador (p. ej. `usuarios.ver`), nunca por nombre de rol.**
