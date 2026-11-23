@@ -44,7 +44,7 @@ docker run --rm -v "$PWD/docs/05-implementacion-y-validacion:/spec:ro" -w /spec 
 - **Primera pasada:** 6 errores. Tres eran de estructura (descripciones con comas y dos puntos sin comillas, que rompían el mapeo YAML) y tres de seguridad (las rutas públicas `GET/POST /login` y `/up` no declaraban `security: []`). Se corrigieron, y se agregaron `operationId` y descripciones de las etiquetas.
 - **Resultado actual:** «Your API description is valid», **0 errores y 9 avisos**, que se dejan a propósito:
   - `info-license`: el repositorio no declara licencia.
-  - `no-server-example.com`: el servidor es `http://localhost:8080` (Docker Compose local).
+  - `no-server-example.com`: uno de los dos servidores es `http://localhost:8080` (Docker Compose local); el otro es el de staging.
   - `operation-2xx-response` y `operation-4xx-response`: la interfaz es HTML con redirecciones, por lo que varias operaciones responden `302` y no `2XX`; no se inventaron respuestas que el código no da.
 
 Además, el contenido se contrastó **a mano** con `routes/web.php`, `bootstrap/app.php` y los controladores. La herramienta valida la sintaxis y la estructura de OpenAPI, no que coincida con el código; si una ruta cambia, hay que actualizarlo a mano.

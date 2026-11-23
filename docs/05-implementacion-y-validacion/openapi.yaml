@@ -11,8 +11,10 @@ info:
     CSRF (`_token`, campo oculto del formulario); sin él la respuesta es 419. Las rutas protegidas usan los
     middleware `auth`, `auth.session`, `activo` y `cambio-password`.
 servers:
+  - url: https://sge-peru.chilecentral.cloudapp.azure.com
+    description: Staging (Azure).
   - url: http://localhost:8080
-    description: Entorno local con Docker Compose (servicio `web`). Para staging, sustituir por su host.
+    description: Entorno local con Docker Compose (servicio `web`).
 tags:
   - { name: Sesión, description: Inicio y cierre de sesión. }
   - { name: Evaluación, description: Guardado de notas y descarga de boletas. }
