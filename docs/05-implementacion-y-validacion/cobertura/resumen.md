@@ -2,7 +2,7 @@
 
 Cobertura de **líneas ejecutables** de `app/`, medida con PCOV sobre la suite completa de Pest. Meta de diseño (EQ-07): cobertura de la capa de servicios ≥ 80 %. No es cobertura de la calidad de las aserciones.
 
-## Resultado (20/11/2026, local, 951 pruebas en verde)
+## Resultado por carpeta (M-02, 20/11/2026, local, 951 pruebas en verde)
 
 | Carpeta | Archivos | Líneas | Cubiertas | Cobertura |
 |---|---:|---:|---:|---:|
@@ -14,7 +14,7 @@ Cobertura de **líneas ejecutables** de `app/`, medida con PCOV sobre la suite c
 | `app/Autorizacion/` | 11 | 183 | 178 | 97,3 % |
 | **Capa de servicios** | 43 | 1183 | 1153 | **97,5 %** |
 
-Todo `app/`: 96,0 % (el informe de Pest da 95,9 % por el redondeo de su método). Fuente: [`docs/retoques.md`](../../retoques.md), M-02.
+Todo `app/`: 96,0 % (el informe de Pest da 95,9 % por el redondeo de su método). Fuente: [`docs/retoques.md`](../../retoques.md), M-02. **Es una medición fechada el 20/11**: el total actualizado, por clase, está en el artefacto del CI (abajo; el 23/11 dio 95,98 % en todo `app/`).
 
 ## Cobertura en el CI
 

@@ -32,6 +32,19 @@ Las pantallas Livewire (`Route::livewire(...)`: administración, académico, mat
 
 También sirve cualquier visor de OpenAPI 3. Los ejemplos de «Try it out» no funcionarán tal cual, porque todas las rutas salvo `/up` y `GET /login` necesitan una sesión y un token CSRF reales.
 
-## Cómo se verificó
+## Cómo se validó
 
-El archivo se cargó como YAML válido y se contrastó a mano con las rutas y los controladores citados. **No se validó con una herramienta de OpenAPI** ni se generó desde el código; si una ruta cambia, hay que actualizarlo a mano.
+El 23/11/2026 se validó con **Redocly CLI 2.82.0** en un contenedor, sin instalar nada en el proyecto:
+
+```bash
+docker run --rm -v "$PWD/docs/05-implementacion-y-validacion:/spec:ro" -w /spec node:20 \
+  npx --yes @redocly/cli@latest lint openapi.yaml
+```
+
+- **Primera pasada:** 6 errores. Tres eran de estructura (descripciones con comas y dos puntos sin comillas, que rompían el mapeo YAML) y tres de seguridad (las rutas públicas `GET/POST /login` y `/up` no declaraban `security: []`). Se corrigieron, y se agregaron `operationId` y descripciones de las etiquetas.
+- **Resultado actual:** «Your API description is valid», **0 errores y 9 avisos**, que se dejan a propósito:
+  - `info-license`: el repositorio no declara licencia.
+  - `no-server-example.com`: el servidor es `http://localhost:8080` (Docker Compose local).
+  - `operation-2xx-response` y `operation-4xx-response`: la interfaz es HTML con redirecciones, por lo que varias operaciones responden `302` y no `2XX`; no se inventaron respuestas que el código no da.
+
+Además, el contenido se contrastó **a mano** con `routes/web.php`, `bootstrap/app.php` y los controladores. La herramienta valida la sintaxis y la estructura de OpenAPI, no que coincida con el código; si una ruta cambia, hay que actualizarlo a mano.

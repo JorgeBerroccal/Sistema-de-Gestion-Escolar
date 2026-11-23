@@ -26,7 +26,7 @@ Tres entregables se **adaptaron** porque la letra del pedido contradice la arqui
 |---|---|---|---|
 | Pruebas con **Jest** | Pruebas con **Pest** (`tests/Unit`, `tests/Feature`), ejecutadas por GitHub Actions en cada push y pull request, con cobertura | **Adaptado** | El sistema es PHP/Laravel; Jest es de JavaScript y no probaría el código del SGE. Pest cumple el mismo papel: pruebas automáticas en CI con reporte de cobertura (artefacto `cobertura`) |
 | **API REST** documentada con OpenAPI/Swagger | [`openapi.yaml`](openapi.yaml) solo con los endpoints HTTP reales que no son Livewire: login, logout, `/up`, guardado de notas, descarga de boletas y cambio de contraseña | **Adaptado** | No hay API REST: la interfaz es Blade + Livewire en el monolito (RC04, ADR-001). Crear una API solo para el entregable contradiría la arquitectura documentada y sería funcionalidad inventada |
-| k6 con **hasta 2000** usuarios | k6 con **1000** usuarios virtuales | **Adaptado** | Umbral de 1000 usuarios acordado con la docente (declaración del responsable del proyecto; no hay un documento del acuerdo en el repositorio). Con 1000 la CPU de los 2 vCPU ya se satura y el p95 no se cumple: [`k6-sesion-2026-11-13.md`](../../specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-13.md), AC03 en [`04`](../01-analisis-de-sistema/04-atributos-de-calidad.md). Duplicar la carga no habría aportado información nueva |
+| k6 con **hasta 2000** usuarios | k6 con **1000** usuarios virtuales | **Adaptado (pendiente de confirmar)** | El umbral de 1000 usuarios se acordó **verbalmente** con la docente al inicio del proyecto; **no hay un documento escrito**, y el enunciado del Sprint 2 menciona 2000. El responsable lo confirmará con la docente; según su respuesta se actualizará esta fila o se hará una sesión con 2000. Con 1000 la CPU de los 2 vCPU ya se satura y el p95 no se cumple: [`k6-sesion-2026-11-13.md`](../../specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-13.md), AC03 en [`04`](../01-analisis-de-sistema/04-atributos-de-calidad.md) |
 
 ## Criterio fundamental: ¿responde a los atributos de calidad?
 
@@ -38,6 +38,6 @@ Resumen de los estados reales (fuente: [`08`](../01-analisis-de-sistema/08-escen
 
 ## Qué no se hizo
 
-- Pruebas de 2000 usuarios, y una segunda sesión de carga (constitución 2.2.0).
+- Pruebas de 2000 usuarios y una segunda sesión de carga (la constitución 2.2.0 fija una sola sesión; ver la fila de k6 de las adaptaciones, que está pendiente de confirmar con la docente).
 - Prueba de usabilidad con 5 usuarios (AC08).
 - Una API REST, caché de aplicación, cola de trabajos y bitácora de auditoría (ADR-006, ADR-007 y ADR-010 en `07`).
