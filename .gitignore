@@ -49,3 +49,5 @@ Thumbs.db
 
 # Marcas de Windows al copiar desde el Explorador
 *:Zone.Identifier
+/cobertura.txt
+/cobertura-html/

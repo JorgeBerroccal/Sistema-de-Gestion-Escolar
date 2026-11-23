@@ -1,5 +1,5 @@
 # Integración continua: en cada push y pull request ejecuta la suite completa de Pest (con MySQL y
-# Redis reales) y la comprobación de estilo de Pint. Contrato: specs/002-despliegue-ci-staging/contracts/workflows-github.md
+# Redis reales, midiendo la cobertura con PCOV) y la comprobación de estilo de Pint. Contrato: specs/002-despliegue-ci-staging/contracts/workflows-github.md
 name: ci
 
 on:
@@ -60,7 +60,7 @@ jobs:
         with:
           php-version: '8.3'
           extensions: pdo_mysql, bcmath, intl, zip, redis, pcntl
-          coverage: none
+          coverage: pcov
 
       - name: Caché de Composer
         uses: actions/cache@v6
@@ -102,8 +102,25 @@ jobs:
           echo 'Redis ', $redis->info()['redis_version'], PHP_EOL;
           PHP
 
-      - name: Pest (suite completa)
-        run: vendor/bin/pest --ci
+      # La cobertura de líneas se mide en cada ejecución (PCOV) y se publica como artefacto. No hay umbral
+      # mínimo: informa, no bloquea. El resumen por clase queda también en el registro del paso.
+      - name: Pest (suite completa, con cobertura)
+        run: |
+          vendor/bin/pest --ci --colors=never \
+            --coverage-text=cobertura.txt \
+            --coverage-html=cobertura-html
+          cat cobertura.txt
+
+      - name: Informe de cobertura (artefacto)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: cobertura
+          path: |
+            cobertura.txt
+            cobertura-html
+          if-no-files-found: warn
+          retention-days: 90
 
   estilo:
     name: estilo
