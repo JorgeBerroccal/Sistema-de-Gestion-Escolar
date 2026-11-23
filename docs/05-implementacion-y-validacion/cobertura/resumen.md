@@ -20,7 +20,7 @@ Todo `app/`: 96,0 % (el informe de Pest da 95,9 % por el redondeo de su método)
 
 Desde este cambio el job `ci / pruebas` mide la cobertura con PCOV en cada push y pull request y publica el informe como el artefacto **`cobertura`** (`cobertura.txt` y `cobertura-html/`, 90 días). No hay umbral: informa y no bloquea.
 
-- Ejecución que generó el reporte: ENLACE_CI
+- Ejecución que generó el reporte: [https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/actions/runs/45248630708](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/actions/runs/45248630708): 951 pruebas en verde y **95,98 % de líneas en todo `app/`** (2481 de 2585), job `cobertura`.
 - El artefacto se descarga desde la sección **Artifacts** de esa ejecución; el HTML no se guarda en el repositorio.
 
 El texto del CI da la cobertura **por clase y total**; la tabla por carpeta de arriba es la de M-02 (suma de las clases de cada carpeta) y se regenera con el procedimiento de abajo.
