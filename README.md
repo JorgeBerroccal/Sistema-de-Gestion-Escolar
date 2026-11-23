@@ -4,6 +4,8 @@
 **Universidad:** Universidad Nacional de San Cristóbal de Huamanga
 **Escuela Profesional:** Ingeniería de Sistemas
 
+> **Versión final del MVP: [`v1.0.0`](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/releases/tag/v1.0.0)** (seis módulos, despliegue, pruebas y documentación). En staging: <https://sge-peru.chilecentral.cloudapp.azure.com> (estado en `/up`). Lo que queda abierto está en [Pendientes](#pendientes).
+
 El **SGE** es una aplicación web para gestionar una institución escolar: usuarios, roles y permisos
 de acceso, y —en los módulos siguientes— los datos académicos que dependen de ellos.
 
@@ -136,6 +138,14 @@ Los diagramas se editan en `docs/img/fuentes/*.archify.json` y se regeneran con 
 ## Implementación y validación (Sprint 2)
 
 [`docs/05-implementacion-y-validacion/`](docs/05-implementacion-y-validacion/README.md) indica dónde está la evidencia de cada entregable (especificaciones SDD, pruebas en CI, k6, atributos de calidad) y la tabla de **adaptaciones** (Jest → Pest, sin API REST, k6 con 1000 usuarios). Incluye los [endpoints HTTP documentados con OpenAPI](docs/05-implementacion-y-validacion/api-http.md), la [base de datos y la caché](docs/05-implementacion-y-validacion/base-de-datos-y-cache.md) y el [resumen de cobertura](docs/05-implementacion-y-validacion/cobertura/resumen.md).
+
+## Pendientes
+
+Con `v1.0.0` el MVP está completo y desplegado. Quedan tres puntos abiertos, ninguno de código:
+
+1. **Usuarios de la prueba de carga (1000 o 2000).** El umbral de 1000 se acordó verbalmente con la docente y el enunciado del Sprint 2 menciona 2000. El responsable espera su respuesta: según ella se actualiza la fila de k6 de [las adaptaciones](docs/05-implementacion-y-validacion/README.md#adaptaciones) o se hace una sesión con 2000 (la constitución 2.2.0 fija una sola sesión de carga).
+2. **Revisión de costos (T083 de la feature 002, 15/12).** Revisar *Cost analysis* contra la estimación, confirmar que el proyectado al 31/12 no pasa del 80 % del crédito (DC-007) y decidir si se detiene la VM hasta la sustentación. Ver [`specs/002-despliegue-ci-staging/tasks.md`](specs/002-despliegue-ci-staging/tasks.md) y [`docs/despliegue/costo-y-tamano.md`](docs/despliegue/costo-y-tamano.md).
+3. **Comprobación de T078 (feature 002).** Confirmar en *Cost analysis* que no aparecen cargos nuevos de B2als_v2 tras la sesión de carga; la evidencia de la sesión ya está registrada y esta es la única parte pendiente de esa tarea.
 
 ## Regla de autorización
 

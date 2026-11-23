@@ -148,6 +148,23 @@ Prueba de humo del responsable, todos los pasos correctos:
 
 `ASISTENTE_NOMBRE` no hizo falta: `config/asistente.php` usa «Yachay» por defecto.
 
+## Verificación en staging (v1.0.0, 23/11)
+
+Versión final del MVP: etiqueta anotada `v1.0.0` sobre `main` (`ee74adb`, con el PR #21 integrado). La ejecución 45260759628 del workflow `release` quedó en verde y las imágenes `sge-app` y `sge-web` `v1.0.0` se descargan de forma anónima de GHCR.
+
+Despliegue con `deploy/deploy.sh v1.0.0` (23/11/2026, 15:49:45 según el registro del servidor):
+- Sincronización de datos base correcta: `RolesYPermisos`, `EscalasCalificacion`, `TiposDocumento` y `EstadosAsistencia`.
+- «Comprobación de salud correcta: https://sge-peru.chilecentral.cloudapp.azure.com/up informa version=v1.0.0».
+- «Desplegada v1.0.0 en 36s».
+- Permisos en la base: **32** (sin cambios respecto de v0.7.1).
+
+Comprobación rápida del responsable en el navegador, correcta:
+1. `/up` responde `{"status":"ok","version":"v1.0.0"}`.
+2. `admin` ve el Inicio con tarjetas agrupadas, el menú lateral y el nombre de la institución.
+3. El Director ve Gestión académica, Matrícula, Asistencia y Evaluación, y **no** ve Administración (coherente con los permisos que se le quitaron en la verificación de v0.7.1).
+
+No se repitió la prueba de humo completa de 8 pasos de v0.7.1: entre `v0.7.1` y `v1.0.0` no cambió el código de la aplicación (`git diff v0.7.1 v1.0.0` sin diferencias en `app/`, `resources/`, `routes/`, `config/`, `database/`, `lang/`, `docker/` ni `deploy/`); cambiaron la documentación y el CI (job de cobertura).
+
 ## Mediciones para el congelamiento (21-22/11)
 
 Mediciones de los atributos de calidad que hoy figuran como «No medido» o «Parcial» en [`04`](01-analisis-de-sistema/04-atributos-de-calidad.md) y [`08`](01-analisis-de-sistema/08-escenarios-atributos-calidad.md). Se hacen **después** de implementar los retoques (19-20/11), sobre el código que se congela. Con los resultados (20/11) se actualizaron los estados de `04` y `08`: AC05/EQ-05 pasa a Parcial, AC07/EQ-07 a Cumplido y AC08/EQ-08 a Parcial.
