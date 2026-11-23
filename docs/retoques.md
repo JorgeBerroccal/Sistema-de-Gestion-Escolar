@@ -150,7 +150,7 @@ Prueba de humo del responsable, todos los pasos correctos:
 
 ## Mediciones para el congelamiento (21-22/11)
 
-Mediciones de los atributos de calidad que hoy figuran como «No medido» o «Parcial» en [`04`](01-analisis-de-sistema/04-atributos-de-calidad.md) y [`08`](01-analisis-de-sistema/08-escenarios-atributos-calidad.md). Se hacen **después** de implementar los retoques (19-20/11), sobre el código que se congela. Con cada resultado se actualizan los estados de `04` y `08` en un PR pequeño; hasta entonces esos documentos siguen diciendo «No medido» o «Parcial».
+Mediciones de los atributos de calidad que hoy figuran como «No medido» o «Parcial» en [`04`](01-analisis-de-sistema/04-atributos-de-calidad.md) y [`08`](01-analisis-de-sistema/08-escenarios-atributos-calidad.md). Se hacen **después** de implementar los retoques (19-20/11), sobre el código que se congela. Con los resultados (20/11) se actualizaron los estados de `04` y `08`: AC05/EQ-05 pasa a Parcial, AC07/EQ-07 a Cumplido y AC08/EQ-08 a Parcial.
 
 ### M-01 · Usabilidad en móvil (AC08 / EQ-08)
 - **Qué se mide**: (a) que no haya desplazamiento horizontal a 360 px de ancho; (b) cuántas interacciones (clics o toques) lleva llegar a la boleta desde que el padre inicia sesión.
