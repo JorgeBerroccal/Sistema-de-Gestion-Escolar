@@ -45,6 +45,12 @@ pest()->extend(TestCase::class)
 // Las pruebas Unit pueden usar el contenedor y config(), pero nunca la base de datos.
 pest()->extend(TestCase::class)->in('Unit');
 
+// Pruebas End to End (navegador real con Playwright). No forman parte de `phpunit.xml`: se ejecutan con
+// `vendor/bin/pest -c phpunit.e2e.xml`, en el job `e2e` del CI.
+pest()->extend(TestCase::class)
+    ->use(RefreshDatabase::class)
+    ->in('Browser');
+
 /*
 |--------------------------------------------------------------------------
 | Expectations
