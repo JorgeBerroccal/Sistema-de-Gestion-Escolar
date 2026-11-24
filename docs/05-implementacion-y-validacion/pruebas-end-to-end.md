@@ -18,23 +18,22 @@ Límite conocido: el flujo de la boleta **no descarga el PDF** en el navegador; 
 
 - **En el CI:** el job `ci / e2e` de [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) (MySQL y Redis reales, `sockets`, `npx playwright install --with-deps chromium`, `vendor/bin/pest --ci -c phpunit.e2e.xml`). Si falla, sube las capturas como artefacto `e2e-capturas`. Es un job aparte para que `ci / pruebas` no se alargue.
 - **No forman parte de `vendor/bin/pest`:** viven en `phpunit.e2e.xml` (suite `Browser`, con `SESSION_DRIVER=file` porque el navegador es un cliente HTTP real y la sesión `array` no sobrevive entre peticiones). `phpunit.xml` solo lista `Unit` y `Feature`.
-- **Imagen de desarrollo y de producción:** no se modificaron (`docker/php/Dockerfile` y `Dockerfile.prod`). El contenedor `app` no trae Node, Chromium ni la extensión `sockets`.
+- **Imágenes:** a `docker/php/Dockerfile` (desarrollo) solo se le agregó la extensión `sockets`, que exige el servidor HTTP interno del plugin y por tanto `composer.lock`; sin Node ni Chromium. `Dockerfile.prod` no cambia.
 
 ## Reproducirlo en el contenedor de desarrollo
 
-Funciona, pero hay que preparar el contenedor **a mano y de forma temporal** (se pierde al recrearlo):
+Tras reconstruir la imagen (`docker compose build app && docker compose up -d`), `composer install` funciona sin banderas. El contenedor **no trae Node ni Chromium**, así que para ejecutar las pruebas de navegador hay que agregarlos **a mano y de forma temporal** (se pierden al recrearlo):
 
 ```bash
-docker compose up -d app db redis
-docker compose exec -u root app sh -c 'docker-php-ext-install sockets && apt-get update && apt-get install -y nodejs'
+docker compose exec -u root app sh -c 'apt-get update && apt-get install -y nodejs'
 docker compose exec -u root -e PLAYWRIGHT_BROWSERS_PATH=/opt/pw app node node_modules/playwright/cli.js install --with-deps chromium
 docker compose exec -u root -e PLAYWRIGHT_BROWSERS_PATH=/opt/pw app php vendor/bin/pest -c phpunit.e2e.xml
 docker compose exec -u root app chown -R sge:sge storage tests/Browser   # el root dejó archivos propios
 ```
 
-`node_modules/playwright` lo instala `npm install` (está en `devDependencies`). La instalación de Chromium con sus dependencias del sistema descarga unos 200 MB y tarda varios minutos.
+`node_modules/playwright` lo instala `npm install` (está en `devDependencies`). Chromium con sus dependencias del sistema descarga unos 200 MB y tarda varios minutos. No lances a la vez dos ejecuciones de Pest: comparten la base `sge_testing`.
 
-> **`composer.lock` ahora exige `ext-sockets`** (lo pide el servidor HTTP interno del plugin). En el contenedor `app`, que no la trae, hay que instalar con `composer install --ignore-platform-req=ext-sockets`. El CI la agrega en `setup-php` de todos los jobs; las imágenes de producción no se ven afectadas porque instalan sin dependencias de desarrollo y con `--ignore-platform-reqs`.
+> La imagen de producción no se ve afectada: instala sin dependencias de desarrollo y con `--ignore-platform-reqs`.
 
 ## Resultado
 
