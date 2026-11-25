@@ -7,6 +7,7 @@ GitHub, junto al commit y dentro del pull request:
 | Estado | Qué hace |
 |---|---|
 | `ci / pruebas` | Levanta MySQL 8 y Redis 7 reales como servicios, instala dependencias, compila los assets (las vistas usan `@vite`) y ejecuta la suite **completa** de Pest (`vendor/bin/pest --ci`). |
+| `ci / e2e` | Ejecuta las pruebas de navegador (Pest Browser con Chromium de Playwright, `phpunit.e2e.xml`) con MySQL y Redis reales; sube capturas si fallan. Detalle y reproducción local en [`pruebas-end-to-end.md`](../05-implementacion-y-validacion/pruebas-end-to-end.md). |
 | `ci / cobertura` | Ejecuta la misma suite con PCOV, imprime la cobertura por clase y publica el informe (`cobertura.txt` y `cobertura-html/`) como el artefacto `cobertura` (90 días). Informa, no tiene umbral ni bloquea por porcentaje; va aparte para no alargar `ci / pruebas`. |
 | `ci / estilo` | Ejecuta Pint en modo solo comprobación (`vendor/bin/pint --test`); no modifica el repositorio. |
 

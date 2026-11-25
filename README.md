@@ -7,11 +7,11 @@
 > **Versión final del MVP: [`v1.0.0`](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/releases/tag/v1.0.0)** (seis módulos, despliegue, pruebas y documentación). En staging: <https://sge-peru.chilecentral.cloudapp.azure.com> (estado en `/up`). Lo que queda abierto está en [Pendientes](#pendientes).
 
 El **SGE** es una aplicación web para gestionar una institución escolar: usuarios, roles y permisos
-de acceso, y —en los módulos siguientes— los datos académicos que dependen de ellos.
+de acceso, y en los módulos siguientes los datos académicos que dependen de ellos.
 
 Este repositorio contiene el **Módulo 1: Autenticación y Roles (RBAC)** — inicio de sesión con
 correo o usuario, gestión de usuarios, roles y permisos configurables desde la interfaz, menú por
-permisos y un mecanismo de filtros de pertenencia (*fail-closed*) para los módulos 2–6—, el
+permisos y un mecanismo de filtros de pertenencia (*fail-closed*) para los módulos 2–6, el
 **Módulo 2: Gestión Académica Base** (institución, años y periodos, grados, secciones, cursos y asignación
 docente) y el **Módulo 3: Matrícula**: alumnos (documento único por tipo y número, DNI de 8 dígitos),
 matrícula individual y masiva en secciones del año vigente con estados (matriculado, retirado, trasladado) e
