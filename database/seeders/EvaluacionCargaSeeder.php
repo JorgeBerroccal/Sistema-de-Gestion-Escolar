@@ -19,6 +19,7 @@ use App\Models\Rol;
 use App\Models\Seccion;
 use App\Models\TipoDocumento;
 use App\Models\Usuario;
+use Database\Seeders\Concerns\CantidadDeCarga;
 use Database\Seeders\Concerns\ContrasenaDeCarga;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -27,8 +28,8 @@ use Illuminate\Support\Facades\Hash;
 use RuntimeException;
 
 /**
- * Datos de la sesión única de carga k6 del Módulo 5 (contracts/prueba-de-carga.md): 1020 alumnos FICTICIOS en 34
- * secciones `K01…K34` de un mismo grado (documentos `9001xxxx`; Ley 29733), con notas del primer periodo cerrado
+ * Datos de la sesión única de carga k6 del Módulo 5 (contracts/prueba-de-carga.md): `CARGA_TOTAL + 20` alumnos FICTICIOS (1020 en 34
+ * secciones `K01…K34` con la carga por defecto de 1000; 2020 en 68 con 2000) de un mismo grado (documentos `9001xxxx`; Ley 29733), con notas del primer periodo cerrado
  * (publicado); las cuentas `carga0001…1000` quedan vinculadas a un alumno y pueden ver notas y boletas; y 20
  * cuentas `cargadoc01…20` (Docente de carga) asignadas a las 20 primeras secciones, con los criterios del segundo
  * periodo —que queda abierto— para registrar notas. La contraseña sale de `CARGA_PASSWORD` (obligatoria fuera de local y
@@ -37,10 +38,12 @@ use RuntimeException;
  */
 class EvaluacionCargaSeeder extends Seeder
 {
+    use CantidadDeCarga;
     use ContrasenaDeCarga;
 
     public const ENTORNOS_PERMITIDOS = ['local', 'staging', 'testing'];
 
+    /** Secciones con la carga por defecto (1000 familias): `ceil((1000 + 20) / 30)`. Con `CARGA_TOTAL` mayor son más. */
     public const SECCIONES = 34;
 
     public const ALUMNOS_POR_SECCION = 30;
@@ -54,6 +57,15 @@ class EvaluacionCargaSeeder extends Seeder
 
     public const CURSO = 'Curso de carga';
 
+    /** Número de secciones de esta ejecución (34 con 1000 familias). */
+    private int $secciones = self::SECCIONES;
+
+    /** Alumno N va a la sección ceil(N/30): hacen falta alumnos para las familias y para que los 20 docentes tengan sección. */
+    public static function seccionesPara(int $familias): int
+    {
+        return max(self::DOCENTES, (int) ceil(($familias + self::DOCENTES) / self::ALUMNOS_POR_SECCION));
+    }
+
     public function run(): void
     {
         if (! app()->environment(self::ENTORNOS_PERMITIDOS)) {
@@ -65,6 +77,7 @@ class EvaluacionCargaSeeder extends Seeder
         }
 
         $this->contrasenaDeCarga(); // falla antes de sembrar nada si falta en staging
+        $this->secciones = $this->seccionesPara($this->cantidadDeCarga());
 
         $this->call([RolesYPermisosSeeder::class, EscalasCalificacionSeeder::class, TiposDocumentoSeeder::class, LoadTestSeeder::class]);
 
@@ -126,7 +139,7 @@ class EvaluacionCargaSeeder extends Seeder
     /** @return Collection<int, Seccion> `K01…K34` */
     private function secciones(Grado $grado, AnioEscolar $vigente)
     {
-        return collect(range(1, self::SECCIONES))->map(fn (int $i) => Seccion::firstOrCreate(
+        return collect(range(1, $this->secciones))->map(fn (int $i) => Seccion::firstOrCreate(
             ['grado_id' => $grado->id, 'anio_escolar_id' => $vigente->id, 'identificador' => sprintf('K%02d', $i)],
             ['activo' => true],
         ));
@@ -140,7 +153,7 @@ class EvaluacionCargaSeeder extends Seeder
     private function alumnos($secciones, AnioEscolar $vigente)
     {
         $dni = TipoDocumento::where('codigo', 'DNI')->firstOrFail();
-        $total = self::SECCIONES * self::ALUMNOS_POR_SECCION;
+        $total = $this->secciones * self::ALUMNOS_POR_SECCION;
         $documentos = fn (int $n) => self::PREFIJO_DOCUMENTO.str_pad((string) $n, 4, '0', STR_PAD_LEFT);
         $ahora = now();
 

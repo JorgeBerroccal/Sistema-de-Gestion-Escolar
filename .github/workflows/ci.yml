@@ -357,7 +357,7 @@ jobs:
 
       - name: ShellCheck (deploy/*.sh y entrypoint de producción)
         run: |
-          archivos=(deploy/*.sh docker/php/entrypoint.prod.sh)
+          archivos=(deploy/*.sh docker/php/entrypoint.prod.sh tests/Load/*.sh)
           docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:v0.11.0 -x -P /mnt/deploy "${archivos[@]/#//mnt/}"
 
       - name: actionlint (workflows)

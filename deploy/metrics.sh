@@ -17,6 +17,14 @@ INTERVALO="${SGE_METRICS_INTERVAL:-5}"
 TAMANO_ECONOMICO="Standard_B2ats_v2"
 TAMANO_CARGA="Standard_B2als_v2"
 TARIFA_HORA_CARGA="0.0526"   # USD/h de B2als_v2 en Chile Central (38,40 USD/mes ÷ 730 h)
+# Sesión de 2000 usuarios (enmienda 2.4.0): el tamaño máximo que permita la cuota. Standard_B4als_v2: 0,186 USD/h
+# (API pública de precios de Azure, prices.azure.com, Consumption, Linux; 135,78 USD/mes en el portal).
+# Standard_B8als_v2 (solo si hubiera cuota): 0,373 USD/h, misma fuente (prices.azure.com, Chile Central, Consumption, Linux);
+# se puede ajustar con SGE_TARIFA_HORA_B8.
+TAMANO_CARGA_2000="Standard_B4als_v2"
+TARIFA_HORA_CARGA_2000="0.186"
+TAMANO_CARGA_2000_B8="Standard_B8als_v2"
+TARIFA_HORA_CARGA_2000_B8="${SGE_TARIFA_HORA_B8:-0.373}"
 PID_FILE="$SGE_LOG_DIR/metrics.pid"
 ACTUAL_FILE="$SGE_LOG_DIR/metrics.actual"
 META_FILE="$SGE_LOG_DIR/meta-servidor.json"
@@ -147,21 +155,28 @@ case "$comando" in
         parada="$(cat "$SGE_LOG_DIR/ultimo-stop")"
         if [[ "$tamano_actual" == "$TAMANO_ECONOMICO" && ! "$fecha_ultima" < "$parada" ]]; then
             # Muestras (una cada 5 min) del último tramo en tamaño de carga; las horas con la VM liberada no cuentan.
-            n_carga="$(awk -v t="$TAMANO_CARGA" '$2 == t { if (prev != "C") c = 0; c++; prev = "C"; next } { prev = $2 } END { print c + 0 }' "$SGE_LOG_DIR/tamano.log")"
+            read -r n_b2 n_b4 n_b8 < <(awk -v t2="$TAMANO_CARGA" -v t4="$TAMANO_CARGA_2000" -v t8="$TAMANO_CARGA_2000_B8" '
+                $2 == t2 || $2 == t4 || $2 == t8 { if (prev != "C") { c2 = 0; c4 = 0; c8 = 0 } if ($2 == t8) c8++; else if ($2 == t4) c4++; else c2++; prev = "C"; next }
+                { prev = $2 }
+                END { print c2 + 0, c4 + 0, c8 + 0 }' "$SGE_LOG_DIR/tamano.log")
             # Incluye la espera para acumular créditos con la VM encendida en el tamaño de carga: se factura igual.
-            horas="$(awk -v n="$n_carga" 'BEGIN { printf "%.2f", n * 5 / 60 }')"
-            costo="$(awk -v h="$horas" -v t="$TARIFA_HORA_CARGA" 'BEGIN { printf "%.2f", h * t }')"
+            horas="$(awk -v a="$n_b2" -v b="$n_b4" -v c="$n_b8" 'BEGIN { printf "%.2f", (a + b + c) * 5 / 60 }')"
+            costo="$(awk -v a="$n_b2" -v b="$n_b4" -v c="$n_b8" -v t2="$TARIFA_HORA_CARGA" -v t4="$TARIFA_HORA_CARGA_2000" -v t8="$TARIFA_HORA_CARGA_2000_B8" 'BEGIN { printf "%.2f", (a * t2 + b * t4 + c * t8) * 5 / 60 }')"
+            tamano_carga="$TAMANO_CARGA"
+            (( n_b4 > 0 )) && tamano_carga="$TAMANO_CARGA_2000"
+            (( n_b8 > 0 )) && tamano_carga="$TAMANO_CARGA_2000_B8"
             cat > "$SGE_LOG_DIR/cierre-carga.json" <<JSON
 {
   "evidencia_completa": true,
   "tamano_actual": "$tamano_actual",
   "ultima_muestra_utc": "$fecha_ultima",
   "fin_de_la_prueba_utc": "$parada",
+  "tamano_de_carga": "$tamano_carga",
   "horas_aprox_en_tamano_de_carga": $horas,
   "costo_aprox_usd": $costo
 }
 JSON
-            log "evidencia_completa: true — la VM volvió a $tamano_actual (≈ $horas h en $TAMANO_CARGA, ≈ $costo USD)."
+            log "evidencia_completa: true — la VM volvió a $tamano_actual (≈ $horas h en $tamano_carga, ≈ $costo USD)."
             log "Falta la evidencia de créditos de CPU: ejecuta deploy/creditos-cpu.sh en tu PC (ver docs/despliegue/prueba-de-carga.md, paso 13)."
             log "Escrito $SGE_LOG_DIR/cierre-carga.json: descárgalo junto al CSV y a meta-servidor.json."
         else

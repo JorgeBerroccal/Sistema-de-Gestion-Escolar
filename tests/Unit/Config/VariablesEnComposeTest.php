@@ -9,6 +9,7 @@ const CONFIGS_PROPIOS = ['asistencia', 'asistente', 'sge'];
 /** Variables propias que a propósito NO llegan al contenedor de la aplicación. */
 const EXCLUIDAS_DEL_CONTENEDOR = [
     'CARGA_PASSWORD' => 'solo para el perfil de carga; se pasa por la línea de comandos al sembrar',
+    'CARGA_TOTAL' => 'solo para el perfil de carga; se pasa por la línea de comandos al sembrar',
 ];
 
 function variablesDelContenedorApp(): array

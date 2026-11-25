@@ -36,6 +36,14 @@ avisar_si_tamano_no_coincide() {
             log "AVISO: la VM está en B2als_v2 (38,40 USD/mes) con perfil 'diario'. Si no es una sesión de carga, vuelve a B2ats_v2." >&2 ;;
         *B2ats_v2*:carga)
             log "AVISO: perfil 'carga' en B2ats_v2 (1 GB): la pila no cabe en memoria. Cambia primero la VM a B2als_v2 (4 GB)." >&2 ;;
+        *B4als_v2*:diario|*B8als_v2*:diario)
+            log "AVISO: la VM está en un tamaño de la sesión de 2000 usuarios con perfil 'diario'. Si no es esa sesión, vuelve a B2ats_v2." >&2 ;;
+        *B4als_v2*:carga|*B8als_v2*:carga)
+            log "AVISO: perfil 'carga' en un tamaño de la sesión de 2000 usuarios: usa 'carga2000'." >&2 ;;
+        *B8als_v2*:carga2000)
+            log "AVISO: 'carga2000' está dimensionado para B4als_v2 (4 vCPU, 8 GiB); en B8als_v2 funciona pero no aprovecha las 8 vCPU: sube FPM_* en el .env si hace falta." >&2 ;;
+        *B2ats_v2*:carga2000|*B2als_v2*:carga2000)
+            log "AVISO: perfil 'carga2000' fuera de B4als_v2/B8als_v2 (8 GiB o más): la pila no cabe en memoria. Cambia primero el tamaño de la VM." >&2 ;;
     esac
 }
 

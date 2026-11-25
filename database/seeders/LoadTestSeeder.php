@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Permiso;
 use App\Models\Rol;
+use Database\Seeders\Concerns\CantidadDeCarga;
 use Database\Seeders\Concerns\ContrasenaDeCarga;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -11,15 +12,17 @@ use Illuminate\Support\Facades\Hash;
 use RuntimeException;
 
 /**
- * Datos para la prueba de carga (SC-006): 1000 usuarios carga0001…carga1000 con el rol `Carga`
+ * Datos para la prueba de carga (SC-006): `CARGA_TOTAL` usuarios (1000 por defecto) carga0001…carga1000 con el rol `Carga`
  * (solo `usuarios.ver`). La contraseña sale de `CARGA_PASSWORD` (obligatoria fuera de local y testing). Idempotente. Solo se permite en local, staging y testing (FR-020 de la
  * spec 002); cualquier otro entorno, incluido producción, lo rechaza. Fuera de DatabaseSeeder.
  */
 class LoadTestSeeder extends Seeder
 {
+    use CantidadDeCarga;
     use ContrasenaDeCarga;
 
-    public const TOTAL = 1000;
+    /** Cantidad por defecto; la sesión puede cambiarla con `CARGA_TOTAL` (hasta 5000). */
+    public const TOTAL = self::CARGA_POR_DEFECTO;
 
     /** Entornos donde es seguro sembrar 1000 cuentas con contraseña conocida. */
     public const ENTORNOS_PERMITIDOS = ['local', 'staging', 'testing'];
@@ -35,6 +38,7 @@ class LoadTestSeeder extends Seeder
         }
 
         $contrasena = $this->contrasenaDeCarga(); // falla antes de tocar la base si falta en staging
+        $total = $this->cantidadDeCarga();
 
         $this->call(RolesYPermisosSeeder::class);
 
@@ -45,7 +49,7 @@ class LoadTestSeeder extends Seeder
         $ahora = now();
 
         $filas = [];
-        for ($i = 1; $i <= self::TOTAL; $i++) {
+        for ($i = 1; $i <= $total; $i++) {
             $filas[] = [
                 'nombres' => 'Carga',
                 'apellidos' => sprintf('Usuario %04d', $i),

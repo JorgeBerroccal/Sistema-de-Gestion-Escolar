@@ -1,5 +1,7 @@
 # Prueba de carga de 1000 usuarios virtuales (SC-006 del Módulo 1)
 
+> **Sesión adicional de 2000 usuarios (enmienda 2.4.0):** otro procedimiento, con B4als_v2 (el máximo que permite la cuota), perfil `carga2000`, siembra con `CARGA_TOTAL=2000` y restauración de la base al final: [`sesion-carga-2000.md`](sesion-carga-2000.md). Esta página sigue siendo la de 1000 usuarios.
+
 > **Estado real (14/11/2026):** con B2als_v2 (2 vCPU) el p95 **no se cumple** con 1000 usuarios (Módulos 1 y 5). Sin errores, con memoria de sobra y la CPU de `app` como cuello de botella; límite práctico estimado de ~500 usuarios simultáneos y 4 vCPU para 1000 (estimaciones, no medidas). No se repite la sesión (Constitución 2.2.0) ni se cambian umbrales. Ver R-23 en `specs/006-evaluacion-boletas/research.md`.
 
 La rampa 100 → 300 → 600 → 1000 usuarios virtuales (`tests/Load/carga.js`, ~15 min) se lanza **desde

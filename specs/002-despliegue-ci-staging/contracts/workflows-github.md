@@ -31,7 +31,9 @@
 - **Disparador**: solo `workflow_dispatch`. Nunca con push/PR.
 - **Entradas**: `base_url` (por defecto `vars.STAGING_URL`), `tamano_vm` (texto, obligatorio; p. ej.
   `Standard_B2als_v2`), `version` (etiqueta desplegada, obligatorio), `humo` (boolean, default false →
-  rampa completa).
+  rampa completa). Desde la enmienda 2.4.0: `carga_total` (`1000` por defecto o `2000`; el mismo `CARGA_TOTAL` de la siembra; `2000` solo
+  con `evaluacion.js` y `tamano_vm` B4als_v2 o B8als_v2) y `script`; el artefacto suma `runner-recursos.csv` y `runner-resumen.json` (CPU y memoria
+  del runner durante k6) y `meta.json` declara `carga_total`.
 - **Permisos**: `contents: read`. **Variables**: `vars.STAGING_URL`. **Secretos**: ninguno.
 - **Guardas**: falla pronto si `base_url` ≠ `vars.STAGING_URL`, si `STAGING_URL` no está definida, o
   si `GET {base_url}/up` ≠ 200; imprime el aviso de que se debe haber lanzado `metrics.sh start`.
