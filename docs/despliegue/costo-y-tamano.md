@@ -10,8 +10,8 @@ sustentación del curso (diciembre de 2026 como máximo). Tope de planificación
 | **Standard_B4als_v2** (4 vCPU, 8 GiB, base 30 %, 120 créditos iniciales, +72/h) | Solo la sesión adicional de 2000 usuarios ([`sesion-carga-2000.md`](sesion-carga-2000.md)); es el máximo que permite la cuota regional de Azure for Students (el aumento solicitado fue rechazado), no una decisión de diseño | 135,78 USD/mes (**0,186 USD/h**); ≈ 0,74 USD por sesión de ≈ 4 h |
 
 Fuente de las tarifas por hora de B2als_v2 (0,0526) y B4als_v2 (0,186 USD/h): API pública de precios de Azure
-([prices.azure.com](https://prices.azure.com/api/retail/prices), Consumption, Linux). Standard_B8als_v2 no se pudo usar
-(`Total Regional vCPUs` con límite 6) y no tiene precio verificado en el repositorio.
+([prices.azure.com](https://prices.azure.com/api/retail/prices), Consumption, Linux). Standard_B8als_v2 (0,373 USD/h, misma fuente: Chile Central, Consumption, Linux)
+no se pudo usar (`Total Regional vCPUs` con límite 6).
 
 Descartados (research D-01c): D2s_v5 (cuota 0, aumento rechazado), D2s_v4 (`NotAvailableForSubscription` en la
 suscripción de estudiante), DS2_v2 (196,37 USD/mes, retiro previsto, riesgo de costo) y B2ls_v2 (42,49 USD/mes).

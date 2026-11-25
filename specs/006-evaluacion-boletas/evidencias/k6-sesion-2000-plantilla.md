@@ -17,7 +17,7 @@ Procedimiento: [`docs/despliegue/sesion-carga-2000.md`](../../../docs/despliegue
 - [ ] 5. Siembra con `CARGA_TOTAL=2000` (2020 cuentas activas)
 - [ ] 6. Humo en verde (`carga_total=2000`)
 - [ ] 7. **Créditos de partida** ≥ 200 (valor: `…` a las `…` UTC; espera: `…`)
-- [ ] 8. `metrics.sh start`
+- [ ] 8. `metrics.sh start`; uso de swap (`swap_usada_mb`): `…` (si > 0: señal de memoria insuficiente con `carga2000`, hora y máximo)
 - [ ] 9. Rampa completa (`carga_total=2000`)
 - [ ] 10. `metrics.sh stop` + evidencias descargadas
 - [ ] 11. `creditos-cpu.sh` ejecutado

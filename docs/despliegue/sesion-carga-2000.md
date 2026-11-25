@@ -63,8 +63,9 @@ B2als_v2 = 0,0526 USD/h y B4als_v2 = 0,186 USD/h. `deploy/metrics.sh` usa 0,186 
 
 Con ≈ 4 h en B4als_v2 (cambio de tamaño y siembra ≈ 0,5 h, espera de créditos ≈ 1 h 10 min, humo, rampa de 18 min 30 s,
 desactivación, restauración y regreso) ≈ 4 × 0,186 ≈ **0,74 USD**. Olvidarla encendida una semana (168 h) ≈ 31 USD: el
-último paso no es opcional. B8als_v2 no tiene precio verificado (por defecto `metrics.sh` usa una estimación de
-0,372 USD/h; ajustable con `SGE_TARIFA_HORA_B8`).
+último paso no es opcional. Standard_B8als_v2 (solo si hubiera cuota): **0,373 USD/h**, misma fuente (prices.azure.com,
+Chile Central, Consumption, Linux: «Virtual Machines Basv2 Series · B8als v2»); `metrics.sh` lo usa por defecto y es
+ajustable con `SGE_TARIFA_HORA_B8`.
 
 ## Antes del día de la sesión
 
@@ -120,7 +121,7 @@ como `k6-sesion-<fecha>.md` y marca cada casilla. Variables de la sesión en tu 
   while c="$(creditos)"; [ "${c:-0}" -lt 200 ]; do echo "$(date -u +%T) créditos: ${c:-sin dato}"; sleep 300; done; echo "listo: ${c} créditos a las $(date -u +%T) UTC"
   ```
   (Azure Monitor retrasa el dato unos minutos. Alternativa: Portal → VM → *Metrics* → «CPU Credits Remaining».) Anotar el valor y la hora UTC.
-- [ ] **8.** `./deploy/metrics.sh start` (anotar la hora UTC de inicio de la rampa).
+- [ ] **8.** `./deploy/metrics.sh start` (anotar la hora UTC de inicio de la rampa). Durante la sesión se vigila la columna `swap_usada_mb` del CSV de métricas: **si se observa uso de swap, registrarlo en la evidencia como señal de memoria insuficiente con el perfil `carga2000`** (con la hora y el valor máximo).
 - [ ] **9.** **Rampa**: workflow **carga** con `humo` **desmarcado**, `script=evaluacion.js`, `carga_total=2000`, `tamano_vm=Standard_B4als_v2`, `version=<etiqueta>` (≈ 18 min 30 s; el job admite 45).
 - [ ] **10.** Al terminar: `./deploy/metrics.sh stop`; descargar `/var/log/sge/metricas-*.csv` y `meta-servidor.json` (`scp`) y el artefacto: `gh run download <run_id> -n evidencia-carga-<run_id>` (trae `k6-resumen.json`, `meta.json`, `runner-recursos.csv`, `runner-resumen.json`).
 - [ ] **11.** **Créditos de CPU** (tu PC, ≥ 10 min después del `stop`): `./deploy/creditos-cpu.sh <desde-utc> <fin-utc> <inicio-rampa-utc>`. El mínimo de créditos y si se agotaron (y en qué minuto) van al registro.

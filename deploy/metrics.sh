@@ -19,12 +19,12 @@ TAMANO_CARGA="Standard_B2als_v2"
 TARIFA_HORA_CARGA="0.0526"   # USD/h de B2als_v2 en Chile Central (38,40 USD/mes ÷ 730 h)
 # Sesión de 2000 usuarios (enmienda 2.4.0): el tamaño máximo que permita la cuota. Standard_B4als_v2: 0,186 USD/h
 # (API pública de precios de Azure, prices.azure.com, Consumption, Linux; 135,78 USD/mes en el portal).
-# Standard_B8als_v2 (solo si hubiera cuota): sin precio verificado; el valor por defecto es una ESTIMACIÓN (2 × B4als_v2) y
-# se ajusta con SGE_TARIFA_HORA_B8.
+# Standard_B8als_v2 (solo si hubiera cuota): 0,373 USD/h, misma fuente (prices.azure.com, Chile Central, Consumption, Linux);
+# se puede ajustar con SGE_TARIFA_HORA_B8.
 TAMANO_CARGA_2000="Standard_B4als_v2"
 TARIFA_HORA_CARGA_2000="0.186"
 TAMANO_CARGA_2000_B8="Standard_B8als_v2"
-TARIFA_HORA_CARGA_2000_B8="${SGE_TARIFA_HORA_B8:-0.372}"
+TARIFA_HORA_CARGA_2000_B8="${SGE_TARIFA_HORA_B8:-0.373}"
 PID_FILE="$SGE_LOG_DIR/metrics.pid"
 ACTUAL_FILE="$SGE_LOG_DIR/metrics.actual"
 META_FILE="$SGE_LOG_DIR/meta-servidor.json"
