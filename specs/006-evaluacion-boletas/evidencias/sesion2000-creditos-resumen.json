@@ -1,0 +1,19 @@
+{
+  "vm": "sge-staging",
+  "desde_utc": "2026-11-25T20:17:35Z",
+  "hasta_utc": "2026-11-25T22:20:57Z",
+  "inicio_rampa_utc": "2026-11-25T21:46:50Z",
+  "muestras_de_1_min": 121,
+  "creditos_al_inicio_de_la_observacion": 121.2,
+  "creditos_al_iniciar_la_rampa": 221.71,
+  "creditos_minimos_durante_la_prueba": 204.23,
+  "minimo_alcanzado_utc": "2026-11-25T22:08:00Z",
+  "creditos_al_final": 216.52,
+  "umbral_de_agotamiento": 0.5,
+  "creditos_agotados": false,
+  "primer_minuto_agotado_utc": null,
+  "minutos_desde_el_inicio_de_la_rampa": null,
+  "minutos_con_cpu_limitada": 0,
+  "duracion_de_la_prueba_min": 34,
+  "csv": "/home/jorge/evidencia-2000/rampa/creditos-cpu-20261125-2232.csv"
+}

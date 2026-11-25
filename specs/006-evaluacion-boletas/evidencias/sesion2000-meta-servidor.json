@@ -1,0 +1,11 @@
+{
+  "vm_size": "Standard_B4als_v2",
+  "vcpus": 4,
+  "ram_mb": 7931,
+  "modelo_cpu": "AMD EPYC 7763 64-Core Processor",
+  "version_desplegada": "v1.1.0",
+  "perfil_tamano": "carga2000",
+  "inicio_utc": "2026-11-25T21:46:50Z",
+  "fin_utc": "2026-11-25T22:20:57Z",
+  "csv": "/var/log/sge/metricas-20261125-1646.csv"
+}

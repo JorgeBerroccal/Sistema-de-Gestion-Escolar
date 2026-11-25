@@ -5,6 +5,8 @@ Sprint 2 (hasta 2000 usuarios). Mismos umbrales (`specs/006-evaluacion-boletas/c
 mismo script (`tests/Load/evaluacion.js`) y mismos seeders, pero con la carga parametrizada y una máquina mayor.
 **No se cambian umbrales ni el costo de bcrypt.** Si no se cumplen, la evidencia se guarda igual y se analiza.
 
+**Estado:** ejecutada el 25/11/2026; registro y evidencia en [`k6-sesion-2026-11-25.md`](../../specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-25.md).
+
 ## Limitación: el tamaño lo fijó la cuota de Azure, no el diseño
 
 La sesión se hace en **Standard_B4als_v2** (4 vCPU, 8 GiB) porque es el tamaño máximo que permite la cuota regional de

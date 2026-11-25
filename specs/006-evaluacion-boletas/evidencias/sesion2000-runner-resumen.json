@@ -1,0 +1,9 @@
+{
+  "vcpus": 4,
+  "ram_mb": 15983,
+  "muestras": 228,
+  "cpu_pct_p95": 3.0,
+  "cpu_pct_max": 14.0,
+  "mem_usada_mb_p95": 2183.0,
+  "mem_usada_mb_max": 2212.0
+}

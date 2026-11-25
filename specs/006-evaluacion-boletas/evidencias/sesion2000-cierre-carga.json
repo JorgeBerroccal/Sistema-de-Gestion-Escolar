@@ -1,0 +1,9 @@
+{
+  "evidencia_completa": true,
+  "tamano_actual": "Standard_B2ats_v2",
+  "ultima_muestra_utc": "2026-11-25T22:44:14Z",
+  "fin_de_la_prueba_utc": "2026-11-25T22:20:57Z",
+  "tamano_de_carga": "Standard_B4als_v2",
+  "horas_aprox_en_tamano_de_carga": 2.42,
+  "costo_aprox_usd": 0.45
+}
