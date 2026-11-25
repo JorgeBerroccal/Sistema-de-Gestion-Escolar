@@ -38,4 +38,11 @@ docker compose exec -u root app chown -R sge:sge storage tests/Browser   # el ro
 ## Resultado
 
 - Local (contenedor `app` preparado como arriba, 23/11/2026): **8 pruebas en verde** (15 aserciones, ≈ 55 s).
-- CI: el job `e2e` está definido pero **aún no se ha ejecutado**; el resultado se anota aquí cuando salga.
+- CI (24/11/2026, rama `feat/e2e-y-criterios`, PR #23): el job `e2e` salió **en verde** en las dos ejecuciones del mismo commit (`27b7581`), junto con `estilo`, `scripts`, `pruebas` y `cobertura`:
+
+  | Ejecución | Evento | Duración del job `e2e` | Paso «Chromium para Playwright» | Paso «Pest (pruebas End to End)» |
+  |---|---|---|---|---|
+  | [45320992025](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/actions/runs/45320992025) | `push` | 1 min 37 s | 25 s | 10 s |
+  | [45320997507](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/actions/runs/45320997507) | `pull_request` | 4 min 59 s | 4 min 9 s | 6 s |
+
+  **Variación observada:** la duración del job difiere en 3 min 22 s entre las dos ejecuciones, y casi toda la diferencia está en el paso de instalación de Chromium; las pruebas en sí tardan 6 a 10 s. Es una sola observación: **si se repite en los próximos CI, se revisará ese paso** (descarga de Chromium y de sus dependencias del sistema en cada ejecución, sin caché). No se ha cambiado nada por ahora.
