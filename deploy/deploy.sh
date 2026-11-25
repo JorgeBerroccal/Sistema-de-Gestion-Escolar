@@ -36,6 +36,12 @@ avisar_si_tamano_no_coincide() {
             log "AVISO: la VM está en B2als_v2 (38,40 USD/mes) con perfil 'diario'. Si no es una sesión de carga, vuelve a B2ats_v2." >&2 ;;
         *B2ats_v2*:carga)
             log "AVISO: perfil 'carga' en B2ats_v2 (1 GB): la pila no cabe en memoria. Cambia primero la VM a B2als_v2 (4 GB)." >&2 ;;
+        *B8als_v2*:diario)
+            log "AVISO: la VM está en B8als_v2 con perfil 'diario'. Si no es la sesión de 2000 usuarios, vuelve a B2ats_v2." >&2 ;;
+        *B8als_v2*:carga)
+            log "AVISO: perfil 'carga' en B8als_v2: usa 'carga2000' para aprovechar sus 8 vCPU." >&2 ;;
+        *B2ats_v2*:carga2000|*B2als_v2*:carga2000)
+            log "AVISO: perfil 'carga2000' fuera de B8als_v2 (16 GiB): la pila no cabe en memoria. Cambia primero la VM a B8als_v2." >&2 ;;
     esac
 }
 

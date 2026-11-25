@@ -59,7 +59,13 @@ aplicar_perfil() {
             : "${FPM_MAX_CHILDREN:=20}" "${FPM_START_SERVERS:=6}" "${FPM_MIN_SPARE:=4}" "${FPM_MAX_SPARE:=10}"
             : "${MYSQL_BUFFER_POOL:=1G}" "${MYSQL_MAX_CONNECTIONS:=100}" "${REDIS_MAXMEMORY:=256mb}" "${PHP_MEMORY_LIMIT:=256M}"
             ;;
-        *) die "PERFIL_TAMANO='$perfil' no es válido (usa 'diario' o 'carga')." ;;
+        carga2000)
+            # Standard_B8als_v2 (8 vCPU, 16 GiB): mismos criterios que 'carga' (10 workers por vCPU) con 4 veces la CPU.
+            # Memoria estimada: pool 2G + conexiones ≈ 2,5 GB, PHP-FPM ≈ 80 × 50 MB = 4 GB, Redis ≤ 0,5 GB → ≈ 7,5 GB de 16.
+            : "${FPM_MAX_CHILDREN:=80}" "${FPM_START_SERVERS:=24}" "${FPM_MIN_SPARE:=16}" "${FPM_MAX_SPARE:=40}"
+            : "${MYSQL_BUFFER_POOL:=2G}" "${MYSQL_MAX_CONNECTIONS:=200}" "${REDIS_MAXMEMORY:=512mb}" "${PHP_MEMORY_LIMIT:=256M}"
+            ;;
+        *) die "PERFIL_TAMANO='$perfil' no es válido (usa 'diario', 'carga' o 'carga2000')." ;;
     esac
     export FPM_MAX_CHILDREN FPM_START_SERVERS FPM_MIN_SPARE FPM_MAX_SPARE \
         MYSQL_BUFFER_POOL MYSQL_MAX_CONNECTIONS REDIS_MAXMEMORY PHP_MEMORY_LIMIT

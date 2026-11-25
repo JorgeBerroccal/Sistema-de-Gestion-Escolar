@@ -3,6 +3,7 @@
 //   Rampa completa (1000 VUs, ~14 min):  k6 run /scripts/evaluacion.js
 //   Prueba de humo (10 VUs, ~35 s):      k6 run -e SMOKE=1 /scripts/evaluacion.js
 //   Otro servidor:                       k6 run -e BASE_URL=https://staging.ejemplo.pe /scripts/evaluacion.js
+//   2000 usuarios (enmienda 2.4.0):      k6 run -e CARGA_TOTAL=2000 /scripts/evaluacion.js  (~18,5 min; sembrar con el mismo CARGA_TOTAL)
 // Datos: `php artisan db:seed --class=EvaluacionCargaSeeder` (solo local, staging y testing).
 //   Contraseña: `-e CARGA_PASSWORD=…` (el mismo valor con el que se sembró; en local, `password` por defecto).
 //
@@ -25,9 +26,37 @@ if (!PASSWORD) {
 // Cuentas del seeder: cargadoc01…20 (docentes) y carga0001…1000 (familias). Cada VU elige su cuenta con
 // `(id de VU - 1) % total`: no depende del orden en que k6 reparte los ids entre escenarios.
 const DOCENTES = SMOKE ? 2 : 20;
-const FAMILIAS = 1000;
+// Cantidad de cuentas `carga0001…`: debe ser la misma con la que se sembró (CARGA_TOTAL). 1000 por defecto.
+const FAMILIAS = Number(__ENV.CARGA_TOTAL || 1000);
+if (!Number.isInteger(FAMILIAS) || FAMILIAS < 1 || FAMILIAS > 5000) {
+  throw new Error(`CARGA_TOTAL debe ser un entero entre 1 y 5000 (recibido '${__ENV.CARGA_TOTAL}').`);
+}
+// Con más de 1000, el humo usa las 10 ÚLTIMAS cuentas sembradas: comprueba que existen y están vinculadas.
+const DESPLAZAMIENTO = SMOKE && FAMILIAS > 1000 ? FAMILIAS - 10 : 0;
 // ~3 % de las iteraciones de familias descargan la boleta; el resto consulta notas (`-e PROPORCION_BOLETA=1` para ensayos).
 const PROPORCION_BOLETA = Number(__ENV.PROPORCION_BOLETA || 0.03);
+
+// Rampa de familias. Hasta 1000 es la de siempre (14 min); con más, se agrega un tramo más hasta el pico pedido.
+const RAMPA = [
+  { duration: '1m', target: 100 },
+  { duration: '1m', target: 100 },
+  { duration: '1m30s', target: 300 },
+  { duration: '1m', target: 300 },
+  { duration: '2m', target: 600 },
+  { duration: '1m', target: 600 },
+  { duration: '2m30s', target: Math.min(FAMILIAS, 1000) },
+  ...(FAMILIAS > 1000
+    ? [
+        { duration: '2m', target: 1000 },
+        { duration: '2m30s', target: FAMILIAS },
+        { duration: '3m', target: FAMILIAS },
+      ]
+    : [{ duration: '3m', target: Math.min(FAMILIAS, 1000) }]),
+  { duration: '1m', target: 0 },
+];
+const SEGUNDOS = (d) => (d.match(/(\d+)m/) ? Number(d.match(/(\d+)m/)[1]) * 60 : 0) + (d.match(/(\d+)s/) ? Number(d.match(/(\d+)s/)[1]) : 0);
+// Los docentes trabajan mientras dura toda la rampa (14 min con 1000; 18 min 30 s con 2000).
+const DURACION_RAMPA = RAMPA.reduce((total, tramo) => total + SEGUNDOS(tramo.duration), 0);
 
 export const options = {
   // El login ocurre una sola vez por VU: sin esto k6 vacía las cookies entre iteraciones y las peticiones siguientes
@@ -37,7 +66,7 @@ export const options = {
     docentes: {
       executor: 'constant-vus',
       vus: DOCENTES,
-      duration: SMOKE ? '35s' : '14m',
+      duration: SMOKE ? '35s' : `${DURACION_RAMPA}s`,
       gracefulStop: '30s',
       exec: 'docente',
     },
@@ -52,17 +81,7 @@ export const options = {
             { duration: '20s', target: 10 },
             { duration: '5s', target: 0 },
           ]
-        : [
-            { duration: '1m', target: 100 },
-            { duration: '1m', target: 100 },
-            { duration: '1m30s', target: 300 },
-            { duration: '1m', target: 300 },
-            { duration: '2m', target: 600 },
-            { duration: '1m', target: 600 },
-            { duration: '2m30s', target: 1000 },
-            { duration: '3m', target: 1000 },
-            { duration: '1m', target: 0 },
-          ],
+        : RAMPA,
     },
   },
   // Humo = condiciones normales (SC-006: boleta p95 < 5 s). Rampa = pico de 1000 VUs en 2 vCPU (más holgado).
@@ -101,7 +120,7 @@ function enMisNotas(r) {
 
 export function familia() {
   if (!sesionIniciada) {
-    iniciarSesion(`carga${String(((exec.vu.idInTest - 1) % FAMILIAS) + 1).padStart(4, '0')}`);
+    iniciarSesion(`carga${String(((exec.vu.idInTest - 1 + DESPLAZAMIENTO) % FAMILIAS) + 1).padStart(4, '0')}`);
     sleep(1);
     return;
   }

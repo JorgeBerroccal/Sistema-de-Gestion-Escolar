@@ -40,20 +40,20 @@ Valores `<…>` = secreto o dato propio del servidor (nunca en el repositorio).
 | `REGISTRO` | `ghcr.io/<propietario>` |
 | `SGE_VERSION` | la escribe `deploy.sh` (etiqueta activa) |
 | `FQDN` | `<fqdn>` |
-| `PERFIL_TAMANO` | `diario` o `carga` |
+| `PERFIL_TAMANO` | `diario`, `carga` o `carga2000` |
 
 ## Perfiles de tamaño (los aplica `deploy.sh` leyendo `PERFIL_TAMANO`)
 
-| Variable | `diario` (B2ats_v2, 1 GB) | `carga` (B2als_v2, 4 GB) |
-|---|--:|--:|
-| `FPM_MAX_CHILDREN` | 4 | 20 |
-| `FPM_START_SERVERS` | 2 | 6 |
-| `FPM_MIN_SPARE` / `FPM_MAX_SPARE` | 1 / 3 | 4 / 10 |
-| `MYSQL_BUFFER_POOL` | 128M | 1G |
-| `MYSQL_MAX_CONNECTIONS` | 40 | 100 |
-| `REDIS_MAXMEMORY` | 64mb | 256mb |
-| `PHP_MEMORY_LIMIT` | 128M | 256M |
+| Variable | `diario` (B2ats_v2, 1 GB) | `carga` (B2als_v2, 4 GB) | `carga2000` (B8als_v2, 16 GiB) |
+|---|--:|--:|--:|
+| `FPM_MAX_CHILDREN` | 4 | 20 | 80 |
+| `FPM_START_SERVERS` | 2 | 6 | 24 |
+| `FPM_MIN_SPARE` / `FPM_MAX_SPARE` | 1 / 3 | 4 / 10 | 16 / 40 |
+| `MYSQL_BUFFER_POOL` | 128M | 1G | 2G |
+| `MYSQL_MAX_CONNECTIONS` | 40 | 100 | 200 |
+| `REDIS_MAXMEMORY` | 64mb | 256mb | 512mb |
+| `PHP_MEMORY_LIMIT` | 128M | 256M | 256M |
 
-Presupuesto de memoria de `carga` en 4 GB: SO+Docker ≈ 0,25 GB, MySQL ≈ 1,3 GB (pool 1G + conexiones), PHP-FPM ≈ 20 × 40 MB = 0,8 GB, Redis ≤ 0,25 GB, nginx ≈ 0,01 GB → ≈ 2,6 GB, con holgura y el swap de 2 GB como red de seguridad. El cuello de botella esperado es la CPU (bcrypt), no la memoria: 20 workers sobran para 2 vCPU. Los valores de `carga` se ajustan en la primera sesión según la memoria observada en `metrics.sh` (se
+Presupuesto de memoria de `carga` en 4 GB: SO+Docker ≈ 0,25 GB, MySQL ≈ 1,3 GB (pool 1G + conexiones), PHP-FPM ≈ 20 × 40 MB = 0,8 GB, Redis ≤ 0,25 GB, nginx ≈ 0,01 GB → ≈ 2,6 GB, con holgura y el swap de 2 GB como red de seguridad. El cuello de botella esperado es la CPU (bcrypt), no la memoria: 20 workers sobran para 2 vCPU. `carga2000` (Enmienda 2.4.0) escala `carga` a 8 vCPU manteniendo 10 workers por vCPU; memoria estimada ≈ 7,5 GB de 16 GiB (pool 2G + conexiones ≈ 2,5 GB, PHP-FPM ≈ 80 × 50 MB, Redis ≤ 0,5 GB). Es una estimación: se confirma con el humo y se registra el valor final en la evidencia. Los valores de `carga` se ajustan en la primera sesión según la memoria observada en `metrics.sh` (se
 registra el valor final en la evidencia). En desarrollo local los defaults reproducen la configuración
 actual (`max_children=20`, `buffer_pool=256M`, Redis 256 MB).

@@ -77,7 +77,9 @@ contra el retraso.
 - Los endpoints críticos — login, registro de notas y consulta de boletas — MUST además contar con
   pruebas de carga con k6 ejecutadas y documentadas antes de considerarse listos para despliegue.
   Esas pruebas se ejecutan **en una sola sesión de carga, durante el Módulo 5**, y cubren todos los
-  endpoints críticos existentes en ese momento; no se repiten por módulo.
+  endpoints críticos existentes en ese momento; no se repiten por módulo. **Excepción (2.4.0):** si un
+  requisito del curso cambia la carga objetivo, se admite **una sesión de carga adicional** para esa
+  carga, con los mismos umbrales y la misma evidencia; no se repite por módulo ni se rebajan los umbrales.
 
 **Rationale**: Las pruebas son la evidencia verificable de calidad en un proyecto académico y
 previenen regresiones en un calendario sin margen para corregirlas tarde.
@@ -199,5 +201,12 @@ prueba de humo breve dan confianza suficiente sin cronometrajes ni sesiones repe
     de la API de Anthropic; el proveedor por defecto pasa a un plan gratuito. Es MINOR porque amplía
     materialmente una guía sin invalidar código conforme a 2.2.0: un chatbot con Claude Haiku sigue
     cumpliendo, ya que el puerto admite ese proveedor.
+  - 2.4.0 (2026-11-25): Principio de pruebas y Definition of Done — se admite una sesión de carga
+    k6 adicional cuando un requisito del curso cambia la carga objetivo; aplica a la carga de 2000
+    usuarios virtuales (Sprint 2), con los mismos umbrales que la de 1000 y en una máquina mayor
+    (Standard_B8als_v2), sin tocar la regla de una sola sesión por carga objetivo. Justificación:
+    decisión del responsable del proyecto el 23/11/2026; la sesión del 13/11 con 1000 usuarios no
+    cubre el pedido de hasta 2000 usuarios. Es MINOR porque amplía materialmente una guía sin
+    invalidar código conforme a 2.3.0: la sesión de 1000 usuarios sigue siendo válida.
 
-**Version**: 2.3.0 | **Ratified**: 2026-09-27 | **Last Amended**: 2026-11-12
+**Version**: 2.4.0 | **Ratified**: 2026-09-27 | **Last Amended**: 2026-11-25

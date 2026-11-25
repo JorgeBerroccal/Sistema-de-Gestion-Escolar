@@ -1,4 +1,4 @@
-# Prueba de carga de 1000 usuarios virtuales (SC-006 del Módulo 1) contra el servidor de staging.
+# Prueba de carga de 1000 usuarios virtuales (SC-006 del Módulo 1) o, en la sesión adicional de la enmienda 2.4.0, de 2000 contra el servidor de staging.
 # SOLO manual (workflow_dispatch): nunca con push ni pull request. Contrato:
 # specs/002-despliegue-ci-staging/contracts/workflows-github.md y docs/despliegue/prueba-de-carga.md
 name: carga
@@ -20,10 +20,18 @@ on:
         required: true
         type: string
       humo:
-        description: 'Prueba de humo (10 VUs, ~35 s) en lugar de la rampa completa de 1000 VUs'
+        description: 'Prueba de humo (10 VUs, ~35 s) en lugar de la rampa completa (1000 o 2000 VUs); con 2000 usa las 10 últimas cuentas sembradas'
         required: false
         default: false
         type: boolean
+      carga_total:
+        description: 'Cuentas de familia carga0001… (debe ser el CARGA_TOTAL con el que se sembró): 1000 (por defecto) o 2000 (sesión adicional, enmienda 2.4.0 de la constitución; solo con evaluacion.js y B8als_v2)'
+        required: false
+        default: '1000'
+        type: choice
+        options:
+          - '1000'
+          - '2000'
       script:
         description: 'Script k6 de tests/Load: evaluacion.js (Módulo 5: login, registro de notas y boletas; sesión única) o carga.js (Módulo 1: login y consultas)'
         required: false
@@ -54,7 +62,20 @@ jobs:
           STAGING_URL: ${{ vars.STAGING_URL }}
           ENTRADA_URL: ${{ inputs.base_url }}
           VERSION_DECLARADA: ${{ inputs.version }}
+          CARGA_TOTAL: ${{ inputs.carga_total }}
+          SCRIPT: ${{ inputs.script }}
+          TAMANO_DECLARADO: ${{ inputs.tamano_vm }}
         run: |
+          if [ "$CARGA_TOTAL" != "1000" ]; then
+            if [ "$SCRIPT" != "evaluacion.js" ]; then
+              echo "::error::carga_total=$CARGA_TOTAL solo se admite con script=evaluacion.js (carga.js es la prueba de 1000 usuarios del Módulo 1)."
+              exit 1
+            fi
+            case "$TAMANO_DECLARADO" in
+              *B8als_v2*) ;;
+              *) echo "::error::La sesión de $CARGA_TOTAL usuarios se hace en Standard_B8als_v2 (declaraste '$TAMANO_DECLARADO')."; exit 1 ;;
+            esac
+          fi
           if [ -z "$STAGING_URL" ]; then
             echo "::error::Falta la variable de repositorio STAGING_URL (Settings → Secrets and variables → Actions → Variables) con la URL https del servidor de staging."
             exit 1
@@ -93,6 +114,7 @@ jobs:
           # Secreto del repositorio (Settings → Secrets and variables → Actions → Secrets): la misma contraseña con la
           # que se sembraron las cuentas carga*. GitHub la enmascara en los registros; no se escribe en el repositorio.
           CARGA_PASSWORD: ${{ secrets.CARGA_PASSWORD }}
+          CARGA_TOTAL: ${{ inputs.carga_total }}
         run: |
           if [ -z "$CARGA_PASSWORD" ]; then
             echo "::error::Falta el secreto de repositorio CARGA_PASSWORD (Settings → Secrets and variables → Actions → Secrets): la contraseña con la que se sembraron las cuentas de carga."
@@ -102,12 +124,18 @@ jobs:
           chmod 777 resultados
           opciones=()
           if [ "$HUMO" = "true" ]; then opciones+=(-e SMOKE=1); fi
+          # CPU y memoria del runner durante k6: dicen si el generador de carga fue un cuello de botella.
+          pid_muestreo="$(tests/Load/runner-recursos.sh iniciar resultados/runner-recursos.csv)"
           set -o pipefail
+          fallo=0
           docker run --rm --user "$(id -u):$(id -g)" \
             -v "$PWD/tests/Load:/scripts:ro" -v "$PWD/resultados:/out" \
-            -e BASE_URL="$BASE" -e CARGA_PASSWORD "${opciones[@]}" \
+            -e BASE_URL="$BASE" -e CARGA_PASSWORD -e CARGA_TOTAL "${opciones[@]}" \
             grafana/k6:2.3.0 run --summary-export=/out/k6-resumen.json "/scripts/$SCRIPT" \
-            2>&1 | tee resultados/k6-salida.txt
+            2>&1 | tee resultados/k6-salida.txt || fallo=$?
+          kill "$pid_muestreo" 2>/dev/null || true
+          tests/Load/runner-recursos.sh resumir resultados/runner-recursos.csv resultados/runner-resumen.json
+          exit "$fallo"
 
       - name: Metadatos de la evidencia
         if: always()
@@ -118,10 +146,11 @@ jobs:
           INFORMADA: ${{ steps.objetivo.outputs.version_informada }}
           HUMO: ${{ inputs.humo }}
           SCRIPT: ${{ inputs.script }}
+          CARGA_TOTAL: ${{ inputs.carga_total }}
           RESULTADO_K6: ${{ steps.k6.outcome }}
         run: |
           mkdir -p resultados
-          modalidad="rampa completa (hasta 1000 VUs)"
+          modalidad="rampa completa (hasta $CARGA_TOTAL VUs)"
           if [ "$HUMO" = "true" ]; then modalidad="humo (10 VUs)"; fi
           cat > resultados/meta.json <<JSON
           {
@@ -131,6 +160,8 @@ jobs:
             "tamano_vm_declarado": "$TAMANO",
             "modalidad": "$modalidad",
             "script": "$SCRIPT",
+            "carga_total": $CARGA_TOTAL,
+            "runner": "ubuntu-24.04 (recursos en runner-resumen.json y runner-recursos.csv)",
             "umbrales_cumplidos": "$RESULTADO_K6",
             "commit": "$GITHUB_SHA",
             "run_id": "$GITHUB_RUN_ID",

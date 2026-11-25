@@ -7,6 +7,7 @@ sustentación del curso (diciembre de 2026 como máximo). Tope de planificación
 |---|---|--:|
 | **Standard_B2ats_v2** (2 vCPU, 1 GB, base 20 %) | Día a día (demos, verificación manual) | 9,64 USD/mes |
 | **Standard_B2als_v2** (2 vCPU, 4 GB, base 30 %, serie B con créditos de CPU) | Solo durante la prueba de carga y la espera previa de créditos | 38,40 USD/mes (≈ 0,0526 USD/h) |
+| **Standard_B8als_v2** (8 vCPU, 16 GiB, base 30 %, 240 créditos iniciales, +144/h) | Solo la sesión adicional de 2000 usuarios ([`sesion-carga-2000.md`](sesion-carga-2000.md)) | **≈ 0,21 USD/h (estimación 4 × B2als_v2; confirmar en la calculadora)**; ≈ 0,85 USD por sesión de ≈ 4 h |
 
 Descartados (research D-01c): D2s_v5 (cuota 0, aumento rechazado), D2s_v4 (`NotAvailableForSubscription` en la
 suscripción de estudiante), DS2_v2 (196,37 USD/mes, retiro previsto, riesgo de costo) y B2ls_v2 (42,49 USD/mes).
