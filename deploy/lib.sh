@@ -60,10 +60,12 @@ aplicar_perfil() {
             : "${MYSQL_BUFFER_POOL:=1G}" "${MYSQL_MAX_CONNECTIONS:=100}" "${REDIS_MAXMEMORY:=256mb}" "${PHP_MEMORY_LIMIT:=256M}"
             ;;
         carga2000)
-            # Standard_B8als_v2 (8 vCPU, 16 GiB): mismos criterios que 'carga' (10 workers por vCPU) con 4 veces la CPU.
-            # Memoria estimada: pool 2G + conexiones ≈ 2,5 GB, PHP-FPM ≈ 80 × 50 MB = 4 GB, Redis ≤ 0,5 GB → ≈ 7,5 GB de 16.
-            : "${FPM_MAX_CHILDREN:=80}" "${FPM_START_SERVERS:=24}" "${FPM_MIN_SPARE:=16}" "${FPM_MAX_SPARE:=40}"
-            : "${MYSQL_BUFFER_POOL:=2G}" "${MYSQL_MAX_CONNECTIONS:=200}" "${REDIS_MAXMEMORY:=512mb}" "${PHP_MEMORY_LIMIT:=256M}"
+            # Standard_B4als_v2 (4 vCPU, 8 GiB; el máximo que permite la cuota regional de la suscripción): mismos criterios
+            # que 'carga' (10 workers por vCPU, pool ≈ 25 % de la RAM) con el doble de CPU y de memoria.
+            # Memoria estimada: SO+Docker 0,25 GB, MySQL ≈ 2,4 GB (pool 2G + 120 conexiones × ≈ 3 MB), PHP-FPM ≈ 40 × 50 MB = 2 GB,
+            # Redis ≤ 0,5 GB → ≈ 5,2 GB de 8 GiB (queda ≈ 2,5 GB libres, más 2 GB de swap).
+            : "${FPM_MAX_CHILDREN:=40}" "${FPM_START_SERVERS:=12}" "${FPM_MIN_SPARE:=8}" "${FPM_MAX_SPARE:=20}"
+            : "${MYSQL_BUFFER_POOL:=2G}" "${MYSQL_MAX_CONNECTIONS:=120}" "${REDIS_MAXMEMORY:=512mb}" "${PHP_MEMORY_LIMIT:=256M}"
             ;;
         *) die "PERFIL_TAMANO='$perfil' no es válido (usa 'diario', 'carga' o 'carga2000')." ;;
     esac

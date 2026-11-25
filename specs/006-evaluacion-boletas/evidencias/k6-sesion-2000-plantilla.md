@@ -3,20 +3,20 @@
 Procedimiento: [`docs/despliegue/sesion-carga-2000.md`](../../../docs/despliegue/sesion-carga-2000.md) (enmienda 2.4.0).
 **La sesión solo vale como evidencia si la casilla 16 está marcada y `cierre-carga.json` dice `evidencia_completa: true`.**
 
-- Versión desplegada: `v…` · Perfil: `carga2000` · Tamaño de la VM: `Standard_B8als_v2` · `CARGA_TOTAL`: `2000`
+- Versión desplegada: `v…` · Perfil: `carga2000` · Tamaño de la VM: `Standard_B4als_v2` · `CARGA_TOTAL`: `2000`
 - Respaldo previo: `sge-…-manual.sql.gz` · Usuarios antes: `…` · Usuarios tras restaurar: `…`
-- Inicio en B8als_v2 (facturación, UTC): `…` · Arranque tras el Resize (`<desde-utc>`): `…` · Inicio de la rampa (UTC): `…` · Fin (regreso a B2ats_v2): `…`
+- Inicio en B4als_v2 (facturación, UTC): `…` · Arranque tras el Resize (`<desde-utc>`): `…` · Inicio de la rampa (UTC): `…` · Fin (regreso a B2ats_v2): `…`
 - Run ID del humo: `…` · Run ID de la rampa: `…` · Artefacto: `evidencia-carga-…`
 
 ## Lista de verificación
 
 - [ ] 1. Respaldo manual copiado a la PC y número de usuarios anotado
-- [ ] 2. `az`: deallocate, resize a B8als_v2, start
+- [ ] 2. `az`: deallocate, resize a B4als_v2, start
 - [ ] 3. `PERFIL_TAMANO=carga2000` + `deploy.sh --reconfigurar` + `/up` correcto
-- [ ] 4. `metrics.sh tamano` = `Standard_B8als_v2`, 8 vCPU, ≈ 16 GiB
+- [ ] 4. `metrics.sh tamano` = `Standard_B4als_v2`, 4 vCPU, ≈ 8 GiB
 - [ ] 5. Siembra con `CARGA_TOTAL=2000` (2020 cuentas activas)
 - [ ] 6. Humo en verde (`carga_total=2000`)
-- [ ] 7. **Créditos de partida** ≥ 400 (valor: `…` a las `…` UTC; espera: `…`)
+- [ ] 7. **Créditos de partida** ≥ 200 (valor: `…` a las `…` UTC; espera: `…`)
 - [ ] 8. `metrics.sh start`
 - [ ] 9. Rampa completa (`carga_total=2000`)
 - [ ] 10. `metrics.sh stop` + evidencias descargadas

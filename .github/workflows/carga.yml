@@ -25,7 +25,7 @@ on:
         default: false
         type: boolean
       carga_total:
-        description: 'Cuentas de familia carga0001… (debe ser el CARGA_TOTAL con el que se sembró): 1000 (por defecto) o 2000 (sesión adicional, enmienda 2.4.0 de la constitución; solo con evaluacion.js y B8als_v2)'
+        description: 'Cuentas de familia carga0001… (debe ser el CARGA_TOTAL con el que se sembró): 1000 (por defecto) o 2000 (sesión adicional, enmienda 2.4.0 de la constitución; solo con evaluacion.js y B4als_v2 o B8als_v2)'
         required: false
         default: '1000'
         type: choice
@@ -72,8 +72,8 @@ jobs:
               exit 1
             fi
             case "$TAMANO_DECLARADO" in
-              *B8als_v2*) ;;
-              *) echo "::error::La sesión de $CARGA_TOTAL usuarios se hace en Standard_B8als_v2 (declaraste '$TAMANO_DECLARADO')."; exit 1 ;;
+              *B4als_v2*|*B8als_v2*) ;;
+              *) echo "::error::La sesión de $CARGA_TOTAL usuarios se hace en Standard_B4als_v2 (o B8als_v2 si la cuota lo permite); declaraste '$TAMANO_DECLARADO'."; exit 1 ;;
             esac
           fi
           if [ -z "$STAGING_URL" ]; then

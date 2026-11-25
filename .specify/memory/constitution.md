@@ -203,8 +203,9 @@ prueba de humo breve dan confianza suficiente sin cronometrajes ni sesiones repe
     cumpliendo, ya que el puerto admite ese proveedor.
   - 2.4.0 (2026-11-25): Principio de pruebas y Definition of Done — se admite una sesión de carga
     k6 adicional cuando un requisito del curso cambia la carga objetivo; aplica a la carga de 2000
-    usuarios virtuales (Sprint 2), con los mismos umbrales que la de 1000 y en una máquina mayor
-    (Standard_B8als_v2), sin tocar la regla de una sola sesión por carga objetivo. Justificación:
+    usuarios virtuales (Sprint 2), con los mismos umbrales que la de 1000 y en una máquina mayor,
+    la de mayor tamaño que permita la suscripción (el tamaño concreto y su justificación se
+    registran en el runbook de la sesión), sin tocar la regla de una sola sesión por carga objetivo. Justificación:
     decisión del responsable del proyecto el 23/11/2026; la sesión del 13/11 con 1000 usuarios no
     cubre el pedido de hasta 2000 usuarios. Es MINOR porque amplía materialmente una guía sin
     invalidar código conforme a 2.3.0: la sesión de 1000 usuarios sigue siendo válida.

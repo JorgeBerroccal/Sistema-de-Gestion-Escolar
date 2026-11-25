@@ -17,10 +17,14 @@ INTERVALO="${SGE_METRICS_INTERVAL:-5}"
 TAMANO_ECONOMICO="Standard_B2ats_v2"
 TAMANO_CARGA="Standard_B2als_v2"
 TARIFA_HORA_CARGA="0.0526"   # USD/h de B2als_v2 en Chile Central (38,40 USD/mes ÷ 730 h)
-# Sesión de 2000 usuarios (enmienda 2.4.0): Standard_B8als_v2. ESTIMACIÓN (4 × B2als_v2, misma serie y escala lineal):
-# confírmala en la calculadora de precios de Azure o en Cost analysis y ajusta SGE_TARIFA_HORA_B8 si difiere.
-TAMANO_CARGA_2000="Standard_B8als_v2"
-TARIFA_HORA_CARGA_2000="${SGE_TARIFA_HORA_B8:-0.2104}"
+# Sesión de 2000 usuarios (enmienda 2.4.0): el tamaño máximo que permita la cuota. Standard_B4als_v2: 0,186 USD/h
+# (API pública de precios de Azure, prices.azure.com, Consumption, Linux; 135,78 USD/mes en el portal).
+# Standard_B8als_v2 (solo si hubiera cuota): sin precio verificado; el valor por defecto es una ESTIMACIÓN (2 × B4als_v2) y
+# se ajusta con SGE_TARIFA_HORA_B8.
+TAMANO_CARGA_2000="Standard_B4als_v2"
+TARIFA_HORA_CARGA_2000="0.186"
+TAMANO_CARGA_2000_B8="Standard_B8als_v2"
+TARIFA_HORA_CARGA_2000_B8="${SGE_TARIFA_HORA_B8:-0.372}"
 PID_FILE="$SGE_LOG_DIR/metrics.pid"
 ACTUAL_FILE="$SGE_LOG_DIR/metrics.actual"
 META_FILE="$SGE_LOG_DIR/meta-servidor.json"
@@ -151,15 +155,16 @@ case "$comando" in
         parada="$(cat "$SGE_LOG_DIR/ultimo-stop")"
         if [[ "$tamano_actual" == "$TAMANO_ECONOMICO" && ! "$fecha_ultima" < "$parada" ]]; then
             # Muestras (una cada 5 min) del último tramo en tamaño de carga; las horas con la VM liberada no cuentan.
-            read -r n_b2 n_b8 < <(awk -v t2="$TAMANO_CARGA" -v t8="$TAMANO_CARGA_2000" '
-                $2 == t2 || $2 == t8 { if (prev != "C") { c2 = 0; c8 = 0 } if ($2 == t8) c8++; else c2++; prev = "C"; next }
+            read -r n_b2 n_b4 n_b8 < <(awk -v t2="$TAMANO_CARGA" -v t4="$TAMANO_CARGA_2000" -v t8="$TAMANO_CARGA_2000_B8" '
+                $2 == t2 || $2 == t4 || $2 == t8 { if (prev != "C") { c2 = 0; c4 = 0; c8 = 0 } if ($2 == t8) c8++; else if ($2 == t4) c4++; else c2++; prev = "C"; next }
                 { prev = $2 }
-                END { print c2 + 0, c8 + 0 }' "$SGE_LOG_DIR/tamano.log")
+                END { print c2 + 0, c4 + 0, c8 + 0 }' "$SGE_LOG_DIR/tamano.log")
             # Incluye la espera para acumular créditos con la VM encendida en el tamaño de carga: se factura igual.
-            horas="$(awk -v a="$n_b2" -v b="$n_b8" 'BEGIN { printf "%.2f", (a + b) * 5 / 60 }')"
-            costo="$(awk -v a="$n_b2" -v b="$n_b8" -v t2="$TARIFA_HORA_CARGA" -v t8="$TARIFA_HORA_CARGA_2000" 'BEGIN { printf "%.2f", (a * t2 + b * t8) * 5 / 60 }')"
+            horas="$(awk -v a="$n_b2" -v b="$n_b4" -v c="$n_b8" 'BEGIN { printf "%.2f", (a + b + c) * 5 / 60 }')"
+            costo="$(awk -v a="$n_b2" -v b="$n_b4" -v c="$n_b8" -v t2="$TARIFA_HORA_CARGA" -v t4="$TARIFA_HORA_CARGA_2000" -v t8="$TARIFA_HORA_CARGA_2000_B8" 'BEGIN { printf "%.2f", (a * t2 + b * t4 + c * t8) * 5 / 60 }')"
             tamano_carga="$TAMANO_CARGA"
-            (( n_b8 > 0 )) && tamano_carga="$TAMANO_CARGA_2000"
+            (( n_b4 > 0 )) && tamano_carga="$TAMANO_CARGA_2000"
+            (( n_b8 > 0 )) && tamano_carga="$TAMANO_CARGA_2000_B8"
             cat > "$SGE_LOG_DIR/cierre-carga.json" <<JSON
 {
   "evidencia_completa": true,
