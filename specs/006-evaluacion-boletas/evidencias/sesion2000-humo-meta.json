@@ -1,0 +1,15 @@
+{
+  "url": "https://sge-peru.chilecentral.cloudapp.azure.com",
+  "version_declarada": "v1.1.0",
+  "version_informada_por_up": "v1.1.0",
+  "tamano_vm_declarado": "Standard_B4als_v2",
+  "modalidad": "humo (10 VUs)",
+  "script": "evaluacion.js",
+  "carga_total": 2000,
+  "runner": "ubuntu-24.04 (recursos en runner-resumen.json y runner-recursos.csv)",
+  "umbrales_cumplidos": "success",
+  "commit": "66dc6b3e7d98ffa13387930428b06da5a3c275ec",
+  "run_id": "45697494444",
+  "fecha_utc": "2026-11-25T20:43:07Z",
+  "nota": "CPU/memoria del servidor y regreso a B2ats_v2: ver metrics.sh y cierre-carga.json en el servidor; créditos de CPU (serie B): deploy/creditos-cpu.sh en el PC"
+}

@@ -1,0 +1,249 @@
+Unable to find image 'grafana/k6:2.3.0' locally
+2.3.0: Pulling from grafana/k6
+55afa1ecc21d: Pulling fs layer
+2b28f25602d4: Pulling fs layer
+699240e0b337: Pulling fs layer
+4f4fb700ef54: Pulling fs layer
+4f4fb700ef54: Waiting
+2b28f25602d4: Verifying Checksum
+2b28f25602d4: Download complete
+55afa1ecc21d: Download complete
+4f4fb700ef54: Verifying Checksum
+4f4fb700ef54: Download complete
+55afa1ecc21d: Pull complete
+2b28f25602d4: Pull complete
+699240e0b337: Verifying Checksum
+699240e0b337: Download complete
+699240e0b337: Pull complete
+4f4fb700ef54: Pull complete
+Digest: sha256:2dd4756ec6e14e62778916e1eb850108e4b499304c02df56760fa0bdb0fba0b8
+Status: Downloaded newer image for grafana/k6:2.3.0
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+
+     execution: local
+        script: /scripts/evaluacion.js
+        output: -
+
+     scenarios: (100.00%) 2 scenarios, 12 max VUs, 1m5s max duration (incl. graceful stop):
+              * docentes: 2 looping VUs for 35s (exec: docente, gracefulStop: 30s)
+              * familias: Up to 10 looping VUs for 35s over 3 stages (gracefulRampDown: 30s, exec: familia, gracefulStop: 30s)
+
+
+running (0m01.0s), 02/12 VUs, 0 complete and 0 interrupted iterations
+docentes   [   3% ] 2 VUs      01.0s/35s
+familias   [   3% ] 00/10 VUs  01.0s/35.0s
+
+running (0m02.0s), 03/12 VUs, 0 complete and 0 interrupted iterations
+docentes   [   6% ] 2 VUs      02.0s/35s
+familias   [   6% ] 01/10 VUs  02.0s/35.0s
+
+running (0m03.0s), 04/12 VUs, 3 complete and 0 interrupted iterations
+docentes   [   9% ] 2 VUs      03.0s/35s
+familias   [   9% ] 02/10 VUs  03.0s/35.0s
+
+running (0m04.0s), 05/12 VUs, 4 complete and 0 interrupted iterations
+docentes   [  11% ] 2 VUs      04.0s/35s
+familias   [  11% ] 03/10 VUs  04.0s/35.0s
+
+running (0m05.0s), 06/12 VUs, 5 complete and 0 interrupted iterations
+docentes   [  14% ] 2 VUs      05.0s/35s
+familias   [  14% ] 04/10 VUs  05.0s/35.0s
+
+running (0m06.0s), 07/12 VUs, 8 complete and 0 interrupted iterations
+docentes   [  17% ] 2 VUs      06.0s/35s
+familias   [  17% ] 05/10 VUs  06.0s/35.0s
+
+running (0m07.0s), 08/12 VUs, 12 complete and 0 interrupted iterations
+docentes   [  20% ] 2 VUs      07.0s/35s
+familias   [  20% ] 06/10 VUs  07.0s/35.0s
+
+running (0m08.0s), 09/12 VUs, 15 complete and 0 interrupted iterations
+docentes   [  23% ] 2 VUs      08.0s/35s
+familias   [  23% ] 07/10 VUs  08.0s/35.0s
+
+running (0m09.0s), 10/12 VUs, 19 complete and 0 interrupted iterations
+docentes   [  26% ] 2 VUs      09.0s/35s
+familias   [  26% ] 08/10 VUs  09.0s/35.0s
+
+running (0m10.0s), 11/12 VUs, 21 complete and 0 interrupted iterations
+docentes   [  29% ] 2 VUs      10.0s/35s
+familias   [  29% ] 09/10 VUs  10.0s/35.0s
+
+running (0m11.0s), 12/12 VUs, 28 complete and 0 interrupted iterations
+docentes   [  31% ] 2 VUs      11.0s/35s
+familias   [  31% ] 10/10 VUs  11.0s/35.0s
+
+running (0m12.0s), 12/12 VUs, 32 complete and 0 interrupted iterations
+docentes   [  34% ] 2 VUs      12.0s/35s
+familias   [  34% ] 10/10 VUs  12.0s/35.0s
+
+running (0m13.0s), 12/12 VUs, 36 complete and 0 interrupted iterations
+docentes   [  37% ] 2 VUs      13.0s/35s
+familias   [  37% ] 10/10 VUs  13.0s/35.0s
+
+running (0m14.0s), 12/12 VUs, 40 complete and 0 interrupted iterations
+docentes   [  40% ] 2 VUs      14.0s/35s
+familias   [  40% ] 10/10 VUs  14.0s/35.0s
+
+running (0m15.0s), 12/12 VUs, 45 complete and 0 interrupted iterations
+docentes   [  43% ] 2 VUs      15.0s/35s
+familias   [  43% ] 10/10 VUs  15.0s/35.0s
+
+running (0m16.0s), 12/12 VUs, 50 complete and 0 interrupted iterations
+docentes   [  46% ] 2 VUs      16.0s/35s
+familias   [  46% ] 10/10 VUs  16.0s/35.0s
+
+running (0m17.0s), 12/12 VUs, 53 complete and 0 interrupted iterations
+docentes   [  49% ] 2 VUs      17.0s/35s
+familias   [  49% ] 10/10 VUs  17.0s/35.0s
+
+running (0m18.0s), 12/12 VUs, 57 complete and 0 interrupted iterations
+docentes   [  51% ] 2 VUs      18.0s/35s
+familias   [  51% ] 10/10 VUs  18.0s/35.0s
+
+running (0m19.0s), 12/12 VUs, 65 complete and 0 interrupted iterations
+docentes   [  54% ] 2 VUs      19.0s/35s
+familias   [  54% ] 10/10 VUs  19.0s/35.0s
+
+running (0m20.0s), 12/12 VUs, 68 complete and 0 interrupted iterations
+docentes   [  57% ] 2 VUs      20.0s/35s
+familias   [  57% ] 10/10 VUs  20.0s/35.0s
+
+running (0m21.0s), 12/12 VUs, 73 complete and 0 interrupted iterations
+docentes   [  60% ] 2 VUs      21.0s/35s
+familias   [  60% ] 10/10 VUs  21.0s/35.0s
+
+running (0m22.0s), 12/12 VUs, 76 complete and 0 interrupted iterations
+docentes   [  63% ] 2 VUs      22.0s/35s
+familias   [  63% ] 10/10 VUs  22.0s/35.0s
+
+running (0m23.0s), 12/12 VUs, 85 complete and 0 interrupted iterations
+docentes   [  66% ] 2 VUs      23.0s/35s
+familias   [  66% ] 10/10 VUs  23.0s/35.0s
+
+running (0m24.0s), 12/12 VUs, 88 complete and 0 interrupted iterations
+docentes   [  69% ] 2 VUs      24.0s/35s
+familias   [  69% ] 10/10 VUs  24.0s/35.0s
+
+running (0m25.0s), 12/12 VUs, 91 complete and 0 interrupted iterations
+docentes   [  71% ] 2 VUs      25.0s/35s
+familias   [  71% ] 10/10 VUs  25.0s/35.0s
+
+running (0m26.0s), 12/12 VUs, 97 complete and 0 interrupted iterations
+docentes   [  74% ] 2 VUs      26.0s/35s
+familias   [  74% ] 10/10 VUs  26.0s/35.0s
+
+running (0m27.0s), 12/12 VUs, 102 complete and 0 interrupted iterations
+docentes   [  77% ] 2 VUs      27.0s/35s
+familias   [  77% ] 10/10 VUs  27.0s/35.0s
+
+running (0m28.0s), 12/12 VUs, 109 complete and 0 interrupted iterations
+docentes   [  80% ] 2 VUs      28.0s/35s
+familias   [  80% ] 10/10 VUs  28.0s/35.0s
+
+running (0m29.0s), 12/12 VUs, 112 complete and 0 interrupted iterations
+docentes   [  83% ] 2 VUs      29.0s/35s
+familias   [  83% ] 10/10 VUs  29.0s/35.0s
+
+running (0m30.0s), 12/12 VUs, 116 complete and 0 interrupted iterations
+docentes   [  86% ] 2 VUs      30.0s/35s
+familias   [  86% ] 10/10 VUs  30.0s/35.0s
+
+running (0m31.0s), 12/12 VUs, 123 complete and 0 interrupted iterations
+docentes   [  89% ] 2 VUs      31.0s/35s
+familias   [  89% ] 10/10 VUs  31.0s/35.0s
+
+running (0m32.0s), 12/12 VUs, 126 complete and 0 interrupted iterations
+docentes   [  91% ] 2 VUs      32.0s/35s
+familias   [  91% ] 10/10 VUs  32.0s/35.0s
+
+running (0m33.0s), 08/12 VUs, 132 complete and 0 interrupted iterations
+docentes   [  94% ] 2 VUs      33.0s/35s
+familias   [  94% ] 06/10 VUs  33.0s/35.0s
+
+running (0m34.0s), 06/12 VUs, 136 complete and 0 interrupted iterations
+docentes   [  97% ] 2 VUs      34.0s/35s
+familias   [  97% ] 04/10 VUs  34.0s/35.0s
+
+running (0m35.0s), 04/12 VUs, 141 complete and 0 interrupted iterations
+docentes   [ 100% ] 2 VUs      35.0s/35s
+familias   [ 100% ] 02/10 VUs  35.0s/35.0s
+
+running (0m36.0s), 04/12 VUs, 141 complete and 0 interrupted iterations
+docentes ↓ [ 100% ] 2 VUs      35s
+familias ↓ [ 100% ] 02/10 VUs  35s
+
+running (0m37.0s), 02/12 VUs, 143 complete and 0 interrupted iterations
+docentes ↓ [ 100% ] 2 VUs      35s
+familias ✓ [ 100% ] 00/10 VUs  35s
+
+running (0m38.0s), 01/12 VUs, 144 complete and 0 interrupted iterations
+docentes ↓ [ 100% ] 2 VUs      35s
+familias ✓ [ 100% ] 00/10 VUs  35s
+
+
+  █ THRESHOLDS 
+
+    http_req_duration{name:boleta}
+    ✓ 'p(95)<5000' p(95)=599ms
+
+    http_req_duration{name:consulta}
+    ✓ 'p(95)<1500' p(95)=269.72ms
+
+    http_req_duration{name:login}
+    ✓ 'p(95)<3500' p(95)=407.98ms
+
+    http_req_duration{name:notas}
+    ✓ 'p(95)<3000' p(95)=278.74ms
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.00%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 187     4.91809/s
+    checks_succeeded...: 100.00% 187 out of 187
+    checks_failed......: 0.00%   0 out of 187
+
+    ✓ login termina en /inicio
+    ✓ hay un periodo abierto con criterios
+    ✓ tabla de notas con campos
+    ✓ mis notas 200
+    ✓ notas guardadas
+    ✓ sin errores de validación
+    ✓ boleta 200
+    ✓ boleta es PDF
+
+    HTTP
+    http_req_duration..............: avg=271.85ms min=122.26ms med=260.99ms max=771.18ms p(90)=370.3ms  p(95)=503.86ms
+      { expected_response:true }...: avg=271.85ms min=122.26ms med=260.99ms max=771.18ms p(90)=370.3ms  p(95)=503.86ms
+      { name:boleta }..............: avg=437.28ms min=362.56ms med=374.11ms max=638.36ms p(90)=559.65ms p(95)=599ms   
+      { name:consulta }............: avg=266.45ms min=254.98ms med=261.75ms max=771.18ms p(90)=268.34ms p(95)=269.72ms
+      { name:login }...............: avg=299.41ms min=158.83ms med=303.32ms max=416.65ms p(90)=358.94ms p(95)=407.98ms
+      { name:notas }...............: avg=204.45ms min=154.92ms med=168.76ms max=288.28ms p(90)=275.75ms p(95)=278.74ms
+    http_req_failed................: 0.00%  0 out of 213
+    http_reqs......................: 213    5.601888/s
+
+    EXECUTION
+    iteration_duration.............: avg=2.48s    min=1.28s    med=2.29s    max=4.46s    p(90)=3.9s     p(95)=3.95s   
+    iterations.....................: 145    3.813492/s
+    vus............................: 1      min=1        max=12
+    vus_max........................: 12     min=12       max=12
+
+    NETWORK
+    data_received..................: 8.1 MB 213 kB/s
+    data_sent......................: 248 kB 6.5 kB/s
+
+
+
+
+running (0m38.0s), 00/12 VUs, 145 complete and 0 interrupted iterations
+docentes ✓ [ 100% ] 2 VUs      35s
+familias ✓ [ 100% ] 00/10 VUs  35s

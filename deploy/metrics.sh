@@ -143,7 +143,7 @@ case "$comando" in
         log "Créditos de CPU (en tu PC): ./deploy/creditos-cpu.sh <desde-utc> $fin $inicio  (desde = hora del Start tras el Resize)"
         ;;
     tamano)
-        tamano_vm
+        printf '%s\n' "$(tamano_vm)"
         ;;
     cierre)
         [[ -f "$SGE_LOG_DIR/ultimo-stop" ]] || die "No hay una sesión detenida: ejecuta antes 'metrics.sh stop'."
@@ -177,7 +177,12 @@ case "$comando" in
 }
 JSON
             log "evidencia_completa: true — la VM volvió a $tamano_actual (≈ $horas h en $tamano_carga, ≈ $costo USD)."
-            log "Falta la evidencia de créditos de CPU: ejecuta deploy/creditos-cpu.sh en tu PC (ver docs/despliegue/prueba-de-carga.md, paso 13)."
+            if [[ "$tamano_carga" == "$TAMANO_CARGA_2000" || "$tamano_carga" == "$TAMANO_CARGA_2000_B8" ]]; then
+                guia="docs/despliegue/sesion-carga-2000.md, paso 11"
+            else
+                guia="docs/despliegue/prueba-de-carga.md, paso 13"
+            fi
+            log "Falta la evidencia de créditos de CPU: ejecuta deploy/creditos-cpu.sh en tu PC (ver $guia)."
             log "Escrito $SGE_LOG_DIR/cierre-carga.json: descárgalo junto al CSV y a meta-servidor.json."
         else
             log "EVIDENCIA INCOMPLETA: la VM sigue en '$tamano_actual' (última muestra $fecha_ultima; fin de la prueba $parada)." >&2
