@@ -15,5 +15,5 @@
   "minutos_desde_el_inicio_de_la_rampa": null,
   "minutos_con_cpu_limitada": 0,
   "duracion_de_la_prueba_min": 34,
-  "csv": "sesion2000-creditos-cpu-20261125-2232.csv"
+  "csv": "/home/jorge/evidencia-2000/rampa/creditos-cpu-20261125-2232.csv"
 }

@@ -141,9 +141,9 @@ Los diagramas se editan en `docs/img/fuentes/*.archify.json` y se regeneran con 
 
 ## Pendientes
 
-Con `v1.0.0` el MVP está completo y desplegado. Quedan tres puntos abiertos, ninguno de código:
+Con `v1.0.0` el MVP está completo y desplegado. Quedan dos puntos abiertos, ninguno de código (el primero ya se resolvió):
 
-1. **Usuarios de la prueba de carga (1000 o 2000).** El umbral de 1000 se acordó verbalmente con la docente y el enunciado del Sprint 2 menciona 2000. El responsable espera su respuesta: según ella se actualiza la fila de k6 de [las adaptaciones](docs/05-implementacion-y-validacion/README.md#adaptaciones). La sesión con 2000 usuarios ya se ejecutó el 25/11 (enmienda 2.4.0; los umbrales de p95 no se cumplieron): [registro](specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-25.md).
+1. **Usuarios de la prueba de carga: resuelto.** La docente confirmó en clase la prueba con 2000 usuarios; se ejecutó con 2000 el 25/11 (enmienda 2.4.0) y los umbrales de p95 no se cumplieron ([registro](specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-25.md)). Antecedente: la sesión del 13/11 con 1000 usuarios ([registro](specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-13.md)).
 2. **Revisión de costos (T083 de la feature 002, 15/12).** Revisar *Cost analysis* contra la estimación, confirmar que el proyectado al 31/12 no pasa del 80 % del crédito (DC-007) y decidir si se detiene la VM hasta la sustentación. Ver [`specs/002-despliegue-ci-staging/tasks.md`](specs/002-despliegue-ci-staging/tasks.md) y [`docs/despliegue/costo-y-tamano.md`](docs/despliegue/costo-y-tamano.md).
 3. **Comprobación de T078 (feature 002).** Confirmar en *Cost analysis* que no aparecen cargos nuevos de B2als_v2 tras la sesión de carga; la evidencia de la sesión ya está registrada y esta es la única parte pendiente de esa tarea.
 
