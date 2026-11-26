@@ -24,6 +24,13 @@ colegio. La prueba de carga completa solo se ejecuta aquí, nunca en producción
 Diseño y decisiones: [`specs/002-despliegue-ci-staging/`](../../specs/002-despliegue-ci-staging/).
 Evidencias: `specs/001-auth-roles-rbac/evidencias/` (Módulo 1) y `specs/002-despliegue-ci-staging/evidencias/`.
 
+## Configuración del entorno de staging
+
+- nginx + PHP-FPM, Redis para sesiones y caché; sin Octane.
+- `APP_ENV=staging` y `APP_DEBUG=false` ([`env.staging.example`](../../deploy/env.staging.example)).
+- `OPCACHE_VALIDATE_TIMESTAMPS=0`, y `php artisan optimize` en cada arranque del contenedor `app`.
+- `LoadTestSeeder` rechaza producción y no forma parte de `DatabaseSeeder`.
+
 ## Reglas que no se saltan
 
 - Los secretos (`APP_KEY`, contraseñas de base de datos, `SGE_ADMIN_PASSWORD`) viven **solo** en
