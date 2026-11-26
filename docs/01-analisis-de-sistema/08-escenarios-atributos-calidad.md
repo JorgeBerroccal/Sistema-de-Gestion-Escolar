@@ -53,12 +53,12 @@ Se agregan **Verificación** (cómo se probó), **Justificación de la medida** 
 | **Fuente** | Docentes, padres y alumnos al cierre del bimestre, simulados por k6. |
 | **Estímulo** | Hasta 1000 usuarios virtuales inician sesión y consultan; las cuentas de docentes registran notas y las familias consultan notas y descargan boletas. |
 | **Artefacto** | Aplicación Laravel (nginx + PHP-FPM), MySQL y Redis. |
-| **Entorno** | Staging en `Standard_B2als_v2` (2 vCPU, 4 GB) con perfil `carga`; versión `v0.6.0`; asistente excluido (RC18). |
+| **Entorno** | Staging en `Standard_B2als_v2` (2 vCPU, 4 GB) con perfil `carga`; versión `v0.6.0`; asistente excluido (RC18). Sesión adicional del 25/11: `Standard_B4als_v2` (4 vCPU, 8 GiB; tamaño fijado por la cuota regional), perfil `carga2000`, versión `v1.1.0`, 2000 usuarios virtuales más 20 docentes. |
 | **Respuesta** | El sistema atiende las solicitudes sin rechazarlas ni caerse y dentro de los umbrales de tiempo. |
 | **Medida (diseño)** | p95 < 2 s y < 1 % de errores. Umbrales usados por endpoint: login < 3,5 s; consultas del Módulo 1 < 1,5 s; en el Módulo 5, consulta < 2 s, registro de notas < 4 s y boleta < 8 s; fallos < 1 %. |
 | **Verificación** | `tests/Load/carga.js` y `tests/Load/evaluacion.js`, lanzados desde el workflow `carga` de GitHub Actions; métricas del servidor con `deploy/metrics.sh`. |
 | **Justificación de la medida** | El percentil 95 muestra la experiencia de casi todos los usuarios; los umbrales distinguen la operación de cada endpoint. |
-| **Estado real** | **No cumplido en p95.** `evaluacion.js` (1020 VUs): login 15,34 s, consulta 13,89 s, notas 14,43 s, boleta 16,40 s. `carga.js` corregido (1000 VUs): login 5,52 s y consultas 3,39 s. **Solicitudes fallidas: 0 %** en ambas. La CPU del contenedor `app` saturó los 2 vCPU y la memoria sobró. Límite práctico estimado: ~500 usuarios (inferido, no medido). Evidencia: `specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-13.md`. Las sesiones de octubre de `specs/001-auth-roles-rbac/evidencias/` se conservan con la advertencia del hallazgo A2: sus «consultas» medían la página de login. |
+| **Estado real** | **No cumplido en p95.** `evaluacion.js` (1020 VUs): login 15,34 s, consulta 13,89 s, notas 14,43 s, boleta 16,40 s. `carga.js` corregido (1000 VUs): login 5,52 s y consultas 3,39 s. **Solicitudes fallidas: 0 %** en ambas. La CPU del contenedor `app` saturó los 2 vCPU y la memoria sobró. Límite práctico estimado: ~500 usuarios (inferido, no medido). Evidencia: `specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-13.md`. Las sesiones de octubre de `specs/001-auth-roles-rbac/evidencias/` se conservan con la advertencia del hallazgo A2: sus «consultas» medían la página de login. **Sesión del 25/11** (`evaluacion.js`, hasta 2020 VUs, 4 vCPU): tampoco cumplida; login 15,70 s, consulta 13,65 s, notas 10,16 s y boleta 15,33 s; 0,00 % de solicitudes fallidas (0 de 49 367) y CPU del servidor al 100 %: [`k6-sesion-2026-11-25.md`](../../specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-25.md). |
 
 ## EQ-04. Disponibilidad: periodos críticos y reinicios
 
@@ -180,7 +180,7 @@ Los estados de este resumen juzgan la **medida** de cada escenario; los de [`04`
 | Pruebas `arch()` (EQ-05) | Búsqueda de `arch(` y expectativas de arquitectura de Pest en `tests/` | Sin coincidencias. |
 | Cambio dentro de su módulo (EQ-05) | `git diff --stat 7d4b53c..a1e0114` (retoque R-01), con archivos en tres grupos | 0 de otro módulo; 0 de registro compartido; 1 de `docs/`; 2 de `app/Support` sin clasificar. |
 | Lista de pruebas citadas (EQ-01, EQ-02, EQ-06) | Listado de `tests/Feature/` y `tests/Feature/*/Acceso` | Los archivos nombrados existen. |
-| Resultados de carga (EQ-03) | Lectura de `k6-sesion-2026-11-13.md` y del bloque SC-006 de la spec 001 | Cifras copiadas de las tablas de resultados de esos documentos. |
+| Resultados de carga (EQ-03) | Lectura de `k6-sesion-2026-11-13.md`, `k6-sesion-2026-11-25.md` y del bloque SC-006 de la spec 001 | Cifras copiadas de las tablas de resultados de esos documentos. |
 | Reinicio y despliegue (EQ-04, EQ-09) | Lectura de `despliegue-y-vuelta-atras.md`, `migracion-fallida.md` y `docker-compose.prod.yml` | Tiempos y política de reinicio como se citan. |
 | Cobertura y CI (EQ-07) | Job `cobertura` de `.github/workflows/ci.yml` y cobertura local con PCOV (M-02) | CI: 95,98 % de líneas en `app/` ([ejecución 45248630708](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/actions/runs/45248630708)); local: 97,5 % en servicios, 951 pruebas. |
 | Usabilidad a 360 px (EQ-08) | Playwright con Chromium a 360 px y `padre.demo` (M-01) | `scrollWidth` = 360 en siete pantallas; boleta en 2 interacciones (tarjetas) o 4 (menú). |

@@ -26,7 +26,7 @@ SC-007 del Módulo 1 en el servidor, y respaldo de la base de datos con restaura
   desarrollador la aprobó explícitamente según el Principio IV de la constitución y es además un
   requisito del curso. No introduce funcionalidad de negocio. Uno de sus objetivos es cerrar el
   criterio **SC-006 del Módulo 1**, que estaba pendiente porque solo se ejecutó la prueba de humo local
-  (cumplido el 2026-10-25 con la evidencia de DC-006); eso no la clasifica como parte del Módulo 1.
+  (hoy **no cumplido en p95**, según la remedición del 13/11/2026; ver SC-006 en la spec 001); eso no la clasifica como parte del Módulo 1.
 - El servidor es un entorno **staging** (`APP_ENV=staging`): no contiene datos reales de ningún
   colegio y es el único lugar donde se permite la prueba de carga completa (nunca en producción).
 - **Fuera de alcance**: dominio propio pagado, alta disponibilidad, más de un servidor, monitoreo

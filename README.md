@@ -3,7 +3,7 @@
 Aplicación web para gestionar una institución escolar: usuarios y permisos, estructura académica, matrícula, asistencia, notas con boleta en PDF y un asistente virtual.
 
 [![ci](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/actions/workflows/ci.yml)
-[![última versión](https://img.shields.io/github/v/tag/JorgeBerroccal/Sistema-de-Gestion-Escolar?sort=semver&label=versi%C3%B3n)](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/tags)
+[![último release](https://img.shields.io/github/v/release/JorgeBerroccal/Sistema-de-Gestion-Escolar?label=release)](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/releases)
 [![staging](https://img.shields.io/badge/staging-Azure-0078D4)](https://sge-peru.chilecentral.cloudapp.azure.com)
 
 **Curso:** Arquitectura de Software (IS-488)<br>
@@ -77,7 +77,7 @@ y los principios del proyecto en la [constitución](.specify/memory/constitution
 
 Tareas abiertas de la [feature 002](specs/002-despliegue-ci-staging/tasks.md):
 
-- **T083, revisión de costos:** revisar *Cost analysis* al 15/11 y al 15/12 contra la estimación, confirmar que el proyectado al 31/12 no pasa del 80 % del crédito y decidir si se detiene la VM hasta la sustentación ([costo y tamaño](docs/despliegue/costo-y-tamano.md)).
+- **T083, revisión de costos:** la revisión del 15/11 no se hizo en su fecha (sus datos se consultaron después); falta la del 15/12 contra la estimación: confirmar que el proyectado al 31/12 no pasa del 80 % del crédito y decidir si se detiene la VM hasta la sustentación ([costo y tamaño](docs/despliegue/costo-y-tamano.md)).
 - **T078, cargos tras las sesiones de carga:** confirmar en *Cost analysis* que no aparecen cargos nuevos de B2als_v2 tras volver al tamaño diario, ni de B4als_v2 tras la [sesión del 25/11](specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-25.md).
 
 ## Ejecutar en local

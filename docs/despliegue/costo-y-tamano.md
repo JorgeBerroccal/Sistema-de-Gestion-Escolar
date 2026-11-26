@@ -43,7 +43,21 @@ Lectura: el margen contra el tope es de ≈25 USD **incluso con holgura**. Olvid
 `metrics.sh cierre` cuenta todas las horas en ese tamaño.
 
 > Los precios de **disco** e **IP** son estimaciones: confírmalos en la calculadora de precios de Azure
-> (Chile Central) y actualiza la tabla si difieren. Revisa *Cost analysis* al 15/11 y al 15/12.
+> (Chile Central) y actualiza la tabla si difieren. Revisa *Cost analysis* al 15/11 y al 15/12 (ver [consultas registradas](#consultas-de-costo-registradas)).
+
+## Consultas de costo registradas
+
+Revisión de costo (T083 de la feature 002), **abierta hasta el 15/12**. La revisión del 15/11 no se hizo en su fecha.
+
+| Qué | Consultado | Dónde | Resultado |
+|---|---|---|---|
+| Al 15/11 (rango 01/11–15/11/2026) | 26/11 | *Cost analysis* | 5,17 USD reales |
+| Revisión intermedia de noviembre | 25/11 | *Cost analysis* | 7,62 USD reales; previsión 9,33 USD; presupuesto 25 USD/mes |
+| Noviembre | 26/11 | Página de la suscripción | 8,32 USD reales; previsión 9,69 USD |
+| Costo por recurso | 26/11 | Página de la suscripción | Disco del sistema operativo 3,53 USD; IP pública 3,06 USD; máquina virtual 1,73 USD |
+| Uso gratuito | 26/11 | «Principales servicios gratuitos por uso» | Virtual Machines Basv2 Series B2ats v2: 581,12 de 750 horas al mes |
+
+El tamaño diario (B2ats_v2) está dentro del uso gratuito. El crédito restante no se consultó: la regla del 80 % del crédito (DC-007) se revisa el 15/12.
 
 ## Alertas de presupuesto (50 %, 75 %, 90 %)
 
