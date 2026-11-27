@@ -18,7 +18,7 @@ Este documento conserva las diez decisiones del diseño inicial (ADR-001 a ADR-0
 | ADR-006 | Caché y sesiones en Redis | DA03 | **Modificada** | Redis para sesiones y limitadores; sin caché de permisos ni estructura |
 | ADR-007 | Boletas PDF en cola de trabajos | DA03 | **No implementada** | Spec 006, R-13: PDF síncrono con DomPDF |
 | ADR-008 | Nginx + PHP-FPM como servidor de aplicación | DA03, DA06 | **Implementada** | Constitución 2.1.0; spec 002, D-05 |
-| ADR-009 | Docker Compose en un VPS de bajo costo | DA06 | **Modificada** | De VPS genérico a Azure for Students con B2ats_v2 (diario) y B2als_v2 (carga); `docs/despliegue/costo-y-tamano.md` |
+| ADR-009 | Docker Compose en un VPS de bajo costo | DA06 | **Modificada** | De VPS genérico a Azure for Students con B2ats_v2 (diario) y B2als_v2 (carga); B4als_v2 en la sesión de 2000 usuarios; `docs/despliegue/costo-y-tamano.md` |
 | ADR-010 | Auditoría transversal por eventos | DA08 | **No implementada** | Sin bitácora; solo `registrado_por` y `cerrado_por` |
 | ADR-011 | Pertenencia fail-closed | DA01, DA02 | **Implementada** (nueva) | Spec 001, US6; specs 003 a 007 |
 | ADR-012 | Sincronización de datos base | DA04, DA06 | **Implementada** (nueva) | `app/Console/Commands/SincronizarBase.php`; `deploy/deploy.sh` |
@@ -107,6 +107,7 @@ Este documento conserva las diez decisiones del diseño inicial (ADR-001 a ADR-0
 - **Estado real: Modificada.** Dos cambios:
   - **Cuatro contenedores**, no cinco: `web`, `app`, `db` y `redis` (no hay worker, ADR-007).
   - **Azure for Students en lugar de un VPS genérico.** Una VM Ubuntu en la región Chile Central con dos tamaños: `Standard_B2ats_v2` (2 vCPU, 1 GB; 9,64 USD/mes) en el **perfil diario** y `Standard_B2als_v2` (2 vCPU, 4 GB; 38,40 USD/mes) solo en el **perfil carga**, para las sesiones de k6 y la espera previa de créditos de CPU. `PERFIL_TAMANO` ajusta FPM, MySQL y Redis a cada tamaño, y `deploy.sh` advierte si el tamaño de la VM no coincide con el perfil. Crédito de 100 USD con tope de planificación del 80 %.
+  - **Sesión de 2000 usuarios (25/11):** se usó `Standard_B4als_v2` (4 vCPU, 8 GiB) con el perfil `carga2000`, porque es el máximo que permite la cuota regional de Azure for Students (el aumento solicitado fue rechazado), no una decisión de diseño. Los umbrales de p95 no se cumplieron: [`k6-sesion-2026-11-25.md`](../../specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-25.md).
   - Referencias: `docs/despliegue/costo-y-tamano.md`, `docs/despliegue/aprovisionamiento-azure.md` y spec 002 (D-01, D-01c, D-02).
 
 ### ADR-010 — Auditoría transversal por eventos

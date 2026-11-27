@@ -39,7 +39,7 @@ Resumen de los estados reales (fuente: [`08`](../01-analisis-de-sistema/08-escen
 
 - **Cumplidos:** seguridad (EQ-01), privacidad en IA (EQ-02), adaptabilidad (EQ-06, tiempo no medido) y testeabilidad (EQ-07).
 - **Parciales:** disponibilidad (EQ-04), mantenibilidad (EQ-05), usabilidad (EQ-08) y portabilidad (EQ-09).
-- **No cumplidos:** rendimiento con 1000 usuarios en p95 (EQ-03; 0 % de solicitudes fallidas) y trazabilidad (EQ-10).
+- **No cumplidos:** rendimiento en p95 (EQ-03), tanto con 1000 usuarios en 2 vCPU como con 2000 en 4 vCPU ([`k6-sesion-2026-11-25.md`](../../specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-25.md)), con 0 % de solicitudes fallidas y trazabilidad (EQ-10).
 
 ## Qué no se hizo
 

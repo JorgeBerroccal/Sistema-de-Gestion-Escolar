@@ -1,128 +1,60 @@
 # Sistema de Gestión Escolar (SGE)
 
-**Curso:** Arquitectura de Software (IS-488)
-**Universidad:** Universidad Nacional de San Cristóbal de Huamanga
+Aplicación web para gestionar una institución escolar: usuarios y permisos, estructura académica, matrícula, asistencia, notas con boleta en PDF y un asistente virtual.
+
+[![ci](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/actions/workflows/ci.yml)
+[![último release](https://img.shields.io/github/v/release/JorgeBerroccal/Sistema-de-Gestion-Escolar?label=release)](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/releases)
+[![staging](https://img.shields.io/badge/staging-Azure-0078D4)](https://sge-peru.chilecentral.cloudapp.azure.com)
+
+**Curso:** Arquitectura de Software (IS-488)<br>
+**Universidad:** Universidad Nacional de San Cristóbal de Huamanga<br>
 **Escuela Profesional:** Ingeniería de Sistemas
 
-> **Versión final del MVP: [`v1.0.0`](https://github.com/JorgeBerroccal/Sistema-de-Gestion-Escolar/releases/tag/v1.0.0)** (seis módulos, despliegue, pruebas y documentación). En staging: <https://sge-peru.chilecentral.cloudapp.azure.com> (estado en `/up`). Lo que queda abierto está en [Pendientes](#pendientes).
+## Módulos
 
-El **SGE** es una aplicación web para gestionar una institución escolar: usuarios, roles y permisos
-de acceso, y en los módulos siguientes los datos académicos que dependen de ellos.
+| Módulo | Qué hace | Roles que lo usan | Detalle |
+|---|---|---|---|
+| 1. Autenticación y Roles | Inicio de sesión, usuarios, roles y permisos configurables | Todos inician sesión; administra el Administrador | [spec 001](specs/001-auth-roles-rbac/) |
+| 2. Gestión Académica Base | Institución, años y periodos, grados, secciones, cursos y asignación docente | Administrador, Director (consulta), Docente (sus asignaciones) | [spec 003](specs/003-gestion-academica-base/) |
+| 3. Matrícula | Alumnos, apoderados, matrículas y nóminas | Administrador, Director, Docente, Padre de Familia, Alumno | [spec 004](specs/004-matricula/) |
+| 4. Asistencia | Registro diario por sección, consulta y reportes | Administrador, Director, Docente, Padre de Familia, Alumno | [spec 005](specs/005-asistencia/) |
+| 5. Evaluación y Boletas | Notas por criterios, cierre de periodos, promedios y boleta en PDF | Administrador, Director, Docente, Padre de Familia, Alumno | [spec 006](specs/006-evaluacion-boletas/) · [evaluación](docs/evaluacion.md) |
+| 6. Asistente Virtual | Chat en español sobre notas, asistencia y matrícula propias | Padre de Familia, Alumno | [spec 007](specs/007-asistente-virtual/) · [asistente](docs/asistente.md) |
 
-Este repositorio contiene el **Módulo 1: Autenticación y Roles (RBAC)** — inicio de sesión con
-correo o usuario, gestión de usuarios, roles y permisos configurables desde la interfaz, menú por
-permisos y un mecanismo de filtros de pertenencia (*fail-closed*) para los módulos 2–6, el
-**Módulo 2: Gestión Académica Base** (institución, años y periodos, grados, secciones, cursos y asignación
-docente) y el **Módulo 3: Matrícula**: alumnos (documento único por tipo y número, DNI de 8 dígitos),
-matrícula individual y masiva en secciones del año vigente con estados (matriculado, retirado, trasladado) e
-historial, vínculos con el usuario del alumno y con sus apoderados, y nóminas paginadas con búsqueda. Cada rol ve
-solo lo suyo: el Docente la nómina de sus secciones, el Padre de Familia a sus hijos y el Alumno su ficha.
-El **Módulo 4: Asistencia** registra la asistencia diaria por sección (presente, tarde, falta y falta justificada,
-un catálogo en tabla): el Docente asignado (o el Administrador) toma la lista de una fecha y justifica faltas; el
-Alumno y el Padre de Familia consultan lo propio por mes con su resumen; y Administrador, Director y Docente
-obtienen reportes por sección y rango o periodo. Se rechazan los **sábados y domingos** (regla fija, sin
-calendario); los **feriados y días no lectivos no se modelan**: ese día simplemente no se registra y no cuenta.
-"Hoy" se calcula en la zona horaria de la institución (`ASISTENCIA_ZONA_HORARIA`, por defecto `America/Lima`);
-la zona global de la aplicación sigue en UTC.
-El **Módulo 5: Evaluación y Boletas** registra las notas por curso, sección y periodo: el Docente asignado define criterios
-con peso (suman 100 %) y guarda la tabla de la sección de una vez (todo o nada, formulario clásico con CSRF); el
-Administrador cierra y reabre cada periodo por sección (el cierre bloquea al Docente y **publica** notas y boleta); el
-Alumno y el Padre de Familia consultan lo propio de los periodos publicados, con promedio por periodo y anual; y el
-Administrador y el Director descargan la **boleta en PDF** (un solo formato, con el resumen de asistencia), mientras la familia
-descarga la propia. El Docente no accede a la boleta completa. Los promedios no se guardan: se calculan al leer. La escala
-(literal o vigesimal), sus **equivalentes numéricos y el umbral de aprobación son configuración de la institución, no una regla
-del Currículo Nacional**; con escala literal la boleta muestra el calificativo literal. Detalle en [`docs/evaluacion.md`](docs/evaluacion.md).
-El **Módulo 6: Asistente Virtual** es un chat en español para Padre de Familia y Alumno (permiso `asistente.usar`) que responde sobre las notas
-publicadas, la asistencia, la matrícula y la sección propias, sin historial guardado y con aviso de contenido generado por IA. La seguridad no
-depende del modelo: el proveedor solo recibe un contexto con datos permitidos (nunca documento, fecha de nacimiento ni correo, ni datos de otros
-alumnos). El proveedor es intercambiable (adaptador falso para pruebas y OpenRouter con modelo y respaldo por entorno; **con modelos gratuitos no
-admite datos reales y falla cerrado en producción**) y hay un límite de solicitudes por usuario que protege el cupo gratuito. Detalle en
-[`docs/asistente.md`](docs/asistente.md) y configuración de staging en [`docs/despliegue/asistente-virtual.md`](docs/despliegue/asistente-virtual.md).
+Los roles indicados son los que traen los permisos por defecto ([`RolesYPermisosSeeder`](database/seeders/RolesYPermisosSeeder.php)); se pueden cambiar desde la interfaz. La infraestructura de despliegue e integración continua está en la [spec 002](specs/002-despliegue-ci-staging/).
 
-## Stack
+## Arquitectura
 
-- PHP 8.3, Laravel 13, Livewire 4, Blade y Tailwind CSS (Vite)
-- MySQL 8.0 (datos) y Redis 7 (sesiones, caché y limitador de intentos)
-- nginx + PHP-FPM, todo orquestado con Docker Compose
-- Pest 4 (pruebas unitarias y de funcionalidad) y k6 (prueba de carga)
+PHP 8.3, Laravel 13, Livewire 4, Blade y Tailwind CSS; MySQL 8.0 y Redis 7; nginx + PHP-FPM con Docker Compose.
 
-## Metodología: Spec-Driven Development con Spec Kit
+![Diagrama de contenedores del SGE (modelo C4, nivel 2)](docs/img/nivel2-contenedores.png)
 
-El desarrollo sigue **Spec-Driven Development** con [GitHub Spec Kit](https://github.com/github/spec-kit):
-primero se escribe la especificación y luego el plan, las tareas y el código. Los artefactos de cada
-módulo viven en `specs/<módulo>/` (`spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/`,
-`quickstart.md`, `tasks.md`) y los principios del proyecto en `.specify/memory/constitution.md`.
-Módulo 1: [`specs/001-auth-roles-rbac/`](specs/001-auth-roles-rbac/).
+- **Monolito modular** en capas, con MVC y capa de servicios ([estilo](docs/02-arquitectura-software/estilo-arquitectonico.md), [patrón](docs/02-arquitectura-software/patron-arquitectonico.md), [contenedores C4](docs/04-modelo-c4/Nivel2-DiagramadeContenedores.md)).
+- **Regla de autorización:** los permisos se verifican por identificador (p. ej. `usuarios.ver`), **nunca por nombre de rol**. Los roles son datos editables desde la interfaz; el código solo conoce permisos ([componentes](docs/02-arquitectura-software/componentes-arquitectonicos.md)).
+- **Pertenencia *fail-closed*:** cada usuario ve solo lo que le corresponde y, ante la duda, se niega el acceso ([componentes C4](docs/04-modelo-c4/Nivel3-Diagrama-de-Componentes.md), ADR-011 en [decisiones](docs/01-analisis-de-sistema/07-decisiones-arquitectonicas.md)).
+- **Proveedor de IA intercambiable:** el asistente usa un puerto con un adaptador falso para pruebas y otro para OpenRouter ([contexto C4](docs/04-modelo-c4/Nivel1-DiagramadeContextodelSistema.md), [asistente](docs/asistente.md)).
 
-## Levantar el proyecto con Docker
+## Calidad y pruebas
 
-Requisitos: Docker con Docker Compose v2.
-
-```bash
-cp .env.example .env        # definir SGE_ADMIN_USERNAME, SGE_ADMIN_EMAIL y SGE_ADMIN_PASSWORD
-docker compose up -d --build
-docker compose exec app composer install
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan migrate:fresh --seed
-docker compose --profile dev run --rm node sh -c "npm install && npm run build"
-```
-
-La aplicación queda en <http://localhost:8080/login>. Entra con el administrador definido en `.env`.
-En `APP_ENV=local` el seeder crea además usuarios de demostración (uno por rol) y una institución de ejemplo
-con niveles, grados, secciones, cursos, tres docentes y algunas asignaciones (`AcademicoDemoSeeder`).
-
-### Datos base y de ejemplo
-
-| Qué | Cómo | Dónde corre |
+| Qué | Resultado | Evidencia |
 |---|---|---|
-| Roles, permisos, escalas de calificación, tipos de documento y estados de asistencia (datos base, idempotentes) | `php artisan sge:sincronizar-base` | Cada despliegue (lo ejecuta `deploy/deploy.sh` tras `migrate`); nunca crea usuarios |
-| Administrador inicial | `DatabaseSeeder` (`AdministradorInicialSeeder`) | Primer despliegue |
-| Institución y datos académicos de ejemplo | `php artisan db:seed --class=AcademicoDemoSeeder` | `local` (automático; incluye cuentas `docente.demo*` y asignaciones), `staging` (a mano; **solo datos académicos, sin cuentas**); **rechaza producción** |
-| Alumnos y matrículas de ejemplo (Módulo 3, **ficticios**, sin cuentas de usuario) | `php artisan db:seed --class=MatriculaDemoSeeder` | `local` (automático), `staging` (a mano); **rechaza producción** |
-| Asistencia de ejemplo (Módulo 4, **ficticia**, sin cuentas de usuario; solo alumnos del rango `9000xxxx`) | `php artisan db:seed --class=AsistenciaDemoSeeder` | `local` (automático), `staging` (a mano, tras `MatriculaDemoSeeder`); **rechaza producción** |
-| Criterios y notas de ejemplo (Módulo 5, **ficticios**, sin cuentas de usuario; solo alumnos del rango `9000xxxx`) | `php artisan db:seed --class=EvaluacionDemoSeeder` | `local` (automático), `staging` (a mano, tras `MatriculaDemoSeeder`); **rechaza producción** |
-| Datos de la sesión de carga k6 del Módulo 5 (1020 alumnos ficticios `9001xxxx`, cuentas `carga0001…1000` y `cargadoc01…20` con la contraseña de `CARGA_PASSWORD`, obligatoria fuera de local) | `CARGA_PASSWORD=… php artisan db:seed --class=EvaluacionCargaSeeder` | `local`, `staging` (solo justo antes de la sesión; **desactivar las cuentas `carga*` al terminar**); **rechaza producción** |
+| Pruebas Pest (unitarias y de funcionalidad) | 951 pruebas en verde (20/11 en local y 23/11 en el CI) | [cobertura](docs/05-implementacion-y-validacion/cobertura/resumen.md) |
+| Cobertura de líneas | 95,98 % de `app/` (CI, 23/11); 97,5 % en la capa de servicios (20/11) | [cobertura](docs/05-implementacion-y-validacion/cobertura/resumen.md) |
+| Pruebas End to End | Cinco flujos con Pest Browser y Playwright; 8 pruebas en verde (local, 23/11) y job `e2e` en verde en el CI (24/11) | [pruebas End to End](docs/05-implementacion-y-validacion/pruebas-end-to-end.md) |
+| Integración continua | Jobs `pruebas`, `e2e`, `cobertura`, `estilo` y `scripts` en cada push y pull request | [`ci.yml`](.github/workflows/ci.yml) |
+| k6, 13/11: 1000 usuarios (más 20 docentes), 2 vCPU | **p95 no cumplido**; 0,00 % de solicitudes fallidas | [sesión del 13/11](specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-13.md) |
+| k6, 25/11: 2000 usuarios (más 20 docentes), 4 vCPU | **p95 no cumplido**; 0,00 % de solicitudes fallidas (0 de 49 367) | [sesión del 25/11](specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-25.md) |
 
-**Regla operativa: en staging solo datos ficticios** (Ley 29733, Protección de Datos Personales). Los alumnos, apoderados y matrículas incluyen datos personales
-de menores (Ley 29733): ni en staging ni en la demo se cargan nombres, documentos o correos reales, y ningún
-seeder crea usuarios con contraseña conocida fuera de `local` (staging es público); `UsuariosDemoSeeder` y las cuentas
-`docente.demo*` solo existen en `local`.
+En ambas sesiones la CPU de la máquina llegó al 100 %. El criterio de carga del Módulo 1 (SC-006) está **no cumplido en p95**: estado real en su [especificación](specs/001-auth-roles-rbac/spec.md).
 
-`sge:sincronizar-base` solo crea lo que falta y no revierte cambios del Administrador; los permisos que se
-eliminen o renombren en una versión futura hay que limpiarlos a mano.
+## Implementación y validación (Sprint 2)
 
-## Pruebas
-
-```bash
-docker compose exec app ./vendor/bin/pest          # suite completa
-```
-
-**Prueba de carga (k6)** — detalle en [`quickstart.md`](specs/001-auth-roles-rbac/quickstart.md#4-prueba-de-carga-sc-006):
-
-```bash
-docker compose exec app php artisan db:seed --class=LoadTestSeeder              # 1000 usuarios
-docker compose --profile load run --rm k6 run -e SMOKE=1 /scripts/carga.js      # humo: 10 VUs
-docker compose --profile load run --rm k6 run -e BASE_URL=https://<fqdn-del-servidor> /scripts/carga.js  # rampa 1000 VUs
-```
-
-La rampa completa se ejecuta contra el servidor desplegado en pruebas, no en local: se lanza desde GitHub
-Actions (workflow `carga`) tras seguir [`docs/despliegue/prueba-de-carga.md`](docs/despliegue/prueba-de-carga.md).
-
-## Despliegue en staging e integración continua
-
-El SGE se despliega en una máquina de Azure (staging, HTTPS con Let's Encrypt) con imágenes construidas por
-GitHub Actions; cada push y pull request ejecuta Pest y Pint. Guía completa en
-[`docs/despliegue/`](docs/despliegue/README.md).
-
-- **URL de staging:** <https://sge-peru.chilecentral.cloudapp.azure.com>
-- **Estado de CI:** [![ci](https://github.com/JorgeBerroccal/sge/actions/workflows/ci.yml/badge.svg)](https://github.com/JorgeBerroccal/sge/actions/workflows/ci.yml)
-- **Prueba de carga (SC-006 del Módulo 1, cumplido el 25/10/2026):** 1000 usuarios virtuales en dos sesiones; login p95 1,88 s y 1,35 s, consultas p95 387 y 243 ms, 0 solicitudes fallidas ([`k6-sesion-2026-10-24.md`](specs/001-auth-roles-rbac/evidencias/k6-sesion-2026-10-24.md), [`k6-sesion-2026-10-25.md`](specs/001-auth-roles-rbac/evidencias/k6-sesion-2026-10-25.md)).
-- **Evidencias:** despliegue en [`specs/002-despliegue-ci-staging/evidencias/`](specs/002-despliegue-ci-staging/evidencias/)
-  y verificación del Módulo 1 en [`specs/001-auth-roles-rbac/evidencias/`](specs/001-auth-roles-rbac/evidencias/).
+- [Implementación y validación](docs/05-implementacion-y-validacion/README.md): dónde está la evidencia de cada entregable y las adaptaciones (Jest → Pest, sin API REST, k6 con 2000 usuarios).
+- [Criterios de evaluación](docs/06-criterios-de-evaluacion.md): estado real de los 16 criterios.
 
 ## Documentación
 
-La documentación de arquitectura describe el sistema **tal como se construyó** (estado en v0.7.0); cada hecho cita su fuente en el repositorio.
+La documentación de arquitectura describe el sistema **tal como se construyó**; cada hecho cita su fuente en el repositorio.
 
 | Carpeta | Contenido |
 |---|---|
@@ -135,26 +67,39 @@ La documentación de arquitectura describe el sistema **tal como se construyó**
 
 Los diagramas se editan en `docs/img/fuentes/*.archify.json` y se regeneran con Archify; cada uno tiene su versión interactiva en `docs/img/fuentes/*.html`.
 
-## Implementación y validación (Sprint 2)
+## Metodología: Spec-Driven Development con Spec Kit
 
-[`docs/05-implementacion-y-validacion/`](docs/05-implementacion-y-validacion/README.md) indica dónde está la evidencia de cada entregable (especificaciones SDD, pruebas en CI, k6, atributos de calidad) y la tabla de **adaptaciones** (Jest → Pest, sin API REST, k6 con 1000 usuarios). Incluye los [endpoints HTTP documentados con OpenAPI](docs/05-implementacion-y-validacion/api-http.md), la [base de datos y la caché](docs/05-implementacion-y-validacion/base-de-datos-y-cache.md) y el [resumen de cobertura](docs/05-implementacion-y-validacion/cobertura/resumen.md).
+Con [GitHub Spec Kit](https://github.com/github/spec-kit), primero se escribe la especificación y luego el plan, las tareas y el código.
+Los artefactos de cada módulo están en [`specs/`](specs/) (`spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/`, `quickstart.md`, `tasks.md`)
+y los principios del proyecto en la [constitución](.specify/memory/constitution.md).
 
 ## Pendientes
 
-Con `v1.0.0` el MVP está completo y desplegado. Quedan dos puntos abiertos, ninguno de código (el primero ya se resolvió):
+Tareas abiertas de la [feature 002](specs/002-despliegue-ci-staging/tasks.md):
 
-1. **Usuarios de la prueba de carga: resuelto.** La docente confirmó en clase la prueba con 2000 usuarios; se ejecutó con 2000 el 25/11 (enmienda 2.4.0) y los umbrales de p95 no se cumplieron ([registro](specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-25.md)). Antecedente: la sesión del 13/11 con 1000 usuarios ([registro](specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-13.md)).
-2. **Revisión de costos (T083 de la feature 002, 15/12).** Revisar *Cost analysis* contra la estimación, confirmar que el proyectado al 31/12 no pasa del 80 % del crédito (DC-007) y decidir si se detiene la VM hasta la sustentación. Ver [`specs/002-despliegue-ci-staging/tasks.md`](specs/002-despliegue-ci-staging/tasks.md) y [`docs/despliegue/costo-y-tamano.md`](docs/despliegue/costo-y-tamano.md).
-3. **Comprobación de T078 (feature 002).** Confirmar en *Cost analysis* que no aparecen cargos nuevos de B2als_v2 tras la sesión de carga; la evidencia de la sesión ya está registrada y esta es la única parte pendiente de esa tarea.
+- **T083, revisión de costos:** la revisión del 15/11 no se hizo en su fecha (sus datos se consultaron después); falta la del 15/12 contra la estimación: confirmar que el proyectado al 31/12 no pasa del 80 % del crédito y decidir si se detiene la VM hasta la sustentación ([costo y tamaño](docs/despliegue/costo-y-tamano.md)).
+- **T078, cargos tras las sesiones de carga:** confirmar en *Cost analysis* que no aparecen cargos nuevos de B2als_v2 tras volver al tamaño diario, ni de B4als_v2 tras la [sesión del 25/11](specs/006-evaluacion-boletas/evidencias/k6-sesion-2026-11-25.md).
 
-## Regla de autorización
+## Ejecutar en local
 
-**Los permisos se verifican por identificador (p. ej. `usuarios.ver`), nunca por nombre de rol.**
-Los roles son datos editables desde la interfaz; el código solo conoce permisos.
+<details>
+<summary>Comandos de Docker</summary>
 
-## Despliegue en producción
+Requiere Docker con Docker Compose v2.
 
-- nginx + PHP-FPM, Redis para sesiones y caché; sin Octane.
-- `OPCACHE_VALIDATE_TIMESTAMPS=0` y `php artisan optimize` en cada despliegue.
-- `APP_ENV=production`, `APP_DEBUG=false`.
-- **`LoadTestSeeder` nunca se ejecuta en producción** (lanza excepción) ni forma parte de `DatabaseSeeder`.
+```bash
+cp .env.example .env        # definir SGE_ADMIN_USERNAME, SGE_ADMIN_EMAIL y SGE_ADMIN_PASSWORD
+docker compose up -d --build
+docker compose exec app composer install
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate:fresh --seed
+docker compose --profile dev run --rm node sh -c "npm install && npm run build"
+```
+
+Datos de ejemplo, pruebas y prueba de carga: [`docs/desarrollo-local.md`](docs/desarrollo-local.md).
+
+</details>
+
+## Autor
+
+Jorge Luis Berrocal Yucra
